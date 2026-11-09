@@ -1,0 +1,553 @@
+---
+// Header.astro : System.io wala header, design aur logic bilkul same.
+// <style is:global>  -> CSS Astro scope nahi karta (jaisa tha waisa chalta hai)
+// <script is:inline> -> JS jaisi hai waisi rehti hai (onclick="openNav()" kaam karta rahe)
+// Google Fonts (Bodoni Moda + Montserrat) ab Layout.astro ke <head> mein hain.
+// openDrawer() aur #m-global-count cart script se aate hain (wo alag step mein).
+---
+<div class="header-section">
+    <nav class="nav-container">
+        <div class="nav-side nav-left">
+            <button class="hamburger-btn mobile-only" onclick="openNav()" aria-label="Open menu">☰</button>
+      
+            
+            <div class="desktop-only" style="gap: 8px; display: flex; align-items: center;">
+                <a href="https://www.musfiras.com/store" class="nav-link-maroon">HOME</a>
+                <div class="dropdown" id="mDropdown">
+                    <span class="nav-link-maroon dropdown-trigger" tabindex="0" role="button" aria-haspopup="true">OUR COLLECTIONS <span class="nav-caret">▾</span></span>
+                    <div class="dropdown-content">
+                        <div class="menu-brand">
+                            <div class="menu-brand-name">Musfira's</div>
+                            <div class="menu-brand-tag"><i></i><span>Made to adore</span><i></i></div>
+                        </div>
+                        <div class="collections-heading">-THE COLLECTIONS-</div>
+                        <a href="https://www.musfiras.com/bags_carrying"><span>-BAGS &amp; CARRYING-</span></a>
+                        <a href="https://www.musfiras.com/fashion_accessories"><span>-FASHION & ACCESSORIES-</span></a>
+                        <a href="https://www.musfiras.com/musfiras_choice"><span>-MUSFIRA'S CHOICE-</span></a>
+                        <div class="drawer-foot dropdown-foot"><i></i><b>◆</b><i></i></div>
+                        <button type="button" class="dropdown-close" onclick="closeDropdown(event)" aria-label="Close menu">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-center-logo">
+            <a href="https://www.musfiras.com/store" style="text-decoration:none;">
+                <div class="brand-logo-area">
+                    <div class="brand-name-text">Musfira's</div>
+                    <div class="tagline-container">
+                        <span class="tag-line"></span>
+                        <span class="tag-text">Made to adore</span>
+                        <span class="tag-line"></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="nav-side nav-right">
+            <div class="m-header-cart-wrapper" onclick="openDrawer()">
+    <div class="m-cart-icon-container">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="m-cart-badge" id="m-global-count">0</span>
+    </div>
+</div>
+        </div>
+    </nav>
+</div>
+
+<div id="aboutModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-maroon-border"></div>
+        <span class="close-modal" onclick="closeAbout()">&#215;</span>
+        <div class="modal-inner">
+            <h3>Our Story</h3>
+            <div class="about-scroll-body">
+    
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backdrop behind the mobile drawer -->
+<div id="drawerOverlay" class="drawer-overlay" onclick="closeNav()"></div>
+
+<div id="sideNav" class="mobile-side-drawer" aria-hidden="true">
+    <div class="drawer-header">
+        <div class="menu-brand">
+            <div class="menu-brand-name">Musfira's</div>
+            <div class="menu-brand-tag"><i></i><span>Made to adore</span><i></i></div>
+        </div>
+        <button class="drawer-close-btn" onclick="closeNav()" aria-label="Close menu">×</button>
+    </div>
+    <div class="drawer-links">
+        <a href="https://www.musfiras.com/store" class="maroon-mob"><span>HOME</span></a>
+        <div class="collections-heading collections-heading-mob">-THE COLLECTIONS-</div>
+        <a href="https://www.musfiras.com/bags_carrying" class="pink-mob"><span>-BAGS &amp; CARRYING-</span></a>
+        <a href="https://www.musfiras.com/fashion_accessories" class="pink-mob"><span>-FASHION & ACCESSORIES-</span></a>
+        <a href="https://www.musfiras.com/musfiras_choice" class="pink-mob"><span>-MUSFIRA'S CHOICE-</span></a>
+    </div>
+    <div class="drawer-foot"><i></i><b>◆</b><i></i></div>
+</div>
+
+<style is:global>
+    :root {
+        --brand-pink: #e6007e;
+        --maroon: #800000;
+        --cat-maroon: #A30B22;
+        --pink-soft: #fde8f2;      /* light pink hover */
+        --pink-line: #f6d9e6;
+        --ease-elite: cubic-bezier(.22,.61,.36,1);
+    }
+
+    .header-section a, .header-section span, .header-section button,
+    .mobile-side-drawer a, .mobile-side-drawer button { -webkit-tap-highlight-color: transparent; }
+
+    .header-section { width: 100%; background: #fff; border-bottom: 1px solid #f0f0f0; position: fixed; top: 0; left: 0; z-index: 9999; box-sizing: border-box; height: 44px; height: calc(44px + env(safe-area-inset-top, 0px)); padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; display: flex; align-items: center; overflow: visible; transition: background-color .9s ease, border-color .9s ease, box-shadow .9s ease; }
+    /* scroll karte waqt bar chup jati hai (jaldi), sirf logo / cart / menu nazar aate hain */
+    .header-section.scrolling { background-color: transparent; border-bottom-color: transparent; transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease; }
+    .header-section.scrolling .brand-name-text,
+    .header-section.scrolling .tagline-container,
+    .header-section.scrolling .hamburger-btn,
+    .header-section.scrolling .m-header-cart-wrapper { filter: drop-shadow(0 0 3px rgba(255,255,255,0.95)) drop-shadow(0 0 6px rgba(255,255,255,0.8)); }
+    body { padding-top: 46px !important; padding-top: calc(46px + env(safe-area-inset-top, 0px)) !important; }
+
+    .nav-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 20px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: center; }
+    .nav-side { flex: 1; display: flex; align-items: center; }
+    .nav-right { justify-content: flex-end; }
+
+    .nav-center-logo { text-align: center; flex: 1.5; padding: 2px 0; }
+    .brand-name-text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, 'Playfair Display', Georgia, serif; font-size: 21px; font-weight: 670; letter-spacing: 0; font-variant-ligatures: common-ligatures; font-feature-settings: "liga" 1, "kern" 1; color: var(--brand-pink); line-height: 1.15; font-synthesis: none; font-kerning: normal; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .tagline-container { display: flex; align-items: center; justify-content: center; gap: 3px; margin-top: 3px; }
+    .tag-text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, 'Playfair Display', Georgia, serif; font-size: 8.5px; font-weight: 600; line-height: 1; color: var(--brand-pink); }
+    .tag-line { width: 6px; height: 1px; background: var(--brand-pink); margin-top: 0; }
+
+    /* ══════ Top nav links (HOME / OUR COLLECTIONS) — pill + light pink hover ══════ */
+    .nav-link-maroon {
+        font-family: 'Montserrat'; font-size: 10.5px; font-weight: 800;
+        color: var(--maroon) !important; text-decoration: none; letter-spacing: 1.6px;
+        padding: 5px 13px; border-radius: 999px; outline: none;
+        transition: background .3s ease, color .3s ease;
+    }
+    .nav-link-maroon:active,
+    .dropdown.open .dropdown-trigger {
+        background: var(--pink-soft); color: var(--brand-pink) !important;
+    }
+    @media (hover: hover) {
+        .nav-link-maroon:hover {
+            background: var(--pink-soft); color: var(--brand-pink) !important;
+        }
+    }
+
+    /* ══════ Desktop dropdown (elite) ══════ */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-trigger { cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+    .nav-caret { display: inline-block; transition: transform .35s var(--ease-elite); }
+    .dropdown.open .nav-caret { transform: rotate(180deg); }
+
+    .dropdown-content {
+        position: absolute;
+        top: calc(100% + 12px);
+        left: -8px;
+        width: 300px; max-width: calc(100vw - 24px);
+        padding: 24px 12px 14px;
+        border-radius: 20px;
+        border: 1px solid #eee;
+        background: #fff;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.14), 0 4px 14px rgba(0,0,0,0.06);
+        z-index: 10000;
+        text-align: left;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(14px) scale(.97);
+        transform-origin: top left;
+        transition: opacity .4s var(--ease-elite), transform .4s var(--ease-elite), visibility 0s linear .4s;
+    }
+    /* invisible bridge so the menu doesn't close while the mouse travels down */
+    .dropdown-content::before { content: ""; position: absolute; top: -26px; left: 0; right: 0; height: 26px; }
+
+    /* TOP BORDER — asli line, hamesha nazar aati hai (maroon to pink to maroon) */
+    .dropdown-content::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        border-radius: 20px 20px 0 0;
+        background: linear-gradient(90deg, var(--maroon), var(--brand-pink), var(--maroon));
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .dropdown.open .dropdown-content {
+        opacity: 1; visibility: visible; pointer-events: auto;
+        transform: translateY(0) scale(1);
+        transition: opacity .4s var(--ease-elite), transform .4s var(--ease-elite), visibility 0s;
+    }
+
+    /* Brand block — identical in dropdown and drawer */
+    .menu-brand { padding: 0 10px; }
+    .menu-brand-name { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, 'Playfair Display', Georgia, serif; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 28px; font-weight: 670; letter-spacing: 0; font-variant-ligatures: common-ligatures; font-feature-settings: "liga" 1, "kern" 1; color: var(--brand-pink); line-height: 1; }
+    .menu-brand-tag { display: flex; align-items: center; gap: 5px; margin-top: 6px; }
+    .menu-brand-tag span { font-family: 'Bodoni Moda', serif; font-size: 9.5px; color: var(--brand-pink); opacity: .85; }
+    .menu-brand-tag i { width: 9px; height: 1px; background: var(--brand-pink); opacity: .7; }
+
+    /* light-maroon heading (not a link) */
+    .collections-heading { position: relative; color: #a8505c; margin: 16px 10px 8px; padding: 14px 0 12px; border-top: 1px solid var(--pink-line); font-family: 'Montserrat'; font-size: 10.5px; font-weight: 800; letter-spacing: 2px; cursor: default; user-select: none; -webkit-user-select: none; }
+    .collections-heading::after { content: ""; position: absolute; left: 0; top: -1px; width: 34px; height: 2px; background: linear-gradient(90deg, var(--maroon), var(--brand-pink)); border-radius: 2px; }
+
+    /* Category rows: 01 / 02 / 03 */
+    .dropdown-content { counter-reset: cat; }
+    .dropdown-content a {
+        counter-increment: cat;
+        display: flex; align-items: center; justify-content: space-between;
+        color: var(--cat-maroon);
+        padding: 13px 14px;
+        margin: 3px 0;
+        border-radius: 12px;
+        text-decoration: none;
+        font-family: 'Montserrat'; font-size: 11px; font-weight: 800; letter-spacing: .8px;
+        transition: background .3s ease, color .3s ease, padding-left .3s var(--ease-elite);
+    }
+    .dropdown-content a span { display: flex; align-items: center; }
+    .dropdown-content a span::before {
+        content: counter(cat, decimal-leading-zero);
+        margin-right: 14px;
+        font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+        color: rgba(163,11,34,0.45);
+        transition: color .3s ease;
+    }
+    .dropdown-content a::after { content: "→"; opacity: 0; transform: translateX(-8px); transition: opacity .3s ease, transform .3s var(--ease-elite); }
+    .dropdown-content a:active { background: var(--pink-soft); color: var(--brand-pink); padding-left: 20px; }
+    .dropdown-content a:active::after { opacity: 1; transform: none; }
+    .dropdown-content a:active span::before { color: var(--brand-pink); }
+    @media (hover: hover) {
+        .dropdown-content a:hover { background: var(--pink-soft); color: var(--brand-pink); padding-left: 20px; }
+        .dropdown-content a:hover::after { opacity: 1; transform: none; }
+        .dropdown-content a:hover span::before { color: var(--brand-pink); }
+    }
+
+    /* stagger: items glide in one after another each time the menu opens */
+    @keyframes mItemIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+    .dropdown.open .dropdown-content > * { animation: mItemIn .55s var(--ease-elite) backwards; }
+    .dropdown-content > *:nth-child(1) { animation-delay: .04s !important; }
+    .dropdown-content > *:nth-child(2) { animation-delay: .10s !important; }
+    .dropdown-content > *:nth-child(3) { animation-delay: .16s !important; }
+    .dropdown-content > *:nth-child(4) { animation-delay: .22s !important; }
+    .dropdown-content > *:nth-child(5) { animation-delay: .28s !important; }
+    .dropdown-content > *:nth-child(6) { animation-delay: .34s !important; }
+    .dropdown-content > *:nth-child(7) { animation-delay: .40s !important; }
+    .dropdown-content > *:nth-child(8) { animation-delay: .46s !important; }
+
+    /* close button inside dropdown */
+    .dropdown-close { position: absolute; top: 18px; right: 16px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--pink-line); background: #fff; color: var(--maroon); font-size: 11px; font-weight: 800; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: background .3s ease, color .3s ease, transform .35s var(--ease-elite); -webkit-tap-highlight-color: transparent; }
+    .dropdown-close:active { background: var(--pink-soft); color: var(--brand-pink); transform: rotate(90deg); }
+    @media (hover: hover) { .dropdown-close:hover { background: var(--pink-soft); color: var(--brand-pink); transform: rotate(90deg); } }
+
+    .modal-overlay { display: none; position: fixed; z-index: 30000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+    .modal-content { background: #fff; margin: 5% auto; width: 90%; max-width: 550px; border-radius: 12px; overflow: hidden; position: relative; }
+    .modal-maroon-border { height: 10px; background: var(--maroon); }
+    .about-scroll-body { max-height: 450px; max-height: min(450px, 60vh); overflow-y: auto; padding: 25px; font-family: 'Montserrat'; font-size: 13px; line-height: 1.8; color: #333; text-align: justify; }
+    .modal-inner h3 { font-family: 'Bodoni Moda'; text-align: center; color: var(--maroon); font-size: 28px; margin-top: 20px; }
+    .close-modal { position: absolute; right: 15px; top: 15px; font-size: 30px; cursor: pointer; color: #999; }
+
+    /* ══════ Mobile drawer (elite) ══════ */
+    .drawer-overlay {
+        position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+        z-index: 2147483646;
+        opacity: 0; visibility: hidden;
+        transition: opacity .4s ease, visibility 0s linear .4s;
+    }
+    .drawer-overlay.active { opacity: 1; visibility: visible; transition: opacity .4s ease, visibility 0s; }
+
+    .mobile-side-drawer {
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: min(320px, 86vw);
+        background: #fff;
+        z-index: 2147483647;
+        padding: calc(env(safe-area-inset-top) + 24px) 18px calc(env(safe-area-inset-bottom) + 24px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        border-radius: 0 24px 24px 0;
+        box-shadow: 16px 0 40px rgba(0,0,0,0.18);
+        transform: translate3d(-105%, 0, 0);
+        visibility: hidden;
+        transition: transform .5s var(--ease-elite), visibility 0s linear .5s;
+        will-change: transform;
+        counter-reset: cat;
+    }
+    .mobile-side-drawer.active { transform: translate3d(0, 0, 0); visibility: visible; transition: transform .5s var(--ease-elite), visibility 0s; }
+
+    /* TOP BORDER — drawer ke upar fixed line, scroll karne par bhi apni jagah rehti hai */
+    .mobile-side-drawer::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        border-radius: 0 24px 0 0;
+        background: linear-gradient(90deg, var(--maroon), var(--brand-pink));
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .drawer-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 6px; }
+    .drawer-header .menu-brand { padding: 0 4px; }
+    .drawer-close-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--pink-line); background: #fff; color: var(--maroon); font-size: 24px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .25s ease, color .25s ease, transform .35s var(--ease-elite); }
+    .drawer-close-btn:active { background: var(--pink-soft); transform: rotate(90deg); }
+    @media (hover: hover) { .drawer-close-btn:hover { background: var(--pink-soft); color: var(--brand-pink); transform: rotate(90deg); } }
+
+    .pink-mob, .maroon-mob {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 15px 14px;
+        margin: 3px 0;
+        border-radius: 14px;
+        font-family: 'Montserrat'; font-weight: 800; font-size: 13px; letter-spacing: .6px;
+        text-decoration: none;
+        transition: background .3s ease, color .3s ease, padding-left .3s var(--ease-elite);
+    }
+    .pink-mob { color: var(--cat-maroon) !important; counter-increment: cat; }
+    .maroon-mob { color: var(--maroon) !important; }
+    .pink-mob span { display: flex; align-items: center; }
+    .pink-mob span::before {
+        content: counter(cat, decimal-leading-zero);
+        margin-right: 14px;
+        font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+        color: rgba(163,11,34,0.45);
+        transition: color .3s ease;
+    }
+    .pink-mob::after, .maroon-mob::after { content: "→"; opacity: 0; transform: translateX(-8px); transition: opacity .3s ease, transform .3s var(--ease-elite); }
+    .pink-mob:active, .maroon-mob:active { background: var(--pink-soft); padding-left: 20px; }
+    .pink-mob:active { color: var(--brand-pink) !important; }
+    .pink-mob:active::after, .maroon-mob:active::after { opacity: 1; transform: none; }
+    .pink-mob:active span::before { color: var(--brand-pink); }
+    @media (hover: hover) {
+        .pink-mob:hover, .maroon-mob:hover { background: var(--pink-soft); padding-left: 20px; }
+        .pink-mob:hover { color: var(--brand-pink) !important; }
+        .pink-mob:hover::after, .maroon-mob:hover::after { opacity: 1; transform: none; }
+        .pink-mob:hover span::before { color: var(--brand-pink); }
+    }
+
+    .collections-heading-mob { margin: 14px 4px 8px; }
+
+    .drawer-foot { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 26px; color: var(--brand-pink); opacity: .7; }
+    .dropdown-foot { margin-top: 16px; margin-bottom: 2px; }
+    .drawer-foot i { width: 44px; height: 1px; background: var(--brand-pink); opacity: .5; }
+    .drawer-foot b { font-size: 9px; }
+
+    /* stagger the drawer items when it opens */
+    @keyframes mDrawerItemIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+    .mobile-side-drawer.active .drawer-links > *, .mobile-side-drawer.active .drawer-foot { animation: mDrawerItemIn .55s var(--ease-elite) backwards; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(1) { animation-delay: .12s; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(2) { animation-delay: .18s; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(3) { animation-delay: .24s; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(4) { animation-delay: .30s; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(5) { animation-delay: .36s; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(6) { animation-delay: .42s; }
+    .mobile-side-drawer.active .drawer-foot { animation-delay: .5s; }
+
+    .drawer-cat-title { font-family: 'Montserrat'; font-size: 10px; color: #999; letter-spacing: 2px; font-weight: 700; }
+
+    .desktop-only { display: flex !important; }
+    .mobile-only { display: none !important; }
+    .hamburger-btn { background: none; border: none; font-size: 24px; line-height: 1; padding: 6px 8px; min-width: 40px; min-height: 40px; color: var(--maroon); cursor: pointer; touch-action: manipulation; }
+
+    @media (max-width: 950px) {
+        .desktop-only { display: none !important; }
+        .mobile-only { display: block !important; }
+        .brand-name-text { font-size: 20px; }
+    }
+
+    /* ══════ Extra responsive: har device ke liye ══════ */
+    .nav-link-maroon, .pink-mob, .maroon-mob, .drawer-close-btn, .dropdown-close, .m-header-cart-wrapper { touch-action: manipulation; }
+    .mobile-side-drawer { padding-left: max(18px, env(safe-area-inset-left, 0px)); }
+
+    /* Chhota laptop / iPad landscape */
+    @media (min-width: 951px) and (max-width: 1100px) {
+        .nav-link-maroon { padding: 5px 9px; letter-spacing: 1.2px; }
+    }
+
+    /* Phones */
+    @media (max-width: 600px) {
+        .nav-container { padding-left: 14px; padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: 14px; padding-right: max(14px, env(safe-area-inset-right, 0px)); }
+        .brand-name-text { font-size: 19px; }
+        .modal-content { margin: 12% auto; width: 92%; }
+        .about-scroll-body { padding: 18px; font-size: 12.5px; }
+        .modal-inner h3 { font-size: 24px; }
+    }
+
+    /* Bohat chhote phones (iPhone SE, purane Android) */
+    @media (max-width: 380px) {
+        .nav-container { padding-left: 10px; padding-left: max(10px, env(safe-area-inset-left, 0px)); padding-right: 10px; padding-right: max(10px, env(safe-area-inset-right, 0px)); }
+        .brand-name-text { font-size: 17px; }
+        .tag-text { font-size: 7.5px; }
+        .tag-line { width: 4px; }
+        .mobile-side-drawer { width: 88vw; }
+        .menu-brand-name { font-size: 25px; }
+        .pink-mob, .maroon-mob { font-size: 12px; padding: 14px 12px; }
+    }
+
+    /* Phone landscape (kam height) */
+    @media (max-height: 480px) and (orientation: landscape) {
+        .mobile-side-drawer { padding-top: calc(env(safe-area-inset-top, 0px) + 16px); }
+        .drawer-foot { margin-top: 16px; }
+        .modal-content { margin: 3% auto; }
+        .about-scroll-body { max-height: 55vh; }
+    }
+
+    /* ══════ Cart icon + count (pehle product CSS mein tha, ab header ke saath, taake har page par sahi chale) ══════ */
+    .m-header-cart-wrapper {
+        cursor: pointer;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        position: relative;
+        transition: all 0.3s ease-in-out;
+    }
+    .m-cart-icon-container {
+        position: relative !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+    }
+    .m-cart-icon-container svg {
+        width: 34px;
+        height: 34px;
+        stroke: #800000;
+        stroke-width: 1.5;
+        fill: none;
+        filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15));
+    }
+    #m-global-count {
+        position: absolute !important;
+        top: 0px !important;
+        right: -2px !important;
+        background: #e6007e !important;
+        color: #ffffff !important;
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 2px solid #ffffff !important;
+        box-shadow: 0 4px 8px rgba(230, 0, 126, 0.3);
+        z-index: 999999 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    @media (max-width: 1024px) and (min-width: 768px) {
+        .m-cart-icon-container { width: 38px; height: 38px; }
+        .m-cart-icon-container svg { width: 30px; height: 30px; }
+        #m-global-count { min-width: 20px !important; height: 20px !important; font-size: 10px !important; }
+    }
+    @media (max-width: 767px) {
+        .m-cart-icon-container { width: 35px; height: 35px; }
+        .m-cart-icon-container svg { width: 28px; height: 28px; }
+        #m-global-count {
+            top: -2px !important;
+            right: -4px !important;
+            min-width: 18px !important;
+            height: 18px !important;
+            font-size: 9px !important;
+            border-width: 1.5px !important;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .dropdown-content, .mobile-side-drawer, .drawer-overlay { transition-duration: .01s !important; }
+        .dropdown-content > *, .drawer-links > *, .drawer-foot { animation: none !important; }
+    }
+</style>
+
+<script is:inline>
+    // Move drawer and backdrop straight under the page body so they always sit above WhatsApp and chat buttons
+    (function () {
+        var ov = document.getElementById("drawerOverlay");
+        var dr = document.getElementById("sideNav");
+        if (ov) { if (ov.parentNode !== document.body) { document.body.appendChild(ov); } }
+        if (dr) { if (dr.parentNode !== document.body) { document.body.appendChild(dr); } }
+    })();
+
+    function openNav() {
+        var d = document.getElementById("sideNav");
+        d.classList.add("active");
+        d.setAttribute("aria-hidden", "false");
+        document.getElementById("drawerOverlay").classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+    function closeNav() {
+        var d = document.getElementById("sideNav");
+        d.classList.remove("active");
+        d.setAttribute("aria-hidden", "true");
+        document.getElementById("drawerOverlay").classList.remove("active");
+        document.body.style.overflow = "";
+    }
+    function closeDropdown(e) {
+        if (e) { e.stopPropagation(); }
+        var dd = document.getElementById("mDropdown");
+        dd.classList.remove("open");
+        if (dd.contains(document.activeElement)) { document.activeElement.blur(); }
+    }
+    function openAbout() { document.getElementById("aboutModal").style.display = "block"; }
+    function closeAbout() { document.getElementById("aboutModal").style.display = "none"; }
+    window.onclick = function(e) { if(e.target == document.getElementById("aboutModal")) { closeAbout(); } };;
+
+    // Scroll pe bar chup jaye, scroll rukne ke baad slowly wapas aa jaye
+    (function () {
+        var hdr = document.querySelector(".header-section");
+        if (!hdr) { return; }
+        var stopTimer = null;
+        window.addEventListener("scroll", function () {
+            if ((window.pageYOffset || document.documentElement.scrollTop) > 5) {
+                hdr.classList.add("scrolling");
+            }
+            clearTimeout(stopTimer);
+            stopTimer = setTimeout(function () { hdr.classList.remove("scrolling"); }, 350);
+        }, { passive: true });
+    })();
+
+    // Categories dropdown: hover on mouse, tap on touch, always re-opens, closes with X / outside click / Esc
+    (function () {
+        var dd = document.getElementById("mDropdown");
+        if (!dd) { return; }
+        var trigger = dd.querySelector(".dropdown-trigger");
+        var closeTimer = null;
+        var lastType = "mouse";
+
+        function openDd() { clearTimeout(closeTimer); dd.classList.add("open"); }
+        function closeDd() { clearTimeout(closeTimer); dd.classList.remove("open"); }
+        function closeSoon() { clearTimeout(closeTimer); closeTimer = setTimeout(closeDd, 160); }
+
+        dd.addEventListener("pointerdown", function (e) { lastType = e.pointerType || "mouse"; });
+        dd.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { openDd(); } });
+        trigger.addEventListener("pointerover", function (e) { if (e.pointerType === "mouse") { openDd(); } });
+        dd.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { closeSoon(); } });
+
+        trigger.addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (lastType === "mouse") { openDd(); } else { dd.classList.toggle("open"); }
+        });
+        trigger.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); dd.classList.toggle("open"); }
+        });
+        document.addEventListener("click", function (e) {
+            if (!dd.contains(e.target)) { closeDd(); }
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") { closeDd(); closeNav(); }
+        });
+    })();
+</script>

@@ -93,8 +93,8 @@
 <style is:global>
     :root {
         --brand-pink: #e6007e;
-        --maroon: #800000;
-        --cat-maroon: #A30B22;
+        --maroon: var(--orange-maroon, #a3301f);
+        --cat-maroon: var(--orange-maroon, #a3301f);
         --pink-soft: #fde8f2;      /* light pink hover */
         --pink-line: #f6d9e6;
         --ease-elite: cubic-bezier(.22,.61,.36,1);
@@ -214,7 +214,7 @@
         content: counter(cat, decimal-leading-zero);
         margin-right: 14px;
         font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
-        color: rgba(163,11,34,0.45);
+        color: rgba(163,48,31,0.45);
         transition: color .3s ease;
     }
     .dropdown-content a::after { content: "→"; opacity: 0; transform: translateX(-8px); transition: opacity .3s ease, transform .3s var(--ease-elite); }
@@ -316,7 +316,7 @@
         content: counter(cat, decimal-leading-zero);
         margin-right: 14px;
         font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
-        color: rgba(163,11,34,0.45);
+        color: rgba(163,48,31,0.45);
         transition: color .3s ease;
     }
     .pink-mob::after, .maroon-mob::after { content: "→"; opacity: 0; transform: translateX(-8px); transition: opacity .3s ease, transform .3s var(--ease-elite); }
@@ -419,7 +419,7 @@
     .m-cart-icon-container svg {
         width: 34px;
         height: 34px;
-        stroke: #800000;
+        stroke: var(--orange-maroon, #a3301f);
         stroke-width: 1.5;
         fill: none;
         filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15));

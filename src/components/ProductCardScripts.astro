@@ -1,0 +1,35 @@
+---
+// Ye code System.io ke footer wale script mein tha, lekin ye FOOTER ka nahi, PRODUCT CARDS ka hai
+// (features popup khulna/band hona aur star rating bharna). Product cards wale step mein iski CSS aayegi.
+---
+<script is:inline>
+  function m_open_features(el) {
+    var card = el.closest('.m-elite-contain-card');
+    card.querySelector('.m-features-overlay').classList.add('m-open');
+    document.body.classList.add('m-scroll-lock');
+  }
+  function m_close_features(el) {
+    var card = el.closest('.m-elite-contain-card');
+    card.querySelector('.m-features-overlay').classList.remove('m-open');
+    document.body.classList.remove('m-scroll-lock');
+  }
+  (function () {
+    function initRatings() {
+      document.querySelectorAll('.m-elite-contain-card[data-rating]').forEach(function (card) {
+        if (card.dataset.ratingInit === 'true') return;
+        var rating = parseFloat(card.getAttribute('data-rating')) || 0;
+        var pct = Math.max(0, Math.min(100, (rating / 5) * 100));
+        var fillEl = card.querySelector('.m-stars-fill');
+        var numEl = card.querySelector('.m-rating-num');
+        if (fillEl) fillEl.style.width = pct + '%';
+        if (numEl) numEl.textContent = rating.toFixed(1);
+        card.dataset.ratingInit = 'true';
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRatings);
+    } else {
+      initRatings();
+    }
+  })();
+</script>

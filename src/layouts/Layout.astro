@@ -1,6 +1,11 @@
 ---
 import Header from '../components/Header.astro';
-const { title = "Musfira's Store - Luxury Bags & Backpacks" } = Astro.props;
+import Footer from '../components/Footer.astro';
+import ProductCardScripts from '../components/ProductCardScripts.astro';
+const {
+  title = "Musfira's Store - Luxury Bags & Backpacks",
+  description = "Musfira's: hand-selected ladies' bags, jewellery, wallets, watches and accessories, delivered across the UAE.",
+} = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -8,6 +13,7 @@ const { title = "Musfira's Store - Luxury Bags & Backpacks" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
     <title>{title}</title>
 
     <link rel="icon" type="image/png" sizes="512x512" href="/mlogo.png?v=2" />
@@ -15,16 +21,21 @@ const { title = "Musfira's Store - Luxury Bags & Backpacks" } = Astro.props;
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400..900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     <style is:global>
+      /* System.io ke footer CSS mein ye global reset tha, poori site par lagta tha, wahi rakha hai */
+      /* ORANGY MAROON: poori site ka maroon yahin se aata hai. Tone badalni ho to sirf ye ek rang badlo. */
+      :root { --orange-maroon: #a3301f; }
+      *, *::before, *::after { box-sizing: border-box; }
       html, body { margin: 0; width: 100%; height: 100%; }
     </style>
   </head>
   <body>
     <Header />
     <slot />
-    <!-- Footer yahan aayega (agla step) -->
+    <Footer />
+    <ProductCardScripts />
 
     <!-- Cart drawer script aane tak cart icon par click error na de -->
     <script is:inline>

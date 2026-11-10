@@ -4,18 +4,15 @@
    Sab kuch is file me hai: HTML + CSS + Script (live stock check bhi). */
 ---
 
-<!-- CART Drawer (bottom sheet) -->
+<!-- CART Drawer (side drawer, right se) -->
 <div id="m-cart-drawer-overlay" class="m-cart-overlay" onclick="closeDrawer()"></div>
 <div id="m-cart-drawer" class="m-cart-drawer" role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden="true">
     <div class="m-drawer-top">
         <div class="m-drawer-header">
-            <span class="m-drawer-grip"></span>
-            <div class="m-drawer-head-text">
-                <span class="m-drawer-title">MY SHOPPING BAG</span>
-                <span class="m-drawer-sub"><i></i><em>Made to adore</em><i></i></span>
-            </div>
+            <span class="m-drawer-title">MY SHOPPING BAG</span>
             <button type="button" class="m-drawer-close" onclick="closeDrawer()" aria-label="Close bag">&times;</button>
         </div>
+        <div class="m-drawer-tag"><i></i><em>Made to adore</em><i></i></div>
     </div>
 
     <div id="m-cart-items-container" class="m-cart-body"></div>
@@ -46,32 +43,31 @@
         touch-action: none;
     }
 
-    /* ══════════ Drawer: HAMESHA screen ke sab se neeche se upar (har device par) ══════════
-       Height content ke hisaab se khud barhti hai (zyada products = bara drawer),
-       max-height par ruk kar sirf items wala hissa scroll hota hai. */
+    /* ══════════ Drawer: right side se (har device par) ══════════
+       Phone: ~92% width | Tablet/laptop/desktop: aadhi screen (min 420px, max 520px).
+       Lambai poori screen ki; zyada products par sirf items wala hissa scroll hota hai. */
     .m-cart-drawer {
         position: fixed !important;
-        top: auto !important;
+        top: 0 !important;
         bottom: 0 !important;
-        left: 0 !important;
         right: 0 !important;
-        margin: 0 auto !important;
-        width: 100%; max-width: 520px;
-        height: auto;
-        max-height: 88vh;
-        max-height: 88dvh;
+        left: auto !important;
+        margin: 0 !important;
+        width: 92vw; max-width: 440px;
+        height: 100vh; height: 100dvh;
         background: #fff;
         z-index: 2147483647;
         display: flex; flex-direction: column;
-        border-radius: 26px 26px 0 0;
+        border-radius: 26px 0 0 26px;
         overflow: hidden;
-        box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.22);
-        transform: translate3d(0, 105%, 0);
-        -webkit-transform: translate3d(0, 105%, 0);
+        box-shadow: -18px 0 50px rgba(0, 0, 0, 0.22);
+        transform: translate3d(105%, 0, 0);
+        -webkit-transform: translate3d(105%, 0, 0);
         visibility: hidden;
         transition: transform .9s cubic-bezier(.16,.84,.3,1), visibility 0s linear .9s;
         will-change: transform;
         overscroll-behavior: contain;
+        touch-action: pan-y;
         -webkit-tap-highlight-color: transparent;
     }
     .m-cart-drawer.active {
@@ -81,30 +77,29 @@
         transition: transform .9s cubic-bezier(.16,.84,.3,1), visibility 0s;
     }
 
-    /* ══════════ Top: bohat patla header (grip andar hi hai) ══════════ */
-    .m-drawer-top { flex: 0 0 auto; touch-action: none; }
+    /* ══════════ Top: patla maroon header (sirf title) + neeche safed patti me tagline ══════════ */
+    .m-drawer-top { flex: 0 0 auto; }
     .m-drawer-header {
         position: relative;
         display: flex; justify-content: space-between; align-items: center;
-        padding: 14px 12px 8px 20px;
+        padding: 10px 12px 10px 20px;
+        padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 10px 20px;
         background: linear-gradient(135deg, #800000 0%, #5e0a22 100%);
         color: #fff;
-        cursor: grab;
     }
     .m-drawer-header::after {
         content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
         background: linear-gradient(90deg, #800000, #e6007e, #800000);
     }
-    .m-drawer-grip {
-        position: absolute; top: 5px; left: 50%; margin-left: -18px;
-        width: 36px; height: 3px; border-radius: 3px;
-        background: rgba(255, 255, 255, 0.4);
+    .m-drawer-title { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2.4px; font-size: 12px; line-height: 1; }
+    .m-drawer-tag {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: 9px 20px 3px;
+        background: #fff;
     }
-    .m-drawer-head-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-    .m-drawer-title { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2.2px; font-size: 12px; line-height: 1; }
-    .m-drawer-sub { display: flex; align-items: center; gap: 6px; }
-    .m-drawer-sub em { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 10.5px; color: #ff3cac; line-height: 1; }
-    .m-drawer-sub i { display: block; width: 12px; height: 1px; background: #ff3cac; opacity: .8; }
+    .m-drawer-tag em { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 13px; color: #e6007e; line-height: 1; letter-spacing: .4px; }
+    .m-drawer-tag i { display: block; width: 34px; height: 1px; background: linear-gradient(90deg, transparent, #e6007e); }
+    .m-drawer-tag i:last-child { background: linear-gradient(90deg, #e6007e, transparent); }
 
     .m-drawer-close {
         width: 30px; height: 30px; flex-shrink: 0;
@@ -211,19 +206,15 @@
     body.m-cart-locked [id*="whatsapp" i] { visibility: hidden !important; }
 
     /* ══════════ Responsive: phone, iPhone, tablet, laptop, desktop ══════════ */
-    @media (max-width: 520px) {
-        .m-cart-drawer { max-width: 100%; border-radius: 24px 24px 0 0; }
-        .m-cart-body { padding: 14px 12px; }
+    @media (min-width: 768px) {
+        .m-cart-drawer { width: 50vw; min-width: 420px; max-width: 520px; }
+    }
+    @media (max-width: 380px) {
+        .m-cart-drawer { width: 94vw; }
+        .m-cart-body { padding: 12px 10px; }
         .m-sub-amt { font-size: 18px; }
     }
-    @media (min-width: 768px) {
-        .m-cart-drawer { max-width: 540px; max-height: 84vh; max-height: 84dvh; }
-    }
-    @media (min-width: 1400px) {
-        .m-cart-drawer { max-width: 580px; }
-    }
     @media (max-height: 480px) and (orientation: landscape) {
-        .m-cart-drawer { max-height: 96vh; max-height: 96dvh; }
         .m-drawer-footer { padding-top: 10px; padding-bottom: 10px; }
         .m-cart-empty { padding: 20px; }
     }
@@ -633,32 +624,38 @@ function unlockPageForCart() {
     if (_cartFixed) window.scrollTo(0, _cartY);
 }
 
-// Neeche se swipe karke band karna (grip / header par ungli rakh kar neeche khinchein)
+// Side drawer: ungli se right ki taraf swipe karke band karna
 function bindCartSwipe(drw) {
     if (!drw || drw.getAttribute('data-sw')) return;
-    var zone = drw.querySelector('.m-drawer-top');
-    if (!zone) return;
     drw.setAttribute('data-sw', '1');
-    var startY = 0, dy = 0, drag = false;
-    zone.addEventListener('touchstart', function (e) {
+    var sx = 0, sy = 0, dx = 0, mode = 0; // mode: 0 = pata nahi, 1 = horizontal drag, 2 = vertical (scroll)
+    drw.addEventListener('touchstart', function (e) {
         if (!drw.classList.contains('active')) return;
-        startY = e.touches[0].clientY; dy = 0; drag = true;
-        drw.style.transition = 'none';
+        sx = e.touches[0].clientX; sy = e.touches[0].clientY; dx = 0; mode = 0;
     }, { passive: true });
-    zone.addEventListener('touchmove', function (e) {
-        if (!drag) return;
-        dy = Math.max(0, e.touches[0].clientY - startY);
-        drw.style.transform = 'translate3d(0,' + dy + 'px,0)';
+    drw.addEventListener('touchmove', function (e) {
+        if (!drw.classList.contains('active') || mode === 2) return;
+        var mx = e.touches[0].clientX - sx, my = e.touches[0].clientY - sy;
+        if (mode === 0) {
+            if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
+            mode = (Math.abs(mx) > Math.abs(my) && mx > 0) ? 1 : 2;
+            if (mode === 1) drw.style.transition = 'none';
+        }
+        if (mode === 1) {
+            dx = Math.max(0, mx);
+            drw.style.transform = 'translate3d(' + dx + 'px,0,0)';
+        }
     }, { passive: true });
     function end() {
-        if (!drag) return;
-        drag = false;
-        drw.style.transition = '';
-        drw.style.transform = '';
-        if (dy > 90) closeDrawer();
+        if (mode === 1) {
+            drw.style.transition = '';
+            drw.style.transform = '';
+            if (dx > 90) closeDrawer();
+        }
+        mode = 0; dx = 0;
     }
-    zone.addEventListener('touchend', end);
-    zone.addEventListener('touchcancel', end);
+    drw.addEventListener('touchend', end);
+    drw.addEventListener('touchcancel', end);
 }
 
 function openDrawer() {

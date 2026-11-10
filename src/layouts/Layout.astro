@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import ProductCardScripts from '../components/ProductCardScripts.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import ReviewTab from '../components/ReviewTab.astro';
+import CartDrawer from '../components/CartDrawer.astro';
 const {
   title = "Musfira's Store - Luxury Bags & Backpacks",
   description = "Musfira's: hand-selected ladies' bags, jewellery, wallets, watches and accessories, delivered across the UAE.",
@@ -52,7 +53,11 @@ const {
     <WhatsAppFloat />
     <ReviewTab />
 
-    <!-- Cart drawer script aane tak cart icon par click error na de -->
+    <!-- Cart drawer: har page par khud load hota hai (HTML + CSS + live stock script) -->
+    <CartDrawer />
+
+    <!-- Safety: cart drawer script na chale to bhi cart icon par click error na de.
+         CartDrawer ke baad hai, isliye asli openDrawer maujood ho to ye kuch nahi karta. -->
     <script is:inline>
       if (typeof window.openDrawer !== 'function') { window.openDrawer = function () {}; }
     </script>

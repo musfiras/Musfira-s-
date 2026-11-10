@@ -1,0 +1,777 @@
+---
+/* CartDrawer.astro
+   Layout me SIRF EK BAAR lagana hai. Har page par khud chalega.
+   Sab kuch is file me hai: HTML + CSS + Script (live stock check bhi). */
+---
+
+<!-- CART Drawer (bottom sheet) -->
+<div id="m-cart-drawer-overlay" class="m-cart-overlay" onclick="closeDrawer()"></div>
+<div id="m-cart-drawer" class="m-cart-drawer" role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden="true">
+    <div class="m-drawer-top">
+        <div class="m-drawer-header">
+            <span class="m-drawer-grip"></span>
+            <div class="m-drawer-head-text">
+                <span class="m-drawer-title">MY SHOPPING BAG</span>
+                <span class="m-drawer-sub"><i></i><em>Made to adore</em><i></i></span>
+            </div>
+            <button type="button" class="m-drawer-close" onclick="closeDrawer()" aria-label="Close bag">&times;</button>
+        </div>
+    </div>
+
+    <div id="m-cart-items-container" class="m-cart-body"></div>
+
+    <div class="m-drawer-footer">
+        <div class="m-footer-row">
+            <span class="m-sub-label">Subtotal</span>
+            <span id="m-cart-subtotal" class="m-sub-amt">AED 0</span>
+        </div>
+        <div class="m-ship-note"><i></i><span>Complimentary shipping included</span><i></i></div>
+        <button type="button" class="m-proceed-btn" onclick="proceedToCheckout()">
+            PROCEED TO CHECKOUT →
+        </button>
+    </div>
+</div>
+
+<style is:global>
+    /* ══════════ Backdrop ══════════ */
+    .m-cart-overlay {
+        position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+        background: rgba(30, 0, 12, 0.5);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+        z-index: 2147483646;
+        display: none;
+        opacity: 0;
+        transition: opacity .7s ease;
+        touch-action: none;
+    }
+
+    /* ══════════ Drawer: HAMESHA screen ke sab se neeche se upar (har device par) ══════════
+       Height content ke hisaab se khud barhti hai (zyada products = bara drawer),
+       max-height par ruk kar sirf items wala hissa scroll hota hai. */
+    .m-cart-drawer {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 auto !important;
+        width: 100%; max-width: 520px;
+        height: auto;
+        max-height: 88vh;
+        max-height: 88dvh;
+        background: #fff;
+        z-index: 2147483647;
+        display: flex; flex-direction: column;
+        border-radius: 26px 26px 0 0;
+        overflow: hidden;
+        box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.22);
+        transform: translate3d(0, 105%, 0);
+        -webkit-transform: translate3d(0, 105%, 0);
+        visibility: hidden;
+        transition: transform .9s cubic-bezier(.16,.84,.3,1), visibility 0s linear .9s;
+        will-change: transform;
+        overscroll-behavior: contain;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .m-cart-drawer.active {
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+        visibility: visible;
+        transition: transform .9s cubic-bezier(.16,.84,.3,1), visibility 0s;
+    }
+
+    /* ══════════ Top: bohat patla header (grip andar hi hai) ══════════ */
+    .m-drawer-top { flex: 0 0 auto; touch-action: none; }
+    .m-drawer-header {
+        position: relative;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 14px 12px 8px 20px;
+        background: linear-gradient(135deg, #800000 0%, #5e0a22 100%);
+        color: #fff;
+        cursor: grab;
+    }
+    .m-drawer-header::after {
+        content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+        background: linear-gradient(90deg, #800000, #e6007e, #800000);
+    }
+    .m-drawer-grip {
+        position: absolute; top: 5px; left: 50%; margin-left: -18px;
+        width: 36px; height: 3px; border-radius: 3px;
+        background: rgba(255, 255, 255, 0.4);
+    }
+    .m-drawer-head-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .m-drawer-title { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 2.2px; font-size: 12px; line-height: 1; }
+    .m-drawer-sub { display: flex; align-items: center; gap: 6px; }
+    .m-drawer-sub em { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 10.5px; color: #ff3cac; line-height: 1; }
+    .m-drawer-sub i { display: block; width: 12px; height: 1px; background: #ff3cac; opacity: .8; }
+
+    .m-drawer-close {
+        width: 30px; height: 30px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff; font-size: 21px; line-height: 1; padding: 0;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background .3s ease, border-color .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);
+    }
+    .m-drawer-close:active,
+    .m-drawer-close:focus-visible { background: #e6007e; border-color: #ff4fa3; transform: rotate(90deg); outline: none; }
+    @media (hover: hover) { .m-drawer-close:hover { background: #e6007e; border-color: #ff4fa3; transform: rotate(90deg); } }
+
+    /* ══════════ Items area: zyada products par sirf yehi scroll hoga ══════════ */
+    .m-cart-body {
+        flex: 1 1 auto; min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding: 16px 16px;
+        background: #fff;
+        scrollbar-width: thin;
+        scrollbar-color: #e6007e #fff5f8;
+    }
+    .m-cart-body::-webkit-scrollbar { width: 6px; }
+    .m-cart-body::-webkit-scrollbar-track { background: #fff5f8; }
+    .m-cart-body::-webkit-scrollbar-thumb { background: #e6007e; border-radius: 10px; }
+
+    .m-cart-empty { text-align: center; padding: 40px 20px; font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; color: #9c2954; }
+    .m-cart-empty b { display: block; font-style: normal; color: #e6007e; font-size: 12px; margin-bottom: 14px; }
+    .m-cart-empty span { display: block; font-size: 15px; line-height: 1.9; }
+
+    .m-cart-item {
+        display: flex; align-items: center; gap: 12px;
+        margin: 0 0 12px; padding: 14px 12px;
+        border: 1px solid #fecce6; border-radius: 16px;
+        background: #fffafc;
+        box-shadow: 0 2px 10px rgba(156, 41, 84, 0.05);
+        position: relative;
+        transition: box-shadow .3s ease, border-color .3s ease;
+    }
+    @media (hover: hover) { .m-cart-item:hover { border-color: #f6b3d4; box-shadow: 0 6px 18px rgba(230, 0, 126, 0.12); } }
+
+    .m-item-check { accent-color: #800000; width: 20px; height: 20px; flex-shrink: 0; cursor: pointer; }
+    .m-cart-img { width: 72px; height: 72px; flex-shrink: 0; border-radius: 12px; object-fit: cover; background: #f5f5f5; border: 1px solid #fecce6; }
+    .m-item-info { flex: 1; min-width: 0; }
+    .m-item-name {
+        font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 12px; line-height: 1.35;
+        color: #333; margin-bottom: 4px; text-transform: uppercase;
+        word-break: break-word;
+    }
+    .m-item-meta { font-size: 11px; color: #e6007e; font-weight: 700; margin-bottom: 4px; }
+    .m-item-price { font-family: 'Montserrat', sans-serif; font-weight: 900; color: #800000; font-size: 14px; }
+    .m-remove-text { font-size: 10px; color: #e6007e; cursor: pointer; text-decoration: underline; font-weight: 700; margin-top: 4px; padding: 4px 0; display: inline-block; touch-action: manipulation; }
+
+    /* ══════════ Footer ══════════ */
+    .m-drawer-footer {
+        flex: 0 0 auto;
+        padding: 16px 20px 18px;
+        padding: 16px 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
+        background: linear-gradient(180deg, #ffffff, #fff9fb);
+        border-top: 1px solid #fecce6;
+        box-shadow: 0 -10px 24px rgba(156, 41, 84, 0.06);
+    }
+    .m-footer-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .m-sub-label { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #9c2954; }
+    .m-sub-amt { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 20px; color: #800000; }
+    .m-ship-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
+    .m-ship-note span { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 11.5px; color: #e6007e; }
+    .m-ship-note i { display: block; width: 22px; height: 1px; background: #e6007e; opacity: .4; }
+
+    /* Button: orangy maroon, hover/touch par pink */
+    .m-proceed-btn {
+        position: relative; overflow: hidden;
+        width: 100%; min-height: 52px; padding: 15px 20px;
+        background: linear-gradient(135deg, #8c2112, #b5381c);
+        color: #fff; border: none; border-radius: 12px;
+        font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 2px;
+        cursor: pointer; touch-action: manipulation;
+        box-shadow: 0 10px 20px rgba(150, 45, 15, 0.25);
+        transition: background .4s ease, transform .3s ease, box-shadow .4s ease;
+    }
+    .m-proceed-btn::after {
+        content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+        background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+        transform: skewX(-20deg);
+        animation: mCartShine 3.2s ease-in-out infinite;
+        pointer-events: none;
+    }
+    @keyframes mCartShine { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+    .m-proceed-btn:active,
+    .m-proceed-btn:focus-visible { transform: scale(.98); background: linear-gradient(135deg, #e6007e, #ff4fa3); box-shadow: 0 12px 24px rgba(230, 0, 126, 0.35); outline: none; }
+    @media (hover: hover) {
+        .m-proceed-btn:hover { background: linear-gradient(135deg, #e6007e, #ff4fa3); transform: translateY(-2px); box-shadow: 0 14px 28px rgba(230, 0, 126, 0.35); }
+    }
+
+    /* Drawer khula ho to floating WhatsApp button chup */
+    body.m-cart-locked a[href*="wa.me"],
+    body.m-cart-locked a[href*="whatsapp.com"],
+    body.m-cart-locked [class*="whatsapp" i],
+    body.m-cart-locked [id*="whatsapp" i] { visibility: hidden !important; }
+
+    /* ══════════ Responsive: phone, iPhone, tablet, laptop, desktop ══════════ */
+    @media (max-width: 520px) {
+        .m-cart-drawer { max-width: 100%; border-radius: 24px 24px 0 0; }
+        .m-cart-body { padding: 14px 12px; }
+        .m-sub-amt { font-size: 18px; }
+    }
+    @media (min-width: 768px) {
+        .m-cart-drawer { max-width: 540px; max-height: 84vh; max-height: 84dvh; }
+    }
+    @media (min-width: 1400px) {
+        .m-cart-drawer { max-width: 580px; }
+    }
+    @media (max-height: 480px) and (orientation: landscape) {
+        .m-cart-drawer { max-height: 96vh; max-height: 96dvh; }
+        .m-drawer-footer { padding-top: 10px; padding-bottom: 10px; }
+        .m-cart-empty { padding: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .m-cart-drawer, .m-cart-overlay, .m-proceed-btn, .m-drawer-close { transition-duration: .01s !important; animation: none !important; }
+        .m-proceed-btn::after { animation: none !important; }
+    }
+</style>
+
+<!-- is:inline zaroori hai: warna Astro script ko module bana deta hai aur onclick wale functions kaam nahi karte -->
+<script is:inline>
+var CURRENCY = 'AED';
+
+/* ==========================================================
+   LIVE STOCK (auto-pilot)
+   Har page load par, drawer khulte hi, har 15 sec (drawer khula ho to),
+   tab wapas aane par, aur checkout dabane par: stock khud check hota hai.
+   CART_STOCK_URL: product popup script ke STOCK_URL ke BILKUL barabar rakhein.
+   ========================================================== */
+var CART_STOCK_URL = "https://script.google.com/macros/s/AKfycbzsFwi5YqOUaKw079jH4QXpQgMt3PRuHGKqFQM5WS98XSwXAICS4_gijRkDT_QpG_Hi/exec";
+var CART_STOCK_FRESH_MS = 15000;
+var CART_STOCK_CK = "m_live_stock_v1";
+var _cartStock = null;            // {normProduct: {normColor: qty}}
+var _cartStockFetching = false;
+var _cartStockWaiters = [];
+var _cartNotice = "";
+var _cartPoll = 0;
+
+function cNorm(s) { return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, " ").trim(); }
+
+function cartStockClean(items) {
+    var lk = {}, count = 0;
+    if (!items || typeof items !== 'object') return null;
+    Object.keys(items).forEach(function (p) {
+        var cols = items[p];
+        if (!cols || typeof cols !== 'object') return;
+        var np = cNorm(p), o = {};
+        Object.keys(cols).forEach(function (c) {
+            var q = parseInt(cols[c], 10);
+            if (isNaN(q) || q < 0) q = 0;
+            o[cNorm(c)] = q; count++;
+        });
+        if (np) lk[np] = o;
+    });
+    return count ? lk : null;
+}
+
+function cartStockReadCache() {
+    try {
+        var r = sessionStorage.getItem(CART_STOCK_CK);
+        if (!r) return null;
+        var o = JSON.parse(r);
+        if (o && o.items && typeof o.t === 'number') return o;
+    } catch (e) {}
+    return null;
+}
+
+(function () {
+    var c = cartStockReadCache();
+    if (c) _cartStock = c.items;
+})();
+
+// Is item ki bachi hui qty. null = pata nahi (koi rok nahi lagegi)
+function cartLeft(item) {
+    var p = _cartStock && _cartStock[cNorm(item.name)];
+    if (!p) return null;
+    var c = cNorm(item.color);
+    if (!Object.prototype.hasOwnProperty.call(p, c)) return null;
+    return p[c];
+}
+
+// Cart ko live stock se milao: sold out mark, qty zyada ho to kam. true = qty badli
+function syncCartStock() {
+    var qtyChanged = false, notes = [];
+    MUSFIRAS_CART.forEach(function (i) {
+        var left = cartLeft(i);
+        var wasSold = !!i.soldOut;
+        if (left === null) { i.soldOut = false; i.left = null; return; }
+        i.left = left;
+        if (left <= 0) {
+            i.soldOut = true;
+            if (!wasSold) notes.push(i.name + " (" + i.color + ") is sold out");
+        } else {
+            i.soldOut = false;
+            var q = parseInt(i.qty) || 0;
+            if (q > left) {
+                i.qty = left; i.adjusted = left; qtyChanged = true;
+                notes.push(i.name + " (" + i.color + "): only " + left + " left");
+            }
+        }
+    });
+    if (notes.length) _cartNotice = "Stock updated: " + notes.join("; ") + ".";
+    return qtyChanged;
+}
+
+function cartSig() {
+    return MUSFIRAS_CART.map(function (i) { return i.id + ":" + i.qty + ":" + (i.soldOut ? 1 : 0); }).join(",");
+}
+
+function cartApply(done) {
+    renderCart();
+    updateGlobalIcon();
+    if (done) { try { done(); } catch (e) {} }
+}
+
+// force=true: cache ignore karke taaza qty mangwao
+function cartRefreshStock(force, done) {
+    if (!force && !MUSFIRAS_CART.length) { if (done) done(); return; }
+    var c = cartStockReadCache();
+    if (c) _cartStock = c.items;
+    if (!force && c && (Date.now() - c.t < CART_STOCK_FRESH_MS)) { cartApply(done); return; }
+    if (!CART_STOCK_URL || typeof fetch !== 'function') { cartApply(done); return; }
+    if (done) _cartStockWaiters.push(done);
+    if (_cartStockFetching) return;
+    _cartStockFetching = true;
+    var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 6000);
+    fetch(CART_STOCK_URL + '?action=publicStock', { method: 'GET', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            if (!d || d.status !== 'success') return;
+            var lk = cartStockClean(d.items);
+            if (!lk) return;
+            _cartStock = lk;
+            try { sessionStorage.setItem(CART_STOCK_CK, JSON.stringify({ t: Date.now(), items: lk })); } catch (e) {}
+        })
+        .catch(function () {})
+        .then(function () {
+            clearTimeout(timer);
+            _cartStockFetching = false;
+            var w = _cartStockWaiters; _cartStockWaiters = [];
+            cartApply(function () { w.forEach(function (f) { try { f(); } catch (e) {} }); });
+        });
+}
+
+function startCartPoll() {
+    if (_cartPoll) return;
+    _cartPoll = setInterval(function () { cartRefreshStock(false); }, 15000);
+}
+function stopCartPoll() {
+    if (_cartPoll) { clearInterval(_cartPoll); _cartPoll = 0; }
+}
+
+function cartPersistList() {
+    return MUSFIRAS_CART.map(function (i) {
+        var o = {};
+        for (var k in i) { if (k !== 'soldOut' && k !== 'left' && k !== 'adjusted') o[k] = i[k]; }
+        return o;
+    });
+}
+
+function validateCartData() {
+    try {
+        if (localStorage.getItem('musfiras_cart_currency') !== CURRENCY) {
+            localStorage.removeItem('musfiras_cart');
+            localStorage.setItem('musfiras_cart_currency', CURRENCY);
+            return [];
+        }
+        let raw = localStorage.getItem('musfiras_cart');
+        if (!raw) return [];
+        let data = JSON.parse(raw);
+        if (!Array.isArray(data)) return [];
+        return data.filter(item =>
+            item.id &&
+            typeof item.id === 'string' &&
+            item.id.startsWith('ID_') &&
+            !isNaN(item.price) &&
+            !isNaN(item.qty)
+        );
+    } catch (e) {
+        return [];
+    }
+}
+
+var MUSFIRAS_CART = validateCartData();
+
+/* ==========================================================
+   BUNDLE OFFER - popup aur checkout wala hi rule
+   ========================================================== */
+function cartOfferGroups(items) {
+    var map = {}, order = [];
+    items.forEach(function (i) {
+        var q = parseInt(i.qty) || 0, p = parseInt(i.price) || 0;
+        if (q <= 0) return;
+        if (!map[i.name]) {
+            map[i.name] = { name: i.name, qty: 0, price: p, o2: parseInt(i.offer2) || 0, o3: parseInt(i.offer3) || 0 };
+            order.push(i.name);
+        }
+        map[i.name].qty += q;
+    });
+    return order.map(function (n) {
+        var g = map[n];
+        if (!(g.o2 > 0 && g.o2 < g.price * 2)) g.o2 = 0;
+        if (!(g.o3 > 0 && g.o3 < g.price * 3)) g.o3 = 0;
+        var full = g.price * g.qty, offered = full;
+        if (g.qty >= 3 && g.o3) offered = g.o3 + (g.qty - 3) * g.price;
+        else if (g.qty >= 2 && g.o2) offered = g.o2 + (g.qty - 2) * g.price;
+        g.discount = Math.max(0, full - offered);
+        g.next = null;
+        if (g.qty < 2 && g.o2) g.next = { n: 2, p: g.o2 };
+        else if (g.qty < 3 && g.o3) g.next = { n: 3, p: g.o3 };
+        return g;
+    });
+}
+
+function addToCartTrigger(prodId) {
+    const root = document.getElementById(prodId);
+    if (!root) return;
+
+    const itemName = root.getAttribute('data-pname');
+    const basePrice = parseInt(root.getAttribute('data-base')) || 0;
+    const offer2 = parseInt(root.getAttribute('data-offer2')) || 0;
+    const offer3 = parseInt(root.getAttribute('data-offer3')) || 0;
+    const rows = root.querySelectorAll('.m-row-item');
+
+    let addedAny = false;
+    let totalQtySelected = 0;
+
+    rows.forEach(row => {
+        const color = row.querySelector('.m-color-select').value;
+        const qtyInput = row.querySelector('input');
+        const qty = parseInt(qtyInput.value) || 0;
+
+        if (qty > 0 && basePrice > 0) {
+            addedAny = true;
+            totalQtySelected += qty;
+            const existingIdx = MUSFIRAS_CART.findIndex(i => i.name === itemName && i.color === color);
+
+            if (existingIdx > -1) {
+                MUSFIRAS_CART[existingIdx].qty += qty;
+            } else {
+                MUSFIRAS_CART.push({
+                    id: 'ID_' + Math.random().toString(36).substr(2, 9),
+                    name: itemName,
+                    color: color,
+                    qty: qty,
+                    price: basePrice,
+                    selected: true
+                });
+            }
+        }
+    });
+
+    if (addedAny) {
+        MUSFIRAS_CART.forEach(i => {
+            if (i.name === itemName) { i.offer2 = offer2; i.offer3 = offer3; }
+        });
+
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'AddToCart', {
+                content_name: itemName,
+                content_category: 'Handbags',
+                value: basePrice * totalQtySelected,
+                currency: CURRENCY,
+                content_type: 'product'
+            });
+        }
+
+        saveAndUpdate();
+        if (typeof closeElitePop === 'function') closeElitePop(prodId);
+        openDrawer();
+    } else {
+        const alertBox = document.getElementById(`cart-alert-${prodId}`);
+        if (alertBox) alertBox.style.display = 'block';
+    }
+}
+
+function saveAndUpdate() {
+    localStorage.setItem('musfiras_cart', JSON.stringify(cartPersistList()));
+    renderCart();
+    updateGlobalIcon();
+}
+
+function renderCart() {
+    if (syncCartStock()) {
+        try { localStorage.setItem('musfiras_cart', JSON.stringify(cartPersistList())); } catch (e) {}
+    }
+
+    const container = document.getElementById('m-cart-items-container');
+    const subtotalEl = document.getElementById('m-cart-subtotal');
+    if (!container || !subtotalEl) return;
+
+    let html = "";
+    let subtotal = 0;
+
+    MUSFIRAS_CART.forEach(item => {
+        const dis = !!item.soldOut;
+        if (item.selected && !dis) subtotal += (item.price * item.qty);
+
+        let stockLine = "";
+        if (!dis && item.adjusted) {
+            stockLine = `<div style="font-size:10.5px; color:#c0182b; font-weight:700; margin-top:3px;">Only ${item.adjusted} left, quantity updated</div>`;
+        } else if (!dis && item.left !== null && item.left !== undefined && item.left <= 3) {
+            stockLine = `<div style="font-size:10.5px; color:#c0182b; font-weight:700; margin-top:3px;">Only ${item.left} left</div>`;
+        }
+        const priceLine = dis
+            ? `<div class="m-item-price" style="color:#c0182b; letter-spacing:1px;">SOLD OUT</div>`
+            : `<div class="m-item-price">${CURRENCY} ${item.price * item.qty}</div>`;
+
+        html += `
+            <div class="m-cart-item"${dis ? ' style="opacity:.65;"' : ''}>
+                <input type="checkbox" class="m-item-check" ${(item.selected && !dis) ? 'checked' : ''} ${dis ? 'disabled' : ''}
+                    onchange="toggleSelect('${item.id}')">
+                <div class="m-item-info">
+                    <div class="m-item-name">${item.name}</div>
+                    <div class="m-item-meta">Color: ${item.color} | Qty: ${item.qty}</div>
+                    ${priceLine}
+                    ${stockLine}
+                    <span class="m-remove-text" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#e6007e; font-weight:800; font-size:10px;">REMOVE</span>
+                </div>
+            </div>
+        `;
+    });
+
+    const groups = cartOfferGroups(MUSFIRAS_CART.filter(i => i.selected && !i.soldOut));
+    let totalDiscount = 0;
+    let offerHtml = "";
+    const boxStyle = "text-align:center; margin:10px 0; padding:8px 10px; background:#fffdfe; border:1px solid #fdeaf3; border-radius:10px; font-size:11.5px; font-weight:600; color:#9c2954; line-height:1.5;";
+    groups.forEach(g => {
+        totalDiscount += g.discount;
+        let lines = "";
+        if (g.discount > 0) {
+            lines += `<div style="color:#1e8e4e;">&#10003; Bundle offer on ${g.name}: you save <b>${CURRENCY} ${g.discount}</b></div>`;
+        }
+        if (g.next) {
+            const need = g.next.n - g.qty;
+            lines += `<div>Add <b style="color:#e6007e;">${need} more</b> ${g.name} to get ${g.next.n} for <b style="color:#e6007e;">${CURRENCY} ${g.next.p}</b></div>`;
+        }
+        if (lines) offerHtml += `<div class="m-cart-offer-line" style="${boxStyle}">${lines}</div>`;
+    });
+    if (html) html += offerHtml;
+
+    if (html && _cartNotice) {
+        html = `<div class="m-cart-notice" style="margin:0 0 12px; padding:10px 12px; background:#fff5f9; border:1px solid #f6b3d4; border-radius:12px; font-size:11.5px; font-weight:700; color:#800000; line-height:1.5;">&#9888; ${_cartNotice}</div>` + html;
+    }
+
+    container.innerHTML = html || "<div class='m-cart-empty'><b>&#9670;</b><span>Your bag is waiting</span><span>Fill it with something you will adore</span></div>";
+
+    if (totalDiscount > 0) {
+        subtotalEl.innerHTML = `<s style="color:#8f8f8f; font-weight:600; font-size:0.75em; margin-right:6px;">${CURRENCY} ${subtotal}</s>${CURRENCY} ${subtotal - totalDiscount}`;
+    } else {
+        subtotalEl.innerText = CURRENCY + ' ' + subtotal;
+    }
+}
+
+function toggleSelect(id) {
+    const item = MUSFIRAS_CART.find(i => i.id === id);
+    if (item && !item.soldOut) {
+        item.selected = !item.selected;
+        saveAndUpdate();
+    }
+}
+
+function removeFromCart(id) {
+    MUSFIRAS_CART = MUSFIRAS_CART.filter(i => i.id !== id);
+    saveAndUpdate();
+}
+
+function updateGlobalIcon() {
+    const count = MUSFIRAS_CART.reduce((acc, i) => acc + (i.soldOut ? 0 : (parseInt(i.qty) || 0)), 0);
+    const badge = document.getElementById('m-global-count');
+    if (badge) {
+        badge.innerText = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+var _cartLocked = false, _cartY = 0, _cartPrev = {}, _cartFixed = false;
+
+function lockPageForCart() {
+    if (_cartLocked) return;
+    _cartLocked = true;
+    var b = document.body, h = document.documentElement;
+    var sbw = window.innerWidth - h.clientWidth;
+    _cartY = window.pageYOffset || h.scrollTop || 0;
+    _cartPrev = { p: b.style.position, t: b.style.top, l: b.style.left, r: b.style.right, w: b.style.width, o: b.style.overflow, pr: b.style.paddingRight, ho: h.style.overflow };
+    b.classList.add('m-cart-locked');
+    if (b.classList.contains('m-popup-active')) {
+        _cartFixed = false;
+        b.style.overflow = 'hidden';
+        return;
+    }
+    _cartFixed = true;
+    b.style.position = 'fixed';
+    b.style.top = (-_cartY) + 'px';
+    b.style.left = '0';
+    b.style.right = '0';
+    b.style.width = '100%';
+    b.style.overflow = 'hidden';
+    h.style.overflow = 'hidden';
+    if (sbw > 0) b.style.paddingRight = sbw + 'px';
+}
+
+function unlockPageForCart() {
+    if (!_cartLocked) return;
+    _cartLocked = false;
+    var b = document.body, h = document.documentElement;
+    b.classList.remove('m-cart-locked');
+    b.style.position = _cartPrev.p || '';
+    b.style.top = _cartPrev.t || '';
+    b.style.left = _cartPrev.l || '';
+    b.style.right = _cartPrev.r || '';
+    b.style.width = _cartPrev.w || '';
+    b.style.overflow = _cartPrev.o || '';
+    b.style.paddingRight = _cartPrev.pr || '';
+    h.style.overflow = _cartPrev.ho || '';
+    if (_cartFixed) window.scrollTo(0, _cartY);
+}
+
+// Neeche se swipe karke band karna (grip / header par ungli rakh kar neeche khinchein)
+function bindCartSwipe(drw) {
+    if (!drw || drw.getAttribute('data-sw')) return;
+    var zone = drw.querySelector('.m-drawer-top');
+    if (!zone) return;
+    drw.setAttribute('data-sw', '1');
+    var startY = 0, dy = 0, drag = false;
+    zone.addEventListener('touchstart', function (e) {
+        if (!drw.classList.contains('active')) return;
+        startY = e.touches[0].clientY; dy = 0; drag = true;
+        drw.style.transition = 'none';
+    }, { passive: true });
+    zone.addEventListener('touchmove', function (e) {
+        if (!drag) return;
+        dy = Math.max(0, e.touches[0].clientY - startY);
+        drw.style.transform = 'translate3d(0,' + dy + 'px,0)';
+    }, { passive: true });
+    function end() {
+        if (!drag) return;
+        drag = false;
+        drw.style.transition = '';
+        drw.style.transform = '';
+        if (dy > 90) closeDrawer();
+    }
+    zone.addEventListener('touchend', end);
+    zone.addEventListener('touchcancel', end);
+}
+
+function openDrawer() {
+    const drw = document.getElementById('m-cart-drawer');
+    const ovr = document.getElementById('m-cart-drawer-overlay');
+    if (drw && ovr) {
+        if (!drw.classList.contains('active')) {
+            document.body.appendChild(ovr);
+            document.body.appendChild(drw);
+            if (!ovr.getAttribute('data-tm')) {
+                ovr.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+                ovr.setAttribute('data-tm', '1');
+            }
+            bindCartSwipe(drw);
+            ovr.style.display = 'block';
+            drw.offsetWidth;
+            ovr.style.opacity = '1';
+            drw.classList.add('active');
+            drw.setAttribute('aria-hidden', 'false');
+            lockPageForCart();
+        }
+        renderCart();
+        cartRefreshStock(false);
+        startCartPoll();
+    }
+}
+
+function closeDrawer() {
+    const drw = document.getElementById('m-cart-drawer');
+    const ovr = document.getElementById('m-cart-drawer-overlay');
+    if (drw && ovr) {
+        drw.classList.remove('active');
+        drw.setAttribute('aria-hidden', 'true');
+        ovr.style.opacity = '0';
+        setTimeout(function () { if (!drw.classList.contains('active')) ovr.style.display = 'none'; }, 700);
+        unlockPageForCart();
+    }
+    stopCartPoll();
+    _cartNotice = "";
+    MUSFIRAS_CART.forEach(function (i) { delete i.adjusted; });
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDrawer();
+});
+
+// Checkout dabane par pehle taaza qty dekho. Kuch badla ho to bag update karke wahin ruk jao
+function proceedToCheckout() {
+    var btn = document.querySelector('#m-cart-drawer .m-proceed-btn');
+    if (btn && btn.getAttribute('data-busy')) return;
+    var before = cartSig();
+    var original = btn ? btn.innerHTML : '';
+    if (btn) { btn.setAttribute('data-busy', '1'); btn.innerHTML = 'CHECKING STOCK...'; }
+    var finished = false;
+    function go() {
+        if (finished) return;
+        finished = true;
+        if (btn) { btn.removeAttribute('data-busy'); btn.innerHTML = original; }
+        if (cartSig() !== before) { renderCart(); return; }
+        proceedToCheckoutNow();
+    }
+    cartRefreshStock(true, go);
+    setTimeout(go, 7000);
+}
+
+function proceedToCheckoutNow() {
+    const selectedItems = MUSFIRAS_CART.filter(i => i.selected && !i.soldOut);
+    if (selectedItems.length === 0) {
+        return alert(MUSFIRAS_CART.some(i => i.soldOut) ? "Sold out items cannot be ordered. Please select an available item." : "Please select at least one item!");
+    }
+
+    const dataString = selectedItems.map(i => {
+        const o2 = parseInt(i.offer2) || 0, o3 = parseInt(i.offer3) || 0;
+        const offerPart = (o2 || o3) ? `|${o2}|${o3}` : '';
+        return `${i.name}|${i.color}|${i.qty}|${i.price}${offerPart}`;
+    }).join('||');
+    const baseSubtotal = selectedItems.reduce((acc, i) => acc + (i.price * i.qty), 0);
+    const discount = cartOfferGroups(selectedItems).reduce((acc, g) => acc + g.discount, 0);
+    const subtotal = baseSubtotal - discount;
+
+    window.location.href = `https://www.musfiras.com/check_out?data=${encodeURIComponent(dataString)}&subtotal=${subtotal}&total=${subtotal}&delivery=Standard`;
+}
+
+/* ───── AUTO-PILOT: har page par khud chalta hai ───── */
+function cartInit() {
+    updateGlobalIcon();
+    renderCart();
+    setTimeout(function () { cartRefreshStock(false); }, 1200);
+}
+if (document.readyState === 'complete') cartInit();
+else window.addEventListener('load', cartInit);
+
+// Tab wapas khule to taaza qty
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) cartRefreshStock(false);
+});
+
+// Back dabane (bfcache) par
+window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+        MUSFIRAS_CART = validateCartData();
+        cartRefreshStock(true);
+        updateGlobalIcon();
+        renderCart();
+    }
+});
+
+// Dusre tab me cart badle to is tab me bhi sync
+window.addEventListener('storage', function (e) {
+    if (e.key === 'musfiras_cart') {
+        MUSFIRAS_CART = validateCartData();
+        renderCart();
+        updateGlobalIcon();
+    }
+});
+</script>

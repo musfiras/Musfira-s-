@@ -2,6 +2,13 @@
 //  SITE SETTINGS  —  Sab links / number / email yahin se badlo
 //  Is file ke baad kisi aur file mein link badalne ki zaroorat NAHI.
 //  Header, Footer, WhatsApp button, Contact page sab yahin se parhte hain.
+//
+//  LINK KA RULE (glitch se bachne ke liye):
+//   - Bahar ka ya poora link hamesha  https://  se shuru ho
+//   - Apni site ke andar ka link hamesha  /  se shuru ho
+//   - "www.musfiras.com" jaisa link (https:// ke bagair) KABHI na likhein
+//   - Musfira's ke apne pages (home, categories, reviews) ke liye sirf /path likhein,
+//     poora domain nahi: isse koi bhi rewrite / proxy / domain ka masla in links ko nahi chhoo sakta
 // ============================================================================
 
 export const site = {
@@ -25,20 +32,21 @@ export const site = {
   // delaySeconds: site khulne ke kitne second baad nazar aaye
   reviews: {
     label: "REVIEWS",
-    href: "https://www.musfiras.com/reviews",
+    href: "/reviews",
     delaySeconds: 3,
     show: true, // false kar do to tab poori site se chala jata hai
   },
 
   // ---------- HOME ----------
-  home: "musfira-s.pages.dev",
+  home: "/",
 
   // ---------- COLLECTIONS (header dropdown + mobile menu) ----------
+  // Har category apne alag page par jati hai (home par nahi).
   // Nai category: ek nayi line add karo. Hatani ho: line delete kar do.
   collections: [
-    { label: "-BAGS & CARRYING-",        href: "https://www.musfiras.com/bags_carrying" },
-    { label: "-FASHION & ACCESSORIES-",  href: "https://www.musfiras.com/fashion_accessories" },
-    { label: "-MUSFIRA'S CHOICE-",       href: "https://www.musfiras.com/musfiras_choice" },
+    { label: "-BAGS & CARRYING-",        href: "/bags_carrying" },
+    { label: "-FASHION & ACCESSORIES-",  href: "/fashion_accessories" },
+    { label: "-MUSFIRA'S CHOICE-",       href: "/musfiras_choice" },
   ],
 
   // ---------- SOCIAL (footer + contact page) ----------
@@ -47,7 +55,7 @@ export const site = {
     { key: "facebook",  name: "Facebook",  href: "https://web.facebook.com/MusfirasOfficial/" },
     { key: "instagram", name: "Instagram", href: "https://www.instagram.com/musfiras_com/" },
     { key: "pinterest", name: "Pinterest", href: "https://www.pinterest.com/musfiras_com/" },
-    { key: "website",   name: "Website",   href: "musfira-s.pages.dev" },
+    { key: "website",   name: "Website",   href: "/" },
   ],
 
   // ---------- INFO PAGES (footer links + page ke left wali list) ----------

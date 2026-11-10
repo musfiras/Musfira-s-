@@ -31,7 +31,7 @@ export const site = {
   },
 
   // ---------- HOME ----------
-  home: "https://www.musfiras.com/store",
+  home: "musfira-s.pages.dev",
 
   // ---------- COLLECTIONS (header dropdown + mobile menu) ----------
   // Nai category: ek nayi line add karo. Hatani ho: line delete kar do.
@@ -47,7 +47,7 @@ export const site = {
     { key: "facebook",  name: "Facebook",  href: "https://web.facebook.com/MusfirasOfficial/" },
     { key: "instagram", name: "Instagram", href: "https://www.instagram.com/musfiras_com/" },
     { key: "pinterest", name: "Pinterest", href: "https://www.pinterest.com/musfiras_com/" },
-    { key: "website",   name: "Website",   href: "https://www.musfiras.com/store" },
+    { key: "website",   name: "Website",   href: "musfira-s.pages.dev" },
   ],
 
   // ---------- INFO PAGES (footer links + page ke left wali list) ----------

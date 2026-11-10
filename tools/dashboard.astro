@@ -1,0 +1,235 @@
+---
+// tools/dashboard.astro  (sirf dev me /dashboard par inject hota hai)
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Site Dashboard</title>
+<style is:global>
+  :root { --bg:#0f1115; --card:#171a21; --line:#272b35; --txt:#e7e9ee; --mut:#8b93a3; --acc:#5b8cff; --ok:#3ecf8e; --warn:#f5a524; --bad:#f31260; }
+  @media (prefers-color-scheme: light) { :root { --bg:#f5f6f8; --card:#fff; --line:#e2e5ea; --txt:#14171c; --mut:#667085; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--txt); }
+  header { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 20px; }
+  h1 { font-size:18px; margin:0 0 8px; }
+  .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 12px; }
+  .stat b { font-size:16px; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  input, select, button { font:inherit; color:var(--txt); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:6px 10px; }
+  button { cursor:pointer; } button:hover { border-color:var(--acc); }
+  button.p { background:var(--acc); border-color:var(--acc); color:#fff; }
+  .tabs button.on { background:var(--acc); border-color:var(--acc); color:#fff; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .chip.on { background:var(--acc); border-color:var(--acc); color:#fff; }
+  main { padding:16px 20px 60px; max-width:1200px; margin:auto; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--mut); margin:22px 0 8px; }
+  .item { background:var(--card); border:1px solid var(--line); border-radius:8px; margin-bottom:8px; }
+  .item > summary { padding:10px 12px; cursor:pointer; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .route { font-weight:600; } .file { color:var(--mut); font-size:12px; }
+  .badge { font-size:11px; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--mut); }
+  .badge.new { color:var(--ok); border-color:var(--ok); } .badge.changed { color:var(--warn); border-color:var(--warn); }
+  .badge.broken { color:var(--bad); border-color:var(--bad); } .badge.old { color:var(--warn); border-color:var(--warn); }
+  .links { border-top:1px solid var(--line); padding:6px 12px 10px; }
+  .row { display:flex; gap:8px; align-items:center; padding:4px 0; flex-wrap:wrap; }
+  .row code { background:var(--bg); padding:1px 6px; border-radius:4px; word-break:break-all; }
+  .ln { color:var(--mut); font-size:12px; }
+  .edit { display:flex; gap:6px; flex-wrap:wrap; padding:4px 0 8px; width:100%; }
+  .edit input { flex:1; min-width:220px; }
+  .sp { flex:1; }
+  .banner { background:var(--warn); color:#000; padding:8px 20px; display:none; }
+  .toast { position:fixed; bottom:20px; right:20px; background:var(--ok); color:#000; padding:10px 14px; border-radius:8px; display:none; max-width:360px; }
+  table { width:100%; border-collapse:collapse; } td { padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .empty { color:var(--mut); padding:20px; }
+  a { color:var(--acc); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="banner" id="banner">Naye changes detect hue hain — <button id="refresh">Refresh karo</button></div>
+<header>
+  <h1>🧭 Site Dashboard <span class="ln">(sirf dev mode)</span></h1>
+  <div class="stats" id="stats"></div>
+  <div class="bar">
+    <span class="tabs">
+      <button data-tab="pages" class="on">Pages / Files</button>
+      <button data-tab="links">Links (unique)</button>
+      <button data-tab="activity">Activity</button>
+    </span>
+    <input id="q" placeholder="Search: page, file, link…" size="28" />
+    <select id="filt">
+      <option value="all">Sab</option>
+      <option value="fresh">Naye + Changed</option>
+      <option value="broken">Broken links</option>
+      <option value="old">Purane links (pattern)</option>
+      <option value="external">External links</option>
+    </select>
+    <input id="oldre" placeholder="Purana pattern, e.g. old-site\.com|/old-" size="26" title="Regex. Isse match hone wale links 'old' mark honge" />
+    <span class="sp"></span>
+    <button id="seen" class="p">Sab ko "seen" mark karo</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+
+<script is:inline>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const api = (p, body) => fetch('/__dashboard' + p, body ? { method:'POST', body:JSON.stringify(body) } : {}).then((r) => r.json());
+
+  let DATA = null, ver = -1, tab = 'pages', cat = 'all', editing = false;
+  $('#oldre').value = localStorage.getItem('oldre') || '';
+
+  const oldRe = () => { try { const v = $('#oldre').value.trim(); return v ? new RegExp(v, 'i') : null; } catch { return null; } };
+  const toast = (m) => { const t = $('#toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => (t.style.display = 'none'), 3500); };
+
+  async function load() {
+    DATA = await api('/scan'); ver = DATA.version; editing = false;
+    $('#banner').style.display = 'none'; render();
+  }
+  setInterval(async () => {
+    try {
+      const v = await api('/version');
+      if (v.version !== ver) { if (editing) $('#banner').style.display = 'block'; else load(); }
+    } catch {}
+  }, 2000);
+
+  function visibleItems() {
+    const q = $('#q').value.toLowerCase(), f = $('#filt').value, re = oldRe();
+    return DATA.items.filter((it) => {
+      if (cat !== 'all' && it.category !== cat) return false;
+      if (q && !(it.file + ' ' + (it.route || '') + ' ' + it.title + ' ' + it.links.map((l) => l.url).join(' ')).toLowerCase().includes(q)) return false;
+      if (f === 'fresh') return !!it.status;
+      if (f === 'broken') return it.links.some((l) => l.broken);
+      if (f === 'old') return !!re && it.links.some((l) => re.test(l.url));
+      if (f === 'external') return it.links.some((l) => l.type === 'external');
+      return true;
+    });
+  }
+  const linkOk = (l) => {
+    const f = $('#filt').value, re = oldRe(), q = $('#q').value.toLowerCase();
+    if (f === 'broken' && !l.broken) return false;
+    if (f === 'old' && !(re && re.test(l.url))) return false;
+    if (f === 'external' && l.type !== 'external') return false;
+    return true;
+  };
+  const badges = (l) => {
+    const re = oldRe();
+    return (l.broken ? '<span class="badge broken">broken</span>' : '') +
+      (re && re.test(l.url) ? '<span class="badge old">old</span>' : '') +
+      '<span class="badge">' + l.type + '</span>';
+  };
+
+  function stats() {
+    const all = DATA.items, links = all.flatMap((i) => i.links);
+    const s = [
+      ['Pages', all.filter((i) => i.kind === 'page').length],
+      ['Files', all.length], ['Links', links.length],
+      ['Broken', links.filter((l) => l.broken).length],
+      ['Naye/Changed', all.filter((i) => i.status).length],
+    ];
+    $('#stats').innerHTML = s.map(([k, v]) => '<div class="stat">' + k + ' <b>' + v + '</b></div>').join('');
+    const counts = {}; all.forEach((i) => (counts[i.category] = (counts[i.category] || 0) + 1));
+    const cats = ['all', ...Object.keys(counts).sort()];
+    $('#chips').innerHTML = cats.map((c) =>
+      '<button class="chip ' + (c === cat ? 'on' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + (c === 'all' ? ' (' + all.length + ')' : ' (' + counts[c] + ')') + '</button>').join('');
+  }
+
+  function renderPages() {
+    const items = visibleItems();
+    if (!items.length) return '<div class="empty">Kuch nahi mila.</div>';
+    const groups = {};
+    items.forEach((i) => (groups[i.category] = groups[i.category] || []).push(i));
+    return Object.keys(groups).sort().map((c) => '<h2>' + esc(c) + ' (' + groups[c].length + ')</h2>' +
+      groups[c].sort((a, b) => a.file.localeCompare(b.file)).map((it) => {
+        const ls = it.links.filter(linkOk);
+        return '<details class="item"><summary>' +
+          '<span class="route">' + esc(it.route || it.file) + '</span>' +
+          (it.title ? '<span class="ln">— ' + esc(it.title) + '</span>' : '') +
+          '<span class="file">' + esc(it.file) + '</span>' +
+          (it.status ? '<span class="badge ' + it.status + '">' + it.status + '</span>' : '') +
+          '<span class="badge">' + it.kind + '</span>' +
+          '<span class="sp"></span>' +
+          (it.kind === 'page' && !/[[\]]/.test(it.route) ? '<a href="' + esc(it.route) + '" target="_blank" onclick="event.stopPropagation()">open ↗</a>' : '') +
+          (it.status ? '<button data-act="seen" data-file="' + esc(it.file) + '" onclick="event.stopPropagation()">seen</button>' : '') +
+          '<span class="badge">' + ls.length + ' links</span></summary>' +
+          '<div class="links">' + (ls.length ? ls.map((l) =>
+            '<div class="row"><code>' + esc(l.url) + '</code><span class="ln">line ' + l.line + '</span>' + badges(l) +
+            '<span class="sp"></span><button data-act="edit" data-url="' + esc(l.url) + '" data-file="' + esc(it.file) + '">Replace</button></div>').join('')
+            : '<span class="ln">Is file me koi link nahi.</span>') + '</div></details>';
+      }).join('')).join('');
+  }
+
+  function renderLinks() {
+    const map = new Map();
+    visibleItems().forEach((it) => it.links.filter(linkOk).forEach((l) => {
+      if (!map.has(l.url)) map.set(l.url, { l, uses: [] });
+      map.get(l.url).uses.push(it.file + ':' + l.line);
+    }));
+    const rows = [...map.values()].sort((a, b) => b.uses.length - a.uses.length);
+    if (!rows.length) return '<div class="empty">Koi link nahi mila.</div>';
+    return '<table>' + rows.map(({ l, uses }) =>
+      '<tr><td><code>' + esc(l.url) + '</code> ' + badges(l) + '<details><summary class="ln">' + uses.length + ' jagah use</summary><div class="ln">' +
+      uses.map(esc).join('<br>') + '</div></details></td>' +
+      '<td style="width:130px"><button data-act="edit" data-url="' + esc(l.url) + '" data-count="' + uses.length + '">Sab jagah replace</button></td></tr>').join('') + '</table>';
+  }
+
+  function renderActivity() {
+    const ev = DATA.events || [];
+    if (!ev.length) return '<div class="empty">Abhi koi change record nahi hua. Koi file edit/add/delete karo.</div>';
+    return '<table>' + ev.map((e) => '<tr><td class="ln" style="width:170px">' + new Date(e.t).toLocaleString() + '</td><td><span class="badge ' +
+      (e.type === 'add' ? 'new' : e.type === 'unlink' ? 'broken' : 'changed') + '">' + e.type + '</span></td><td>' + esc(e.file) + '</td></tr>').join('') + '</table>';
+  }
+
+  function render() {
+    if (!DATA) return;
+    stats();
+    $('#app').innerHTML = tab === 'pages' ? renderPages() : tab === 'links' ? renderLinks() : renderActivity();
+    document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+  }
+
+  // events
+  document.addEventListener('click', async (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.tab) { tab = b.dataset.tab; return render(); }
+    if (b.dataset.cat) { cat = b.dataset.cat; return render(); }
+    if (b.id === 'refresh') return load();
+    if (b.id === 'seen') { await api('/seen', {}); return load(); }
+    if (b.dataset.act === 'seen') { await api('/seen', { file: b.dataset.file }); return load(); }
+    if (b.dataset.act === 'edit') {
+      editing = true;
+      const host = b.closest('.row') || b.closest('tr').firstElementChild;
+      host.querySelector('.edit')?.remove();
+      const box = document.createElement('div'); box.className = 'edit';
+      box.innerHTML = '<input value="' + esc(b.dataset.url) + '" /><button class="p" data-act="go">Replace</button><button data-act="cancel">Cancel</button>';
+      box.dataset.from = b.dataset.url; if (b.dataset.file) box.dataset.file = b.dataset.file; if (b.dataset.count) box.dataset.count = b.dataset.count;
+      host.appendChild(box); box.querySelector('input').focus(); box.querySelector('input').select();
+      return;
+    }
+    if (b.dataset.act === 'cancel') { b.closest('.edit').remove(); editing = !!document.querySelector('.edit'); return; }
+    if (b.dataset.act === 'go') {
+      const box = b.closest('.edit'), to = box.querySelector('input').value.trim(), from = box.dataset.from;
+      if (!to || to === from) return;
+      const where = box.dataset.file ? 'sirf ' + box.dataset.file + ' me' : 'POORI site me (' + (box.dataset.count || '?') + ' jagah)';
+      if (!confirm('"' + from + '" → "' + to + '"\n' + where + ' replace karna hai?\n(Backup .site-dashboard/backups me banega)')) return;
+      const r = await api('/replace', { from, to, file: box.dataset.file });
+      toast(r.changed + ' jagah replace hua (' + r.files.length + ' files)');
+      load();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.target.closest('.edit')) e.target.closest('.edit').querySelector('[data-act=go]').click();
+  });
+  $('#q').addEventListener('input', render);
+  $('#filt').addEventListener('change', render);
+  $('#oldre').addEventListener('input', () => { localStorage.setItem('oldre', $('#oldre').value); render(); });
+
+  load();
+})();
+</script>
+</body>
+</html>

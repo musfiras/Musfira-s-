@@ -1,0 +1,48 @@
+---
+import InfoPage from '../layouts/InfoPage.astro';
+import { site, whatsappUrl } from '../config/site.js';
+---
+<InfoPage title="Contact Us | Musfira's" eyebrow="We'd Love to Hear From You" heading="Contact Us" description="Contact Musfira's for help with an order, product questions or feedback.">
+      <p class="mfs-lead">Whether you have a question about a product, need help with an order, want to share feedback, or are interested in working with us &#8212; we welcome every message with genuine attention. The <span class="mfs-brand">Musfira's</span> team is always happy to help.</p>
+
+      <h3 class="mfs-sub">Reach Us</h3>
+      <div class="mfs-card">
+        <h4>WhatsApp</h4>
+        <p>The quickest way to reach us. Send a message with your Order ID and we will pick it up from there.</p>
+        <p><a href={whatsappUrl()} class="mfs-btn" target="_blank" rel="noopener">Chat on WhatsApp &nbsp;{site.whatsapp.display}</a></p>
+      </div>
+      <div class="mfs-card">
+        <h4>Email</h4>
+        <p>For detailed questions, photos or anything that needs a longer note.</p>
+        <p><a href={`mailto:${site.email}`} class="mfs-email">{site.email}</a></p>
+      </div>
+
+      <h3 class="mfs-sub">For Help with an Order</h3>
+      <p>For help with an order &#8212; such as tracking, delivery, changing or cancelling an order, or a return or exchange &#8212; please write to us and include your <strong>Order ID</strong> (you will find it on your order confirmation and in our WhatsApp messages). This helps us find your order and assist you much faster.</p>
+      <p>It also helps to tell us:</p>
+      <ul>
+        <li>The name and phone number you used when ordering.</li>
+        <li>What you need: tracking, a change, a cancellation, or a problem with an item.</li>
+        <li>For damaged or wrong items, a few clear photos of the product and the packaging.</li>
+      </ul>
+
+      <h3 class="mfs-sub">For Everything Else</h3>
+      <p>Product questions, suggestions, collaborations, or simply to say hello &#8212; our inbox is always open. If you are not sure which bag, watch or piece of jewellery suits you or the person you are shopping for, tell us the occasion and your budget, and we will gladly point you in the right direction.</p>
+
+      <h3 class="mfs-sub">Share Your Feedback</h3>
+      <p>We read every message personally, and we genuinely appreciate the moment you take out of your day to write to us. A kind word, a helpful correction or a thoughtful suggestion for our next collection &#8212; it all matters, and it all helps us serve you better.</p>
+
+      <h3 class="mfs-sub">Follow Along</h3>
+      <p>See new arrivals and the pieces our team is loving right now:</p>
+      <div class="mfs-badges" style="border-top:none;padding-top:0;margin-top:4px;">
+        {site.social.filter((s) => s.key !== 'website').map((s) => (
+          <div class="mfs-badge"><a href={s.href} class="mfs-email" target="_blank" rel="noopener">{s.name}</a></div>
+        ))}
+      </div>
+
+      <p><em>We aim to respond to every genuine inquiry as promptly as possible.</em></p>
+
+      <p class="mfs-sign"><span class="mfs-brand">&#8212; Musfira's</span> &nbsp;|&nbsp; <span class="mfs-brand">Made to adore</span></p>
+
+      <div class="mfs-disclosure">Please keep your Order ID handy when you contact us so our team can help you faster.</div>
+</InfoPage>

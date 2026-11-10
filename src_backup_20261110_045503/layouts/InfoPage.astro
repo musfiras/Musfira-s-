@@ -1,0 +1,82 @@
+---
+// InfoPage.astro : About / Terms / FAQs / Privacy / Contact ka common design
+// (pehle ye popup ke andar tha, ab poora page). Har page sirf apna text deta hai.
+import Layout from './Layout.astro';
+const { title, eyebrow, heading, description } = Astro.props;
+---
+<Layout title={title} description={description}>
+  <main class="mfs-page">
+    <div class="mfs-page-head">
+      <div class="mfs-page-eye">{eyebrow}</div>
+      <h1 class="mfs-page-title">{heading}</h1>
+      <div class="mfs-page-rule"><span class="rule-line"></span><span class="rule-diamond">&#9670;</span><span class="rule-line"></span></div>
+    </div>
+    <div class="mfs-page-body">
+      <slot />
+    </div>
+  </main>
+</Layout>
+
+<style is:global>
+.mfs-page{
+  max-width:760px;margin:0 auto;
+  padding:34px 20px 56px;
+}
+.mfs-page-head{
+  text-align:center;padding:6px 0 18px;margin-bottom:22px;
+  border-bottom:1px solid #fdf0f6;
+}
+.mfs-page-eye{
+  font-family:'Bodoni Moda',serif;font-style:italic;
+  font-size:13px;color:var(--mfs-pink);letter-spacing:1.5px;margin-bottom:6px;
+}
+.mfs-page-title{
+  font-family:'Bodoni Moda',serif;font-size:clamp(24px,4vw,34px);font-weight:700;
+  color:var(--mfs-heading-maroon);margin:0 0 10px;letter-spacing:0.3px;line-height:1.2;
+}
+.mfs-page-rule{display:flex;align-items:center;justify-content:center;gap:10px;}
+.rule-line{display:block;width:35px;height:1px;background:var(--mfs-pink);opacity:0.4;}
+.rule-diamond{color:var(--mfs-pink);font-size:8px;}
+.mfs-page-body{
+  font-family:'Montserrat',sans-serif;
+  font-size:14.5px;font-weight:400;line-height:1.8;color:#1a1a1a;
+}
+.mfs-page-body p{margin-bottom:12px;}
+.mfs-page-body strong{color:var(--mfs-maroon);font-weight:700;}
+.mfs-page-body strong.mfs-pink{color:var(--mfs-pink) !important;}
+.mfs-page-body em{font-style:italic;color:var(--mfs-maroon);}
+.mfs-sign{font-style:italic;color:var(--mfs-maroon)!important;font-weight:700!important;}
+.mfs-sub{
+  font-family:'Bodoni Moda',serif;font-size:18px;font-weight:700;
+  color:var(--mfs-heading-maroon);letter-spacing:0.3px;
+  margin:22px 0 8px;display:flex;align-items:center;gap:8px;
+}
+.mfs-sub::before{content:"\25C6";color:var(--mfs-pink);font-size:8px;opacity:0.8;}
+.mfs-elite-text{
+  color:var(--mfs-maroon);
+  font-weight:700;
+}
+.mfs-badges{
+  display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap;
+  margin:14px 0 10px;padding-top:14px;border-top:1px solid #fdf0f6;
+}
+.mfs-badge{
+  background:var(--mfs-lpink);border:1px solid #f5cfe3;
+  border-radius:30px;padding:6px 14px;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;
+  color:var(--mfs-maroon);
+}
+.mfs-disclosure{
+  font-family:'Montserrat',sans-serif;font-size:10.5px;
+  color:#555;font-style:italic;text-align:left;
+  line-height:1.6;margin-top:14px;
+  padding-top:10px;border-top:1px dashed #f5e6ec;
+}
+@media(max-width:950px){
+  .mfs-page{padding:24px 18px 44px;}
+  .mfs-page-head{padding:2px 0 14px;margin-bottom:18px;}
+  .mfs-page-body{font-size:13.5px;line-height:1.7;}
+  .mfs-sub{font-size:16px;margin:18px 0 7px;}
+  .mfs-badges{margin:12px 0 8px;padding-top:12px;}
+}
+</style>

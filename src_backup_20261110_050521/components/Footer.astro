@@ -1,0 +1,175 @@
+---
+// Footer.astro : System.io wala footer, text aur design same.
+// Pehle 5 popups the (About, Terms, FAQs, Privacy, Contact); ab har ek ka apna page hai
+// (/about, /terms, /faqs, /privacy, /contact) aur footer ke links seedha unpar jate hain.
+// Colour variables ka naam --mfs-... hai, taake header ke colours se takrao na ho.
+import { site } from '../config/site.js';
+const icons = {
+  facebook: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>`,
+  instagram: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>`,
+  pinterest: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.64 7.86 6.36 9.32-.09-.79-.16-2.01.04-2.87.18-.78 1.15-4.94 1.15-4.94s-.29-.58-.29-1.44c0-1.35.78-2.36 1.76-2.36.83 0 1.23.62 1.23 1.37 0 .84-.53 2.09-.81 3.25-.23.97.49 1.76 1.44 1.76 1.73 0 3.06-1.82 3.06-4.45 0-2.33-1.67-3.95-4.06-3.95-2.77 0-4.39 2.07-4.39 4.22 0 .83.32 1.73.72 2.22.08.1.09.18.06.28-.07.29-.23.94-.26 1.07-.04.17-.14.21-.32.13-1.18-.55-1.92-2.27-1.92-3.65 0-2.97 2.16-5.7 6.22-5.7 3.27 0 5.81 2.33 5.81 5.44 0 3.25-2.05 5.86-4.89 5.86-.96 0-1.86-.5-2.17-1.09l-.59 2.25c-.21.82-.79 1.84-1.18 2.47.89.27 1.83.42 2.81.42 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>`,
+  website: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>`,
+};
+const year = new Date().getFullYear();
+---
+<footer class="mfs-footer">
+  <div class="mfs-footer-inner">
+
+    
+    <img src="https://d1yei2z3i6k35z.cloudfront.net/13948987/69aa3fe0e2064_Musfiras_handbags_ladies_bags_1_1.png" alt="Musfira's Logo" class="mfs-footer-logo-img">
+
+    <a href={site.home} class="mfs-home-btn" aria-label="Back to Home">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>
+      <span>Home</span>
+    </a>
+
+    
+    <div class="mfs-social-row">
+      {site.social.map((s) => (
+        <a href={s.href} target="_blank" rel="noopener" class="mfs-social-icon" aria-label={s.name} set:html={icons[s.key] ?? ''} />
+      ))}
+    </div>
+
+    <div class="mfs-footer-links">
+      {site.pages.map((p, i) => (
+        <>
+          {i > 0 && <span class="mfs-footer-dot">&#8226;</span>}
+          <a href={p.href} class="mfs-footer-btn">{p.label}</a>
+        </>
+      ))}
+    </div>
+
+    <div class="mfs-footer-disclosure">Every <span class="mfs-brand">Musfira's</span> piece is hand-selected by us and delivered to your door with care. <span class="mfs-brand">Made to adore</span>.</div>
+
+    <div class="mfs-footer-copy">&#169; <span id="mfsYear">{year}</span> <span class="mfs-brand">Musfira's</span> &#183; All Rights Reserved</div>
+  </div>
+</footer>
+
+<style is:global>
+:root{
+  --mfs-pink: #e6007e;
+  --mfs-maroon: var(--orange-maroon, #a3301f);
+  --mfs-heading-maroon: #9c2954;
+  --mfs-lpink: #fce4f0;
+}
+.mfs-brand{
+  color:var(--mfs-pink) !important;
+  font-weight:700;
+}
+.mfs-email{
+  color:var(--mfs-pink) !important;font-weight:600;text-decoration:none;
+  border-bottom:1px solid rgba(230,0,126,0.35);
+}
+.mfs-email:hover{border-bottom-color:var(--mfs-pink);}
+.mfs-footer{
+  width:100%;background:#fff;
+  border-top:1.5px solid #f5eaf0;
+  padding:34px 20px 24px;
+}
+.mfs-footer-inner{
+  max-width:900px;margin:0 auto;text-align:center;
+}
+.mfs-footer-logo-img{
+  display:block;
+  height:auto;
+  width:clamp(110px, 16vw, 190px);
+  max-width:65%;
+  object-fit:contain;
+  margin:0 auto 18px;
+}
+/* HOME BUTTON: soft pink pill, hover par maroon se pink gradient (sirf mouse wali devices par) */
+.mfs-home-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:fit-content;margin:0 auto 22px;
+  padding:9px 26px;border-radius:999px;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:1.8px;text-transform:uppercase;text-decoration:none;
+  color:var(--mfs-maroon);background:var(--mfs-lpink);
+  border:1px solid #f5cfe3;
+  transition:all .25s ease;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.mfs-home-btn svg{flex-shrink:0;transition:transform .3s ease;}
+.mfs-home-btn:active{
+  background:linear-gradient(135deg,var(--mfs-maroon),var(--mfs-pink));
+  color:#fff;border-color:transparent;transform:scale(.97);
+}
+@media (hover:hover){
+  .mfs-home-btn:hover{
+    background:linear-gradient(135deg,var(--mfs-maroon),var(--mfs-pink));
+    color:#fff;border-color:transparent;
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(230,0,126,0.3);
+  }
+  .mfs-home-btn:hover svg{transform:translateY(-1px) scale(1.08);}
+}
+.mfs-footer-tag{
+  font-family:'Bodoni Moda',serif;font-size:12px;color:var(--mfs-maroon);
+  opacity:0.75;margin-top:6px;
+}
+.mfs-social-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:12px;margin-bottom:20px;
+}
+.mfs-social-icon{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--mfs-lpink);
+  color:var(--mfs-maroon);
+  border:1px solid #f5cfe3;
+  transition:all .25s ease;
+}
+.mfs-social-icon:hover{
+  background:linear-gradient(135deg,var(--mfs-maroon),var(--mfs-pink));
+  color:#fff;
+  border-color:transparent;
+  transform:translateY(-3px);
+  box-shadow:0 8px 20px rgba(230,0,126,0.3);
+}
+.mfs-footer-links{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:10px;margin:22px 0 18px;
+}
+.mfs-footer-btn{
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;
+  color:var(--mfs-maroon);background:none;border:none;cursor:pointer;
+  padding:4px 2px;transition:color .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.mfs-footer-btn:hover{color:var(--mfs-pink);}
+.mfs-footer-dot{color:#e2ccd5;font-size:11px;}
+.mfs-footer-disclosure{
+  font-family:'Montserrat',sans-serif;font-size:10.5px;
+  color:#bbb;font-style:italic;line-height:1.6;
+  max-width:560px;margin:0 auto 14px;
+}
+.mfs-footer .mfs-footer-copy .mfs-brand{
+  font-weight:500;
+  letter-spacing:0.2px;
+  font-size:inherit;
+  opacity:0.85;
+}
+.mfs-footer-copy{
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:400;
+  color:#8a8a8a;letter-spacing:0.2px;
+  max-width:420px;margin:0 auto;
+  padding-top:14px;border-top:1px solid #f5eaf0;
+}
+@media(max-width:950px){
+  .mfs-footer{padding:28px 16px 20px;}
+  .mfs-footer-logo-img{width:clamp(90px, 30vw, 140px);margin-bottom:16px;}
+  .mfs-home-btn{padding:8px 22px;font-size:10.5px;margin-bottom:20px;}
+  .mfs-social-icon{width:33px;height:33px;}
+  .mfs-social-row{gap:10px;margin-bottom:18px;}
+  .mfs-footer-links{gap:8px 6px;}
+  .mfs-footer-btn{font-size:10px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .mfs-home-btn, .mfs-home-btn svg, .mfs-social-icon{transition:none;}
+}
+</style>
+
+<script is:inline>
+  document.getElementById('mfsYear').textContent = new Date().getFullYear();
+</script>

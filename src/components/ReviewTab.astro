@@ -1,0 +1,109 @@
+---
+// ReviewTab.astro : left edge par chhota REVIEWS tab (orangy maroon).
+// Layout.astro mein hai, is liye jis page mein Layout/InfoPage use ho wahan khud aa jata hai.
+// Label / link / delay / on-off src/config/site.js (reviews) se aata hai.
+import { site } from '../config/site.js';
+const r = site.reviews;
+---
+{r.show && (
+  <a href={r.href} id="m-review-btn" class="m-sticky-btn" data-delay={r.delaySeconds} style="display:none;">
+    <span class="m-sticky-star" aria-hidden="true">&#9733;</span>{r.label}
+  </a>
+)}
+
+<style is:global>
+.m-sticky-btn{
+  position:fixed;
+  left:0;right:auto;
+  top:45%;
+  transform:translateY(-50%) rotate(90deg);
+  transform-origin:left bottom;
+  z-index:9000; /* header aur cart drawer ke neeche, isliye popup khulne par khud dab jata hai */
+
+  /* ORANGY MAROON: poori site wala --orange-maroon (Layout.astro) */
+  background:linear-gradient(180deg,rgba(176,56,34,.96),rgba(138,38,22,.96));
+  color:#fff;text-decoration:none;
+
+  /* bohat patla length, thori si ziada motai (screen par width) */
+  padding:5px 9px;
+  font-family:'Montserrat',sans-serif;
+  font-size:7.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;line-height:1.2;
+  white-space:nowrap;
+
+  border-radius:7px 7px 0 0;
+  border:1px solid rgba(255,255,255,.28);border-bottom:none;
+  box-shadow:2px 0 10px rgba(120,30,15,.25);
+  cursor:pointer;
+  transition:background .3s ease,color .3s ease,opacity .3s ease;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.m-sticky-star{color:#ffd9b3;margin-right:4px;font-size:7px;}
+/* TAP AREA: nazar nahi aata, par dabana aasan karta hai */
+.m-sticky-btn::before{content:'';position:absolute;top:-8px;bottom:-4px;left:-8px;right:-8px;}
+@media (max-width:768px){.m-sticky-btn{top:40%;}}
+@media (hover:hover){
+  .m-sticky-btn:hover{background:#fce4f0;color:var(--orange-maroon,#a3301f);}
+  .m-sticky-btn:hover .m-sticky-star{color:var(--mfs-pink,#e6007e);}
+}
+.m-sticky-btn:focus-visible{outline:2px solid var(--mfs-pink,#e6007e);outline-offset:2px;}
+/* popup khula ho to chhup jaye */
+.m-sticky-btn.m-hide{opacity:0;visibility:hidden;pointer-events:none;}
+@keyframes mReviewIn{from{opacity:0;left:-40px;}to{opacity:1;left:0;}}
+.m-sticky-btn.m-in{animation:mReviewIn .8s ease forwards;}
+@media (prefers-reduced-motion:reduce){.m-sticky-btn.m-in{animation:none;}}
+</style>
+
+<script is:inline>
+(function () {
+  var btn = document.getElementById('m-review-btn');
+  if (!btn) return;
+
+  // site khulne ke kuch second baad tab nazar aaye
+  var delay = (parseFloat(btn.getAttribute('data-delay')) || 3) * 1000;
+  setTimeout(function () {
+    btn.style.display = 'block';
+    btn.classList.add('m-in');
+  }, delay);
+
+  // koi popup / drawer / modal khula ho to tab chhupa do
+  function isPopupLayer(el) {
+    while (el && el !== document.body && el !== document.documentElement) {
+      var cs = getComputedStyle(el);
+      if (cs.position === 'fixed') {
+        var z = parseInt(cs.zIndex, 10);
+        if (!isNaN(z) && z > 9000) return true;
+      }
+      el = el.parentElement;
+    }
+    return false;
+  }
+  function popupAt(x, y) {
+    var stack = document.elementsFromPoint ? document.elementsFromPoint(x, y) : [document.elementFromPoint(x, y)];
+    for (var i = 0; i < stack.length; i++) {
+      var el = stack[i];
+      if (!el || el === btn || btn.contains(el)) continue;
+      return isPopupLayer(el);
+    }
+    return false;
+  }
+  function check() {
+    if (document.hidden) return;
+    var open = popupAt(window.innerWidth / 2, window.innerHeight / 2);
+    if (!open) {
+      var r = btn.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) open = popupAt(r.left + r.width / 2, r.top + r.height / 2);
+    }
+    if (!open) {
+      var d = document.querySelectorAll('dialog[open],[aria-modal="true"]');
+      for (var i = 0; i < d.length; i++) {
+        if (d[i].getClientRects().length && getComputedStyle(d[i]).visibility !== 'hidden') { open = true; break; }
+      }
+    }
+    btn.classList.toggle('m-hide', open);
+  }
+  setInterval(check, 350);
+  ['click', 'touchend', 'keyup'].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(check, 60); setTimeout(check, 400); }, true);
+  });
+})();
+</script>

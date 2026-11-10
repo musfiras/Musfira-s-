@@ -1,0 +1,71 @@
+---
+import InfoPage from '../layouts/InfoPage.astro';
+import { site } from '../config/site.js';
+---
+<InfoPage title="Privacy Policy | Musfira's" eyebrow="Your Trust Matters" heading="Privacy Policy" description="How Musfira's collects, uses and protects your information when you shop with us.">
+      <p class="mfs-lead">At <span class="mfs-brand">Musfira's</span>, we hold your privacy in the highest regard. This policy explains, in clear and honest terms, what information we collect when you shop with us, why we need it, and how we look after it.</p>
+
+      <h3 class="mfs-sub">The Short Version</h3>
+      <ul>
+        <li>We collect only what we need to confirm, dispatch and deliver your order.</li>
+        <li>You do not need an account, and we never ask for card or bank details.</li>
+        <li>We share your details only with the courier delivering your parcel.</li>
+        <li>We do <span class="mfs-elite-text">not sell or rent</span> your information to anyone.</li>
+        <li>You can ask us to show, correct or delete your details at any time.</li>
+      </ul>
+
+      <h3 class="mfs-sub">What We Collect</h3>
+      <p><strong>Information you give us:</strong> When you place an order, we ask only for what we need to complete it: your <span class="mfs-elite-text">name, phone number, delivery address, city</span>, and the details of the items you ordered. You do <span class="mfs-elite-text">not</span> need to create an account, and because we offer Cash on Delivery, we never ask for or store your card or bank details.</p>
+      <p><strong>Messages you send us:</strong> If you write to us by email or WhatsApp, we keep that conversation so we can help you properly and refer back to it if you contact us again about the same order.</p>
+      <p><strong>Basic technical information:</strong> Like most websites, our site may receive standard technical details when you visit, such as your browser type, device type and the pages you view. We use this only to keep the site working well.</p>
+
+      <h3 class="mfs-sub">How We Use Your Information</h3>
+      <p>We use your information to confirm your order by phone or WhatsApp, prepare and dispatch your parcel, arrange delivery through our courier partners, send you your tracking details, and assist you if you need support. We may also use your phone number to message you about your order status.</p>
+      <ul>
+        <li>To confirm that your name, address and items are correct before dispatch.</li>
+        <li>To hand your parcel to the courier and share tracking details with you.</li>
+        <li>To handle questions, changes, cancellations, returns and exchanges.</li>
+        <li>To keep records of orders for accounting and legal purposes.</li>
+        <li>To understand which products people like, so we can improve the collection.</li>
+      </ul>
+      <p>We do not use your details to send you unrelated promotions without your consent, and we do not make decisions about you using automated profiling.</p>
+
+      <h3 class="mfs-sub">Who We Share It With</h3>
+      <p>We share only what is necessary &#8212; such as your name, phone number and delivery address &#8212; with the courier partners who deliver your order, so that your parcel reaches you. We do <span class="mfs-elite-text">not sell or rent</span> your personal information to anyone.</p>
+      <p>Beyond couriers, we may share information only where the law requires it, or where it is needed to protect our rights or prevent fraud. In those cases we share the minimum necessary.</p>
+
+      <h3 class="mfs-sub">Browsing &amp; Analytics</h3>
+      <p>Like most modern websites, our site may use standard, privacy-respecting analytics tools to understand general browsing patterns, such as which products are popular, purely to improve our collection and your experience. This data is aggregated and is not used to personally identify you.</p>
+
+      <h3 class="mfs-sub">Cookies &amp; Local Storage</h3>
+      <p>Our site may use minimal cookies for basic functionality and to understand site performance. It may also keep small pieces of data in your browser, for example so that items in your cart are still there if you return. You can control or disable cookies and clear stored data through your browser settings at any time. Some parts of the site may not work as smoothly if you do.</p>
+
+      <h3 class="mfs-sub">How Long We Keep Your Information</h3>
+      <p>We keep your order details only for as long as they are needed to deliver your order, handle any follow-up such as a return or complaint, and meet our record-keeping obligations. After that, we delete or anonymise them where we reasonably can.</p>
+
+      <h3 class="mfs-sub">Keeping Your Information Safe</h3>
+      <p>We take reasonable steps to protect the information you share with us and limit access to the people who need it to serve you. No online system can be completely risk-free, but we treat your details with the care we would want for our own.</p>
+      <p>You can help too: please do not share your order confirmations or tracking links publicly, and be cautious of anyone who contacts you claiming to be from us. We will never ask you for a card number, a PIN or a one-time password.</p>
+
+      <h3 class="mfs-sub">Your Choices</h3>
+      <p>You may contact us at any time to ask what information we hold about you, to correct it, or to request that we delete it, subject to any records we are required to keep for order and legal purposes. You can also ask us to stop sending you order-unrelated messages and we will do so promptly.</p>
+
+      <h3 class="mfs-sub">Third-Party Links</h3>
+      <p>Our site and messages may link to other websites, such as our social media pages or a courier's tracking page. Those sites have their own privacy practices, and we encourage you to read them. We are not responsible for how other sites handle your information.</p>
+
+      <h3 class="mfs-sub">Children's Privacy</h3>
+      <p><span class="mfs-brand">Musfira's</span> is intended for a general adult audience and does not knowingly collect information from minors. If you believe a child has shared details with us, please let us know and we will remove them.</p>
+
+      <h3 class="mfs-sub">Changes to This Policy</h3>
+      <p>We may revise this Privacy Policy from time to time to reflect improvements to our practices or changes in applicable guidelines. Continued use of the site indicates your acceptance of the current version.</p>
+
+      <h3 class="mfs-sub">Questions About Your Privacy</h3>
+      <p>If you have any concerns about this policy, please reach us through our Contact page, by email at <a href={`mailto:${site.email}`} class="mfs-email">{site.email}</a>, or on WhatsApp at <a href={`https://wa.me/${site.whatsapp.number}`} class="mfs-email" target="_blank" rel="noopener">{site.whatsapp.display}</a>.</p>
+
+      <h3 class="mfs-sub">Our Promise on Comfort</h3>
+      <p>Shopping feels better when you are not worried about who is watching or storing your information. That is why <span class="mfs-brand">Musfira's</span> is built to be light and respectful &#8212; no forced sign-ups, no invasive tracking, no data resale. You are free to explore, compare and decide at your own pace.</p>
+
+      <p class="mfs-sign"><span class="mfs-brand">&#8212; Musfira's</span> &nbsp;|&nbsp; <span class="mfs-brand">Made to adore</span></p>
+
+      <div class="mfs-disclosure">Your details are used only to confirm, dispatch and deliver your <span class="mfs-brand">Musfira's</span> order, and to support you afterwards.</div>
+</InfoPage>

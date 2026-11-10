@@ -1,32 +1,41 @@
 ---
 import InfoPage from '../layouts/InfoPage.astro';
+import { site } from '../config/site.js';
 ---
 <InfoPage title="Frequently Asked Questions | Musfira's" eyebrow="Good to Know" heading="Frequently Asked Questions" description="Answers about ordering, Cash on Delivery, delivery across the UAE, tracking, returns and support at Musfira's.">
-      <p><strong>1. Who is <span class="mfs-brand">Musfira's</span>?</strong><br><span class="mfs-brand">Musfira's</span> is an online fashion brand &#8212; ladies' bags, jewellery, wallets, watches and accessories, plus a small selection for men. We choose every piece ourselves, sell it directly to you, and deliver it to your door. When you shop here, you are shopping with <span class="mfs-brand">Musfira's</span> from start to finish.</p>
+      <p class="mfs-lead">Quick answers to the things customers ask us most. If you cannot find yours here, we are always happy to help.</p>
 
-      <p><strong>2. How do I place an order?</strong><br>Choose your product, select your colour and quantity, and fill in your delivery details at checkout. That's it &#8212; there is no account to create and no card details to enter.</p>
+      <h3 class="mfs-sub">About Us</h3>
+      <p><strong class="mfs-q">Who is <span class="mfs-brand">Musfira's</span>?</strong><span class="mfs-brand">Musfira's</span> is an online fashion brand &#8212; ladies' bags, jewellery, wallets, watches and accessories, plus a small selection for men. We choose every piece ourselves, sell it directly to you, and deliver it to your door. When you shop here, you are shopping with <span class="mfs-brand">Musfira's</span> from start to finish.</p>
+      <p><strong class="mfs-q">How are your products selected?</strong>Every item goes through our <span class="mfs-elite-text"><span class="mfs-brand">Musfira's</span> Approved</span> selection. We look closely at craftsmanship, stitching, hardware, material quality, comfort and everyday usability. If a piece doesn't meet our standard, it doesn't make it into the collection.</p>
+      <p><strong class="mfs-q">Do you have anything for men?</strong>Yes, a small and carefully chosen range, mainly watches and wallets, which make easy and thoughtful gifts.</p>
 
-      <p><strong>3. What payment methods do you accept?</strong><br>We offer <span class="mfs-elite-text">Cash on Delivery</span>. You only pay when your parcel is in your hands, which means you can order with complete peace of mind.</p>
+      <h3 class="mfs-sub">Ordering &amp; Payment</h3>
+      <p><strong class="mfs-q">How do I place an order?</strong>Choose your product, select your colour and quantity, and fill in your delivery details at checkout. That's it &#8212; there is no account to create and no card details to enter.</p>
+      <p><strong class="mfs-q">What payment methods do you accept?</strong>We offer <span class="mfs-elite-text">Cash on Delivery</span>. You only pay when your parcel is in your hands, which means you can order with complete peace of mind.</p>
+      <p><strong class="mfs-q">In which currency are prices shown?</strong>All prices are in <strong>AED</strong>.</p>
+      <p><strong class="mfs-q">Why do you call or message me after I order?</strong>Our team personally confirms every order by phone or WhatsApp to make sure your name, address and items are correct. Please keep your phone active after ordering so we can reach you, and reply <strong>CONFIRM</strong> when you receive our message so we can dispatch right away.</p>
+      <p><strong class="mfs-q">Can I order more than one item?</strong>Yes. Add as many pieces as you like to your cart and check out once, so everything is confirmed together.</p>
+      <p><strong class="mfs-q">Can I change or cancel my order?</strong>Yes, as long as it has not been dispatched. Contact us as early as possible with your Order ID and we will do our best to help. Once an order is on its way with the courier, changes may no longer be possible.</p>
 
-      <p><strong>4. Why do you call or message me after I order?</strong><br>Our team personally confirms every order by phone or WhatsApp to make sure your name, address and items are correct. Please keep your phone active after ordering so we can reach you, and reply <strong>CONFIRM</strong> when you receive our message so we can dispatch right away.</p>
+      <h3 class="mfs-sub">Delivery &amp; Tracking</h3>
+      <p><strong class="mfs-q">Where do you deliver, and how long does it take?</strong>We deliver across the <strong>United Arab Emirates</strong>. Standard delivery typically takes <strong class="mfs-pink">1&#8211;3 working days</strong> after dispatch. This is an estimate and may vary slightly depending on your location and courier schedules.</p>
+      <p><strong class="mfs-q">Is there a delivery charge?</strong>Any delivery charge is shown clearly at checkout before you confirm your order, so there are never any surprises.</p>
+      <p><strong class="mfs-q">How can I track my order?</strong>As soon as your order is dispatched, we send you a WhatsApp message with the <strong>courier's name, your tracking ID and a tracking link</strong>. Simply tap the link and enter the tracking ID if asked.</p>
+      <p><strong class="mfs-q">What if I am not available when the courier arrives?</strong>Let the courier know a better time, or message us and we will help arrange it. Couriers usually call before delivery, so please keep your phone nearby.</p>
+      <p><strong class="mfs-q">What should I do when my parcel arrives?</strong>Check the outer packaging before you pay, and open the parcel as soon as you can. If anything looks damaged or wrong, tell the courier and contact us right away with photos.</p>
 
-      <p><strong>5. Where do you deliver, and how long does it take?</strong><br>We deliver across the <strong>United Arab Emirates</strong>. Standard delivery typically takes <strong class="mfs-pink">1&#8211;3 working days</strong> after dispatch. This is an estimate and may vary slightly depending on your location and courier schedules.</p>
+      <h3 class="mfs-sub">Returns &amp; Product Questions</h3>
+      <p><strong class="mfs-q">Can I return or exchange an item?</strong>Yes, we are happy to help. If your item arrives damaged, defective or different from what you ordered, contact us promptly after delivery with your Order ID and clear photos, and we will review it and make it right. Items should generally be unused and in original condition and packaging to be eligible.</p>
+      <p><strong class="mfs-q">What if my product looks slightly different from the photos?</strong>We photograph and describe every piece as accurately as we can. Colours can look a little different on different screens and in different light, and small natural variations can occur, especially in leather items. If you feel your item is significantly different from what was shown, please contact us and we will look into it.</p>
+      <p><strong class="mfs-q">How do I look after my bag or jewellery?</strong>Keep bags in a dust bag away from sun and damp, and avoid overloading them. Put jewellery on after perfume and take it off before swimming or showering. You will find more simple care tips on our <a href="/about" class="mfs-email">Our Story</a> page.</p>
+      <p><strong class="mfs-q">Can I buy a piece as a gift?</strong>Of course. Just enter the recipient's delivery address at checkout, and tell us if you would like anything noted. A lot of our customers shop for someone else.</p>
 
-      <p><strong>6. Is there a delivery charge?</strong><br>Any delivery charge is shown clearly at checkout before you confirm your order, so there are never any surprises.</p>
-
-      <p><strong>7. How can I track my order?</strong><br>As soon as your order is dispatched, we send you a WhatsApp message with the <strong>courier's name, your tracking ID and a tracking link</strong>. Simply tap the link and enter the tracking ID if asked.</p>
-
-      <p><strong>8. How are your products selected?</strong><br>Every item goes through our <span class="mfs-elite-text"><span class="mfs-brand">Musfira's</span> Approved</span> selection. We look closely at craftsmanship, stitching, hardware, material quality, comfort and everyday usability. If a piece doesn't meet our standard, it doesn't make it into the collection.</p>
-
-      <p><strong>9. Can I return or exchange an item?</strong><br>Yes, we are happy to help. If your item arrives damaged, defective or different from what you ordered, contact us promptly after delivery with your Order ID and clear photos, and we will review it and make it right. Items should generally be unused and in original condition and packaging to be eligible.</p>
-
-      <p><strong>10. What if my product looks slightly different from the photos?</strong><br>We photograph and describe every piece as accurately as we can. Colours can look a little different on different screens and in different light, and small natural variations can occur, especially in leather items. If you feel your item is significantly different from what was shown, please contact us and we will look into it.</p>
-
-      <p><strong>11. Can I change or cancel my order?</strong><br>Yes, as long as it has not been dispatched. Contact us as early as possible with your Order ID and we will do our best to help. Once an order is on its way with the courier, changes may no longer be possible.</p>
-
-      <p><strong>12. How can I contact you?</strong><br>You can write to us anytime at <a href="mailto:info@musfiras.com" class="mfs-email">info@musfiras.com</a> or through our Contact section. Please keep your Order ID handy so we can help you faster.</p>
+      <h3 class="mfs-sub">Privacy &amp; Support</h3>
+      <p><strong class="mfs-q">Do you store my card details?</strong>No. Because we offer Cash on Delivery, we never ask for or store card or bank details. See our <a href="/privacy" class="mfs-email">Privacy Policy</a> for more.</p>
+      <p><strong class="mfs-q">How can I contact you?</strong>You can write to us anytime at <a href={`mailto:${site.email}`} class="mfs-email">{site.email}</a>, message us on WhatsApp at <a href={`https://wa.me/${site.whatsapp.number}`} class="mfs-email" target="_blank" rel="noopener">{site.whatsapp.display}</a>, or use our <a href="/contact" class="mfs-email">Contact page</a>. Please keep your Order ID handy so we can help you faster.</p>
 
       <p class="mfs-sign"><span class="mfs-brand">&#8212; Musfira's</span></p>
 
-      <div class="mfs-disclosure">Still have a question? Write to us at <a href="mailto:info@musfiras.com" class="mfs-email">info@musfiras.com</a> &#8212; a real person from the <span class="mfs-brand">Musfira's</span> team will be happy to help.</div>
+      <div class="mfs-disclosure">Still have a question? Write to us at <a href={`mailto:${site.email}`} class="mfs-email">{site.email}</a> &#8212; a real person from the <span class="mfs-brand">Musfira's</span> team will be happy to help.</div>
 </InfoPage>

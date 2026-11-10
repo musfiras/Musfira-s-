@@ -1,16 +1,25 @@
 ---
-// InfoPage.astro : About / Terms / FAQs / Privacy / Contact ka common design
-// (pehle ye popup ke andar tha, ab poora page). Har page sirf apna text deta hai.
+// InfoPage.astro : About / Terms / FAQs / Privacy / Contact ka common design.
+// Desktop par: left mein heading + baaki pages ki list, right mein padhne wala content.
+// Mobile par: heading left se shuru, neeche content (pura width, left aligned).
+// Har page sirf apna text deta hai. Page ki list src/config/site.js (pages) se aati hai.
 import Layout from './Layout.astro';
+import { site } from '../config/site.js';
 const { title, eyebrow, heading, description } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 <Layout title={title} description={description}>
   <main class="mfs-page">
-    <div class="mfs-page-head">
+    <aside class="mfs-page-head">
       <div class="mfs-page-eye">{eyebrow}</div>
       <h1 class="mfs-page-title">{heading}</h1>
-      <div class="mfs-page-rule"><span class="rule-line"></span><span class="rule-diamond">&#9670;</span><span class="rule-line"></span></div>
-    </div>
+      <div class="mfs-page-rule"><span class="rule-diamond">&#9670;</span><span class="rule-line"></span></div>
+      <nav class="mfs-page-nav" aria-label="More about Musfira's">
+        {site.pages.map((p) => (
+          <a href={p.href} class:list={['mfs-page-link', { 'is-current': p.href === path }]} aria-current={p.href === path ? 'page' : undefined}>{p.label}</a>
+        ))}
+      </nav>
+    </aside>
     <div class="mfs-page-body">
       <slot />
     </div>
@@ -19,64 +28,104 @@ const { title, eyebrow, heading, description } = Astro.props;
 
 <style is:global>
 .mfs-page{
-  max-width:760px;margin:0 auto;
-  padding:34px 20px 56px;
+  width:100%;max-width:1060px;margin:0 auto;
+  padding:40px 28px 64px;
+  display:grid;grid-template-columns:260px minmax(0,1fr);column-gap:56px;align-items:start;
 }
 .mfs-page-head{
-  text-align:center;padding:6px 0 18px;margin-bottom:22px;
-  border-bottom:1px solid #fdf0f6;
+  position:sticky;top:76px;text-align:left;
+  padding:4px 0 0;
 }
 .mfs-page-eye{
   font-family:'Bodoni Moda',serif;font-style:italic;
   font-size:13px;color:var(--mfs-pink);letter-spacing:1.5px;margin-bottom:6px;
 }
 .mfs-page-title{
-  font-family:'Bodoni Moda',serif;font-size:clamp(24px,4vw,34px);font-weight:700;
-  color:var(--mfs-heading-maroon);margin:0 0 10px;letter-spacing:0.3px;line-height:1.2;
+  font-family:'Bodoni Moda',serif;font-size:clamp(26px,3.4vw,34px);font-weight:700;
+  color:var(--mfs-heading-maroon);margin:0 0 12px;letter-spacing:0.3px;line-height:1.2;
 }
-.mfs-page-rule{display:flex;align-items:center;justify-content:center;gap:10px;}
-.rule-line{display:block;width:35px;height:1px;background:var(--mfs-pink);opacity:0.4;}
+.mfs-page-rule{display:flex;align-items:center;justify-content:flex-start;gap:10px;margin-bottom:22px;}
+.rule-line{display:block;width:44px;height:1px;background:var(--mfs-pink);opacity:0.4;}
 .rule-diamond{color:var(--mfs-pink);font-size:8px;}
-.mfs-page-body{
-  font-family:'Montserrat',sans-serif;
-  font-size:14.5px;font-weight:400;line-height:1.8;color:#1a1a1a;
+.mfs-page-nav{display:flex;flex-direction:column;gap:2px;border-top:1px solid #fdf0f6;padding-top:14px;}
+.mfs-page-link{
+  font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:600;
+  color:#6b5560;text-decoration:none;padding:8px 12px;margin-left:-12px;border-radius:8px;
+  transition:background .2s ease,color .2s ease;
 }
-.mfs-page-body p{margin-bottom:12px;}
+.mfs-page-link:hover{background:var(--mfs-lpink);color:var(--mfs-maroon);}
+.mfs-page-link.is-current{color:var(--mfs-maroon);background:var(--mfs-lpink);font-weight:800;}
+
+.mfs-page-body{
+  min-width:0;
+  font-family:'Montserrat',sans-serif;
+  font-size:14.5px;font-weight:400;line-height:1.85;color:#1a1a1a;
+  text-align:left;
+}
+.mfs-page-body p{margin:0 0 14px;}
 .mfs-page-body strong{color:var(--mfs-maroon);font-weight:700;}
 .mfs-page-body strong.mfs-pink{color:var(--mfs-pink) !important;}
 .mfs-page-body em{font-style:italic;color:var(--mfs-maroon);}
+.mfs-page-body ul{margin:0 0 16px;padding-left:20px;}
+.mfs-page-body li{margin-bottom:6px;padding-left:2px;}
+.mfs-page-body li::marker{color:var(--mfs-pink);}
+.mfs-lead{font-size:16px;line-height:1.8;color:#2a2a2a;}
 .mfs-sign{font-style:italic;color:var(--mfs-maroon)!important;font-weight:700!important;}
 .mfs-sub{
-  font-family:'Bodoni Moda',serif;font-size:18px;font-weight:700;
-  color:var(--mfs-heading-maroon);letter-spacing:0.3px;
-  margin:22px 0 8px;display:flex;align-items:center;gap:8px;
+  font-family:'Bodoni Moda',serif;font-size:19px;font-weight:700;
+  color:var(--mfs-heading-maroon);letter-spacing:0.3px;line-height:1.3;
+  margin:30px 0 10px;display:flex;align-items:baseline;gap:9px;
 }
-.mfs-sub::before{content:"\25C6";color:var(--mfs-pink);font-size:8px;opacity:0.8;}
-.mfs-elite-text{
-  color:var(--mfs-maroon);
-  font-weight:700;
-}
+.mfs-page-body > .mfs-sub:first-child{margin-top:0;}
+.mfs-sub::before{content:"\25C6";color:var(--mfs-pink);font-size:8px;opacity:0.8;flex-shrink:0;transform:translateY(-2px);}
+.mfs-elite-text{color:var(--mfs-maroon);font-weight:700;}
+.mfs-q{display:block;margin-bottom:2px;}
 .mfs-badges{
   display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap;
-  margin:14px 0 10px;padding-top:14px;border-top:1px solid #fdf0f6;
+  margin:18px 0 12px;padding-top:16px;border-top:1px solid #fdf0f6;
 }
 .mfs-badge{
   background:var(--mfs-lpink);border:1px solid #f5cfe3;
-  border-radius:30px;padding:6px 14px;
-  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;
+  border-radius:30px;padding:7px 15px;
+  font-family:'Montserrat',sans-serif;font-size:11.5px;font-weight:700;
   color:var(--mfs-maroon);
 }
-.mfs-disclosure{
-  font-family:'Montserrat',sans-serif;font-size:10.5px;
-  color:#555;font-style:italic;text-align:left;
-  line-height:1.6;margin-top:14px;
-  padding-top:10px;border-top:1px dashed #f5e6ec;
+.mfs-badge a{text-decoration:none;}
+.mfs-card{
+  border:1px solid #f5cfe3;background:linear-gradient(180deg,#fff,#fff8fc);
+  border-radius:14px;padding:18px 20px;margin:0 0 14px;
 }
+.mfs-card h4{
+  font-family:'Bodoni Moda',serif;font-size:16px;font-weight:700;margin:0 0 6px;color:var(--mfs-heading-maroon);
+}
+.mfs-card p{margin:0 0 10px;font-size:13.5px;line-height:1.7;}
+.mfs-card p:last-child{margin-bottom:0;}
+.mfs-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:999px;text-decoration:none;
+  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:#fff !important;background:linear-gradient(135deg,var(--mfs-maroon),var(--mfs-pink));
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+@media (hover:hover){.mfs-btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(230,0,126,.28);}}
+.mfs-disclosure{
+  font-family:'Montserrat',sans-serif;font-size:11px;
+  color:#555;font-style:italic;text-align:left;
+  line-height:1.6;margin-top:18px;
+  padding-top:12px;border-top:1px dashed #f5e6ec;
+}
+
+/* Tablet / mobile: ek hi column, sab kuch left se shuru */
 @media(max-width:950px){
-  .mfs-page{padding:24px 18px 44px;}
-  .mfs-page-head{padding:2px 0 14px;margin-bottom:18px;}
-  .mfs-page-body{font-size:13.5px;line-height:1.7;}
-  .mfs-sub{font-size:16px;margin:18px 0 7px;}
-  .mfs-badges{margin:12px 0 8px;padding-top:12px;}
+  .mfs-page{display:block;padding:24px 18px 44px;}
+  .mfs-page-head{position:static;padding:0 0 16px;margin-bottom:20px;border-bottom:1px solid #fdf0f6;}
+  .mfs-page-title{font-size:clamp(24px,6.4vw,30px);margin-bottom:10px;}
+  .mfs-page-rule{margin-bottom:0;}
+  .mfs-page-nav{display:none;} /* mobile par footer mein yehi links hain */
+  .mfs-page-body{font-size:14px;line-height:1.75;}
+  .mfs-lead{font-size:15px;}
+  .mfs-sub{font-size:17px;margin:24px 0 8px;}
+  .mfs-badges{margin:14px 0 10px;padding-top:14px;}
+  .mfs-card{padding:16px;}
 }
 </style>

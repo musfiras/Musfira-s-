@@ -4,6 +4,7 @@
 // <script is:inline> -> JS jaisi hai waisi rehti hai (onclick="openNav()" kaam karta rahe)
 // Google Fonts (Bodoni Moda + Montserrat) ab Layout.astro ke <head> mein hain.
 // openDrawer() aur #m-global-count cart script se aate hain (wo alag step mein).
+import { site } from '../config/site.js';
 ---
 <div class="header-section">
     <nav class="nav-container">
@@ -12,7 +13,7 @@
       
             
             <div class="desktop-only" style="gap: 8px; display: flex; align-items: center;">
-                <a href="https://www.musfiras.com/store" class="nav-link-maroon">HOME</a>
+                <a href={site.home} class="nav-link-maroon">HOME</a>
                 <div class="dropdown" id="mDropdown">
                     <span class="nav-link-maroon dropdown-trigger" tabindex="0" role="button" aria-haspopup="true">OUR COLLECTIONS <span class="nav-caret">▾</span></span>
                     <div class="dropdown-content">
@@ -21,9 +22,9 @@
                             <div class="menu-brand-tag"><i></i><span>Made to adore</span><i></i></div>
                         </div>
                         <div class="collections-heading">-THE COLLECTIONS-</div>
-                        <a href="https://www.musfiras.com/bags_carrying"><span>-BAGS &amp; CARRYING-</span></a>
-                        <a href="https://www.musfiras.com/fashion_accessories"><span>-FASHION & ACCESSORIES-</span></a>
-                        <a href="https://www.musfiras.com/musfiras_choice"><span>-MUSFIRA'S CHOICE-</span></a>
+                        {site.collections.map((c) => (
+                            <a href={c.href}><span>{c.label}</span></a>
+                        ))}
                         <div class="drawer-foot dropdown-foot"><i></i><b>◆</b><i></i></div>
                         <button type="button" class="dropdown-close" onclick="closeDropdown(event)" aria-label="Close menu">✕</button>
                     </div>
@@ -31,7 +32,7 @@
             </div>
         </div>
         <div class="nav-center-logo">
-            <a href="https://www.musfiras.com/store" style="text-decoration:none;">
+            <a href={site.home} style="text-decoration:none;">
                 <div class="brand-logo-area">
                     <div class="brand-name-text">Musfira's</div>
                     <div class="tagline-container">
@@ -81,11 +82,11 @@
         <button class="drawer-close-btn" onclick="closeNav()" aria-label="Close menu">×</button>
     </div>
     <div class="drawer-links">
-        <a href="https://www.musfiras.com/store" class="maroon-mob"><span>HOME</span></a>
+        <a href={site.home} class="maroon-mob"><span>HOME</span></a>
         <div class="collections-heading collections-heading-mob">-THE COLLECTIONS-</div>
-        <a href="https://www.musfiras.com/bags_carrying" class="pink-mob"><span>-BAGS &amp; CARRYING-</span></a>
-        <a href="https://www.musfiras.com/fashion_accessories" class="pink-mob"><span>-FASHION & ACCESSORIES-</span></a>
-        <a href="https://www.musfiras.com/musfiras_choice" class="pink-mob"><span>-MUSFIRA'S CHOICE-</span></a>
+        {site.collections.map((c) => (
+            <a href={c.href} class="pink-mob"><span>{c.label}</span></a>
+        ))}
     </div>
     <div class="drawer-foot"><i></i><b>◆</b><i></i></div>
 </div>

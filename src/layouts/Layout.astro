@@ -2,7 +2,6 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ProductCardScripts from '../components/ProductCardScripts.astro';
-import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import ReviewTab from '../components/ReviewTab.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 const {
@@ -48,9 +47,9 @@ const {
   <body>
     <Header />
     <slot />
+    <!-- Footer ke andar hi floating WhatsApp button bhi hai (alag WhatsAppFloat ki zaroorat nahi) -->
     <Footer />
     <ProductCardScripts />
-    <WhatsAppFloat />
     <ReviewTab />
 
     <!-- Cart drawer: har page par khud load hota hai (HTML + CSS + live stock script) -->

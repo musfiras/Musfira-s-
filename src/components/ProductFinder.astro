@@ -1,0 +1,61 @@
+---
+// Ye Layout.astro mein lagta hai (har page par chalega).
+// Jab review ke "SEE PRODUCT" se customer ?product=NAME ke saath aaye,
+// ye product dhoond kar scroll karta, highlight karta aur "View Details" click karta hai.
+---
+<style is:global>
+    ::target-text { background-color: #FFE600; color: #000; }
+</style>
+
+<script is:inline>
+    (function () {
+        var PROD_Q = (function () {
+            var fromQuery = new URLSearchParams(location.search).get('product');
+            if (fromQuery) return fromQuery;
+            var m = location.hash.match(/[#&]product=([^&:]+)/);
+            try { return m ? decodeURIComponent(m[1]) : ''; } catch (e) { return ''; }
+        })();
+        if (!PROD_Q) return;
+
+        var norm = function (s) { return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+        var want = norm(PROD_Q);
+        var visible = function (el) { return el.getClientRects().length > 0; };
+        var findViewBtn = function (card) {
+            return [].slice.call(card.querySelectorAll('*')).find(function (e) {
+                return e.textContent.trim().toLowerCase() === 'view details';
+            });
+        };
+        var tries = 0, scrolled = 0;
+
+        function findProduct() {
+            var els = [].slice.call(document.querySelectorAll('h1,h2,h3,h4,h5,h6,a,p,span,div,strong,b'))
+                .filter(function (e) { return !e.closest('#musfira-reviews') && (e.textContent || '').length <= PROD_Q.length + 60; });
+            var exact = els.filter(function (e) { return norm(e.textContent) === want; });
+            var vis = exact.filter(visible).sort(function (x, y) { return x.textContent.length - y.textContent.length; })[0];
+            return vis || exact[0] || null;
+        }
+
+        var t = setInterval(function () {
+            tries++;
+            var el = findProduct();
+            if (el) {
+                var p = el, btn = null;
+                while (p && !btn) { btn = findViewBtn(p); if (!btn) p = p.parentElement; }
+                clearInterval(t);
+                var target = (btn && visible(btn)) ? btn : el;
+                if (visible(target)) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                if (p && p !== document.body) {
+                    var old = p.style.boxShadow;
+                    p.style.transition = 'box-shadow .4s';
+                    p.style.boxShadow = '0 0 0 3px #A30B22, 0 0 25px rgba(163,11,34,.5)';
+                    setTimeout(function () { p.style.boxShadow = old; }, 3500);
+                }
+                if (btn) setTimeout(function () { btn.click(); }, 700);
+                return;
+            }
+            // lazy load: thora scroll karke aur products load karo
+            if (tries % 4 === 0 && scrolled < 30) { scrolled++; window.scrollBy(0, window.innerHeight * 0.8); }
+            if (tries > 60) clearInterval(t);
+        }, 300);
+    })();
+</script>

@@ -1,0 +1,569 @@
+---
+// Musfira's Customer Reviews - ported from System.io (design + logic same)
+---
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+<style is:global>
+    :root { --m: #A30B22; --p: #FFB6C1; --s: white; --g: #28a745; --lg: #8fce00; --w: #ffffff; }
+    #musfira-reviews { font-family: 'Poppins', sans-serif; background: var(--s); color: #333; padding-bottom: 50px; }
+
+    #stk-btn { position: fixed; top: 55px; right: 20px; z-index: 9999; background: var(--m); color: var(--w); border: 2px solid var(--w); padding: 10px 22px; border-radius: 30px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s; }
+    #stk-btn:hover { background: var(--p); color: var(--m); }
+
+    .h-wrap { text-align: center; padding: 40px 10px; }
+    .h-wrap h2 { color: var(--m); font-weight: 800; font-size: 28px; margin: 0; }
+    .h-wrap p { color: var(--p); font-weight: 600; margin-top: 5px; font-size: 14px; }
+
+    #wall { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 768px) { #wall { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { #wall { grid-template-columns: repeat(3, 1fr); } }
+
+    .ovl { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .mdl { background: var(--w); width: 95%; max-width: 500px; border-radius: 15px; overflow: hidden; border: 1px solid var(--p); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .mdl-h { background: var(--m); padding: 12px; color: var(--w); text-align: center; position: relative; font-weight: bold; }
+    .cl-btn { position: absolute; right: 15px; top: 8px; font-size: 24px; cursor: pointer; transition: 0.3s; }
+    .cl-btn:hover { color: var(--p); text-shadow: 0 0 8px var(--p); }
+
+    .mdl-ok { position: relative; border: 2px solid var(--p); }
+    .cl-elite { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; background: var(--m); color: var(--w); border: 2px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: 0 4px 12px rgba(163,11,34,0.35); transition: 0.3s; z-index: 5; }
+    .cl-elite:hover { background: var(--p); color: var(--m); border-color: var(--m); transform: rotate(90deg) scale(1.08); }
+
+    .mdl-b { padding: 20px; max-height: 80vh; overflow-y: auto; }
+    .i-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; box-sizing: border-box; font-size: 13px; }
+    .label-m { color: var(--m); font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block; }
+
+    .up-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
+    .up-slot { width: 55px; height: 55px; border: 2px dashed var(--p); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--p); font-size: 20px; }
+    .up-slot.busy { border-color: var(--m); color: var(--m); cursor: wait; }
+    .up-slot.done { border: 2px solid var(--g); color: var(--g); background: #f0fff0; }
+
+    .r-card { background: var(--w); border: 1px solid var(--p); border-radius: 15px; padding: 20px; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
+    .r-id { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #bbb; font-weight: bold; }
+
+    .cust-head { color: var(--m); font-weight: 800; font-size: 8px; margin-bottom: 2px; }
+    .v-badge { color: var(--g); font-size: 14px; margin-left: 5px; }
+    .g-tag { font-weight: 700; color: var(--m); font-size: 12px; }
+    .g-val { color: var(--p); font-weight: 400; }
+
+    .c-says-h { color: var(--m); font-weight: 800; font-size: 14px; margin: 15px 0 5px; display: block; text-decoration: underline; }
+    .c-msg { font-size: 14px; line-height: 1.6; color: #444; margin-bottom: 15px; flex-grow: 1; }
+
+    .r-imgs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .r-imgs img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid var(--p); }
+
+    .off-box { border: 1px solid var(--p); background: #fffcfc; padding: 8px 12px; border-radius: 10px; margin: 10px 0; font-size: 13px; }
+    .off-h { color: #e6007e; font-weight: 900; font-size: 12px; display: block; margin-bottom: 2px; }
+
+    .cm-toggle { color: var(--m); font-weight: bold; font-size: 12px; cursor: pointer; margin-top: 10px; display: inline-block; }
+    .cm-area { display: none; margin-top: 10px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+    .cm-row { background: #fafafa; padding: 8px; border-radius: 8px; margin-bottom: 6px; font-size: 12px; border-left: 3px solid var(--p); }
+    .cm-name { color: var(--g); font-weight: 700; }
+    .rp-name { color: var(--lg); font-weight: 700; }
+    .ts-elite { font-size: 9px; color: #aaa; font-style: italic; display: block; margin-top: 3px; }
+
+    #load-more { display: none; margin: 20px auto; background: var(--m); color: white; border: none; padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; font-family: inherit; }
+
+    #zoom-pop { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,182,193,0.85); z-index:200000; align-items:center; justify-content:center; flex-direction:column; }
+    #zoom-pop img { max-width: 250px; border: 4px solid white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+    #adm-trigger { position: fixed; bottom: 15px; left: 15px; width: 30px; height: 30px; background: var(--p); color: var(--m); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; opacity: 0.1; z-index: 9999; }
+
+    .see-prod { display: inline-block; margin-top: 10px; padding: 8px 22px; border-radius: 25px; background: linear-gradient(135deg, var(--m), #d4122f); color: #fff !important; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-decoration: none; border: 2px solid var(--p); box-shadow: 0 4px 12px rgba(163,11,34,0.3); transition: 0.3s; }
+    .see-prod:hover { background: var(--p); color: var(--m) !important; }
+</style>
+
+<div id="musfira-reviews">
+    <button id="stk-btn" onclick="tgl('p-form',1)">Write Review</button>
+    <div id="adm-trigger" onclick="openAdmin()">M</div>
+
+    <div class="h-wrap">
+        <h2>CUSTOMER REVIEW</h2>
+        <p>What our beautiful family says about us</p>
+    </div>
+
+    <div id="wall" style="padding:0 15px;"></div>
+    <div style="text-align:center;"><button id="load-more" onclick="showMore()">Show More Reviews</button></div>
+
+    <div id="p-form" class="ovl">
+        <div class="mdl">
+            <div class="mdl-h">Share Your Experience <span class="cl-btn" onclick="tgl('p-form',0)">&times;</span></div>
+            <div class="mdl-b">
+                <label class="label-m">Customer Name</label>
+                <input type="text" id="in-n" class="i-box" placeholder="Your Name" required>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label class="label-m">GENDER</label>
+                        <select id="in-g" class="i-box"><option>Female</option><option>Male</option></select>
+                    </div>
+                    <div style="flex:1">
+                        <label class="label-m">RATING</label>
+                        <select id="in-r" class="i-box">
+                            <option value="5">5 Stars Excellent</option>
+                            <option value="4">4 Stars Very Good</option>
+                            <option value="3">3 Stars Good</option>
+                            <option value="2">2 Stars Average</option>
+                            <option value="1">1 Star Terrible</option>
+                        </select>
+                    </div>
+                </div>
+                <label class="label-m">Customer Says:</label>
+                <textarea id="in-m" class="i-box" style="height:70px" placeholder="Your Experience..."></textarea>
+
+                <div style="text-align:center; margin-bottom:10px;">
+                    <label class="label-m" style="margin-bottom:2px;">Add Photos (Optional)</label>
+                    <p style="color:var(--m); font-size:10px; margin:2px 0;">Up to 3 photos of any size. They are compressed automatically to about 50KB.</p>
+                    <a href="https://image.pi7.org/resize-image-pixel" target="_blank" style="color:var(--m); font-weight:bold; font-size:12px; text-decoration:none;">Click here to compress pic (Optional)</a>
+                    <p style="color:#888; font-size:10px; margin:2px 0;">Manual compression is optional - you can skip it, we compress your photos automatically.</p>
+                </div>
+
+                <div class="up-row">
+                    <div class="up-slot" id="s0" onclick="up(0)">+</div>
+                    <div class="up-slot" id="s1" onclick="up(1)">+</div>
+                    <div class="up-slot" id="s2" onclick="up(2)">+</div>
+                </div>
+                <input type="file" id="fi" accept="image/*" style="display:none;">
+                <button onclick="postReview()" style="background:var(--g); color:white; border:none; width:100%; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">POST REVIEW</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="p-success" class="ovl">
+        <div class="mdl mdl-ok" style="text-align:center; padding:30px;">
+            <span class="cl-elite" onclick="tgl('p-success',0)" title="Close">&times;</span>
+            <h2 style="color:var(--m); font-size:18px; margin-top:20px;">We truly appreciate your feedback 💖</h2>
+            <p style="font-size:13px;">Your review has been successfully submitted and will appear within 24 hours once approved by our team.</p>
+            <p style="font-weight:bold;">Thank you for being a part of Musfira’s ✨</p>
+        </div>
+    </div>
+
+    <div id="p-admin" class="ovl">
+        <div class="mdl" style="max-width:800px;">
+            <div class="mdl-h">ADMIN ACCESS <span class="cl-btn" onclick="lockAdmin()">&times;</span></div>
+            <div class="mdl-b">
+                <div style="display:flex; gap:10px; margin-bottom:15px; font-size:12px; text-align:center;">
+                    <div style="flex:1; background:var(--s); padding:8px; border-radius:8px;">Total: <span id="st-all">0</span></div>
+                    <div style="flex:1; background:#e8f5e9; padding:8px; border-radius:8px;">Approved: <span id="st-app">0</span></div>
+                    <div style="flex:1; background:#fff3e0; padding:8px; border-radius:8px;">Pending: <span id="st-pen">0</span></div>
+                </div>
+                <input type="text" id="adm-srch" class="i-box" placeholder="Search Review ID..." onkeyup="renderAdmin()">
+                <div id="adm-list" style="max-height:350px; overflow-y:auto; border:1px solid #eee; padding:10px;"></div>
+                <button onclick="bulkDel()" style="background:#333; color:white; width:100%; border:none; padding:10px; margin-top:10px; border-radius:8px; font-size:12px;">Bulk Delete Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="p-approve" class="ovl">
+        <div class="mdl" style="max-width:420px;">
+            <div class="mdl-h">APPROVE &amp; LINK PRODUCT <span class="cl-btn" onclick="tgl('p-approve',0)">&times;</span></div>
+            <div class="mdl-b">
+                <label class="label-m">1. Select Page</label>
+                <select id="ap-page" class="i-box" onchange="loadProducts()"></select>
+                <label class="label-m">2. Select Product</label>
+                <select id="ap-prod" class="i-box"></select>
+                <input type="text" id="ap-manual" class="i-box" placeholder="Product ka naam yahan type karen" style="display:none;">
+                <div id="ap-msg" style="font-size:11px; color:#888; margin-bottom:10px;"></div>
+                <button onclick="confirmApprove()" style="background:var(--g); color:white; border:none; width:100%; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">APPROVE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="zoom-pop" onclick="this.style.display='none'">
+        <img id="zoom-img">
+        <div style="color:var(--m); font-weight:bold; font-size:12px; margin-top:10px; background:white; padding:5px 15px; border-radius:20px;">Click anywhere to close</div>
+    </div>
+</div>
+
+<script is:inline src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script is:inline src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+<script is:inline>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDnRgwuGA_3rcDuRXlIYRLnFY7xS2_Bqzc",
+        authDomain: "musfiras-reviews.firebaseapp.com",
+        projectId: "musfiras-reviews",
+        storageBucket: "musfiras-reviews.firebasestorage.app",
+        messagingSenderId: "347196137668",
+        appId: "1:347196137668:web:d5ed6e3da3180b4e042991"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let uploaded = [];
+    let uploadedKB = [];
+    let reviews = [];
+    let limit = 8;
+
+    // Safety: user text ko HTML banne se rokta hai
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    /* ===== STORE PAGES (used for product linking) ===== */
+    const STORE_PAGES = [
+        ['Store', 'https://www.musfiras.com/store'],
+        ['Bags & Carrying', 'https://www.musfiras.com/bags_carrying'],
+        ['Fashion Accessories', 'https://www.musfiras.com/fashion_accessories'],
+        ['Apparel & Jewellery', 'https://www.musfiras.com/apparel_jewellery'],
+        ["Musfira's Choice", 'https://www.musfiras.com/musfiras_choice']
+    ];
+    let apId = null;
+    const prodCache = {};
+
+    /* ===== PHOTO UPLOAD: auto compress (~50KB) + Cloudinary ===== */
+    const CLOUD_NAME = 'dgtwdwufv';
+    const UPLOAD_PRESET = 'musfira_final';
+    const TARGET_BYTES = 50 * 1024;
+    let curSlot = 0;
+    let pending = 0;
+
+    function up(i) {
+        const slot = document.getElementById('s' + i);
+        if (slot.classList.contains('busy')) return;
+        curSlot = i;
+        const fi = document.getElementById('fi');
+        fi.value = '';
+        fi.click();
+    }
+
+    function loadImg(file) {
+        return new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(file);
+            const im = new Image();
+            im.onload = () => { URL.revokeObjectURL(url); resolve(im); };
+            im.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad image')); };
+            im.src = url;
+        });
+    }
+
+    function canvasToBlob(canvas, q) {
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', q));
+    }
+
+    async function compressImage(file) {
+        const img = await loadImg(file);
+        let w = img.naturalWidth, h = img.naturalHeight;
+        const scale = Math.min(1, 1280 / Math.max(w, h));
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+        let best = null;
+        for (let round = 0; round < 8; round++) {
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            for (let q = 0.8; q >= 0.35; q -= 0.1) {
+                const b = await canvasToBlob(c, q);
+                if (!b) continue;
+                if (!best || b.size < best.size) best = b;
+                if (b.size <= TARGET_BYTES) return b;
+            }
+            w = Math.round(w * 0.8);
+            h = Math.round(h * 0.8);
+            if (Math.max(w, h) < 200) break;
+        }
+        if (!best) throw new Error('compress failed');
+        return best;
+    }
+
+    async function uploadToCloudinary(blob, name) {
+        const fd = new FormData();
+        fd.append('file', blob, (name || 'photo').replace(/\.[^.]+$/, '') + '.jpg');
+        fd.append('upload_preset', UPLOAD_PRESET);
+        const r = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: fd });
+        const j = await r.json();
+        if (!r.ok || !j.secure_url) throw new Error('upload failed');
+        return { url: j.secure_url, bytes: j.bytes || blob.size };
+    }
+
+    document.getElementById('fi').addEventListener('change', async function () {
+        const file = this.files && this.files[0];
+        if (!file) return;
+        const i = curSlot;
+        const slot = document.getElementById('s' + i);
+        slot.innerHTML = '…';
+        slot.classList.remove('done');
+        slot.classList.add('busy');
+        pending++;
+        try {
+            const blob = await compressImage(file);
+            const upRes = await uploadToCloudinary(blob, file.name);
+            uploaded[i] = upRes.url;
+            uploadedKB[i] = Math.round(upRes.bytes / 1024);
+            slot.title = 'Uploaded: ' + uploadedKB[i] + ' KB';
+            console.log('[Musfira photo check] Original: ' + Math.round(file.size / 1024) + ' KB -> Compressed & uploaded: ' + uploadedKB[i] + ' KB');
+            slot.innerHTML = '✔';
+            slot.classList.add('done');
+        } catch (e) {
+            uploaded[i] = null;
+            slot.innerHTML = '+';
+            alert("This photo could not be uploaded. Please try another photo.");
+        }
+        slot.classList.remove('busy');
+        pending--;
+    });
+
+    function cl(url, t) {
+        return (typeof url === 'string' && url.indexOf('/upload/') > -1) ? url.replace('/upload/', '/upload/' + t + '/') : url;
+    }
+
+    function prodUrl(page, name) {
+        const e = encodeURIComponent(name);
+        return page + '?product=' + e + '#product=' + e + ':~:text=' + e.replace(/-/g, '%2D');
+    }
+    function tgl(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
+    function getDT() { return new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }); }
+
+    async function postReview() {
+        if (pending > 0) return alert("Please wait, your photo is still uploading...");
+        const n = document.getElementById('in-n').value, m = document.getElementById('in-m').value;
+        if (!n || !m) return alert("Please fill all details!");
+        const rid = "MUS-" + Math.random().toString(36).substring(2, 5).toUpperCase();
+        await db.collection("reviews").add({
+            rid, name: n, msg: m, gender: document.getElementById('in-g').value,
+            rating: parseInt(document.getElementById('in-r').value),
+            pics: [0, 1, 2].filter(k => uploaded[k]).map(k => uploaded[k]),
+            picKB: [0, 1, 2].filter(k => uploaded[k]).map(k => uploadedKB[k] || 0), status: 'pending', time: getDT(), ts: Date.now(),
+            reply: '', comments: []
+        });
+        tgl('p-form', 0); tgl('p-success', 1);
+        uploaded = []; uploadedKB = []; document.querySelectorAll('.up-slot').forEach(s => { s.innerHTML = '+'; s.classList.remove('done'); });
+    }
+
+    db.collection("reviews").orderBy("ts", "desc").onSnapshot(snap => {
+        reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderPublic();
+        renderAdmin();
+    });
+
+    function renderPublic() {
+        const app = reviews.filter(r => r.status === 'approved');
+        const show = app.slice(0, limit);
+        document.getElementById('wall').innerHTML = show.map(r => `
+            <div class="r-card">
+                <div class="r-id">${esc(r.rid)}</div>
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div>
+                        <div class="cust-head">CUSTOMER:</div>
+                        <div style="font-weight:700; font-size:15px; color:black">${esc(r.name)} <span class="v-badge" style="color:#28a745; font-weight:bold;">Verified ✔</span></div>
+                        <div class="g-tag">GENDER: <span class="g-val">${esc(r.gender)}</span></div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="g-tag">RATING</div>
+                        <div style="color:#FFD700; font-size:14px;">${'★'.repeat(r.rating)}</div>
+                        <div style="font-size:10px; font-weight:bold; color:var(--m)">${getRateTxt(r.rating)}</div>
+                    </div>
+                </div>
+                <span class="c-says-h">Customer Says:</span>
+                <div class="c-msg">"${esc(r.msg)}"</div>
+                <div class="r-imgs">${(r.pics || []).map(p => `<img src="${esc(cl(p, 'w_140,h_140,c_fill,q_auto:eco,f_auto,fl_lossy'))}" loading="lazy" onerror="this.onerror=null;this.src='${esc(p)}'" onclick="zoom('${esc(p)}')">`).join('')}</div>
+                <span class="ts-elite">Posted on: ${esc(r.time)}</span>
+                ${(r.prod && r.prodPage) || r.prodLink ? `<div style="text-align:center;"><a class="see-prod" href="${esc((r.prod && r.prodPage) ? prodUrl(r.prodPage, r.prod) : r.prodLink)}">✦ SEE PRODUCT</a></div>` : ''}
+
+                ${r.reply ? `<div class="off-box"><span class="off-h">Musfira's Official Reply:</span>${esc(r.reply)}<span class="ts-elite">Replied: ${esc(r.replyTime)}</span></div>` : ''}
+
+                <div class="cm-toggle" onclick="tglCm('${r.id}')">+ Family Conversation (${(r.comments || []).length})</div>
+                <div id="cm-area-${r.id}" class="cm-area">
+                    <div id="clist-${r.id}">${(r.comments || []).map((c, i) => `
+                        <div class="cm-row">
+                            <span class="cm-name">${esc(c.user)}:</span> ${esc(c.text)}
+                            <span class="ts-elite">${esc(c.time)}</span>
+                            <div style="color:var(--m); cursor:pointer; margin-top:3px; font-weight:bold;" onclick="repCm('${r.id}', ${i})">Reply</div>
+                            <div style="margin-left:15px; border-left:1px solid #ddd; padding-left:10px;">
+                                ${(c.reps || []).map(rp => `<div style="margin-top:4px;"><span class="rp-name">${esc(rp.user)}:</span> ${esc(rp.text)} <span class="ts-elite">${esc(rp.time)}</span></div>`).join('')}
+                            </div>
+                        </div>
+                    `).join('')}</div>
+                    <div style="display:flex; gap:5px; margin-top:10px;">
+                        <input type="text" id="cn-${r.id}" class="i-box" placeholder="Name" style="flex:1; margin:0;">
+                        <input type="text" id="ct-${r.id}" class="i-box" placeholder="Comment..." style="flex:2; margin:0;">
+                        <button onclick="addCm('${r.id}')" style="background:var(--m); color:white; border:none; border-radius:5px; padding:0 10px;">Post</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('load-more').style.display = app.length > limit ? 'block' : 'none';
+    }
+
+    async function addCm(rid) {
+        const u = document.getElementById('cn-' + rid).value, t = document.getElementById('ct-' + rid).value;
+        if (!u || !t) return;
+        const r = reviews.find(x => x.id === rid);
+        const updated = [...(r.comments || []), { user: u, text: t, time: getDT(), reps: [] }];
+        await db.collection("reviews").doc(rid).update({ comments: updated });
+    }
+
+    async function repCm(rid, idx) {
+        const u = prompt("Your Name:"), t = prompt("Your Reply:");
+        if (!u || !t) return;
+        const r = reviews.find(x => x.id === rid);
+        r.comments[idx].reps = r.comments[idx].reps || [];
+        r.comments[idx].reps.push({ user: u, text: t, time: getDT() });
+        await db.collection("reviews").doc(rid).update({ comments: r.comments });
+    }
+
+    function tglCm(id) {
+        const el = document.getElementById('cm-area-' + id);
+        const isOp = el.style.display === 'block';
+        document.querySelectorAll('.cm-area').forEach(a => a.style.display = 'none');
+        el.style.display = isOp ? 'none' : 'block';
+    }
+
+    async function checkSize(u) {
+        try {
+            const r = await fetch(u, { method: 'HEAD' });
+            const b = r.headers.get('content-length');
+            alert(b ? 'Uploaded photo size: ' + (b / 1024).toFixed(1) + ' KB' : 'Size not available for this photo.');
+        } catch (e) { alert('Could not check the size right now.'); }
+    }
+
+    function showMore() { limit += 8; renderPublic(); }
+    function zoom(s) {
+        const im = document.getElementById('zoom-img');
+        im.onerror = function () { im.onerror = null; im.src = s; };
+        im.src = cl(s, 'w_450,q_auto:eco,f_auto,fl_lossy');
+        tgl('zoom-pop', 1);
+    }
+    function getRateTxt(v) { return { 5: "EXCELLENT", 4: "VERY GOOD", 3: "GOOD", 2: "AVERAGE", 1: "TERRIBLE" }[v]; }
+
+    // Admin Panel Logic
+    async function openAdmin() {
+        if (prompt("Password:") === "musfira786") {
+            try {
+                await db.collection("config").doc("admin_panel").update({ isAdmin: true });
+                tgl('p-admin', 1);
+            } catch (e) { alert("SYSTEM LOCKED: Access Denied. (Firebase Rule is currently False)"); }
+        }
+    }
+    async function lockAdmin() {
+        try { await db.collection("config").doc("admin_panel").update({ isAdmin: false }); } catch (e) {}
+        tgl('p-admin', 0);
+    }
+
+    function renderAdmin() {
+        const q = document.getElementById('adm-srch').value.toUpperCase();
+        const list = document.getElementById('adm-list');
+        const fil = reviews.filter(r => r.rid.includes(q) || !q);
+
+        document.getElementById('st-all').innerText = reviews.length;
+        document.getElementById('st-app').innerText = reviews.filter(r => r.status === 'approved').length;
+        document.getElementById('st-pen').innerText = reviews.filter(r => r.status === 'pending').length;
+
+        list.innerHTML = fil.map(r => `
+            <div style="border-bottom:1px solid #eee; padding:10px; background:${r.status === 'pending' ? '#fff9f0' : 'white'}">
+                <div style="display:flex; justify-content:space-between; font-size:11px;">
+                    <span><input type="checkbox" class="blk" value="${r.id}"> <b>${esc(r.rid)}</b></span>
+                    <span>${esc(r.time)}</span>
+                </div>
+                <div style="font-size:12px; margin:5px 0;"><b>${esc(r.name)}:</b> ${esc(r.msg)}</div>
+                <div style="display:flex; gap:5px; margin-bottom:5px;">${(r.pics || []).map((p, pi) => `<div style="text-align:center;"><img src="${esc(cl(p, 'w_80,h_80,c_fill,q_auto:eco,f_auto,fl_lossy'))}" loading="lazy" onerror="this.onerror=null;this.src='${esc(p)}'" onclick="checkSize('${esc(p)}')" title="Tap to check real file size" width="35" height="35" style="border-radius:4px; object-fit:cover; cursor:pointer;"><div style="font-size:9px; color:#666;">${(r.picKB && r.picKB[pi]) ? r.picKB[pi] + ' KB' : 'tap'}</div></div>`).join('')}</div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="openApprove('${r.id}')" style="color:green; background:none; border:1px solid; cursor:pointer; font-size:10px;">Approve</button>
+                    <button onclick="upStat('${r.id}','pending')" style="color:orange; background:none; border:1px solid; cursor:pointer; font-size:10px;">Reject</button>
+                    <button onclick="admRep('${r.id}')" style="color:blue; background:none; border:1px solid; cursor:pointer; font-size:10px;">Official Reply</button>
+                    <button onclick="delRev('${r.id}')" style="color:red; background:none; border:1px solid; cursor:pointer; font-size:10px;">Delete</button>
+                </div>
+                <div style="font-size:10px; margin-top:8px; border-top:1px dashed #ccc; padding-top:4px;">
+                    <b>Comments Control:</b> ${(r.comments || []).map((c, i) => `
+                        <div style="display:flex; justify-content:space-between; margin-top:2px;">
+                            <span>${esc(c.user)}: ${esc(c.text)}</span>
+                            <span onclick="delCm('${r.id}',${i})" style="color:red; cursor:pointer;">[Del Comment]</span>
+                        </div>
+                        ${(c.reps || []).map((rp, ri) => `
+                            <div style="margin-left:10px; color:#666; display:flex; justify-content:space-between;">
+                                <span>↳ ${esc(rp.user)}: ${esc(rp.text)}</span>
+                                <span onclick="delRp('${r.id}',${i},${ri})" style="color:red; cursor:pointer;">[Del Reply]</span>
+                            </div>
+                        `).join('')}
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /* ===== APPROVE + LINK PRODUCT ===== */
+    function openApprove(id) {
+        apId = id;
+        document.getElementById('ap-page').innerHTML = '<option value="">-- Select Page --</option>' +
+            STORE_PAGES.map(p => `<option value="${p[1]}">${p[0]}</option>`).join('');
+        document.getElementById('ap-prod').innerHTML = '<option value="">-- Select page first --</option>';
+        document.getElementById('ap-manual').style.display = 'none';
+        document.getElementById('ap-manual').value = '';
+        document.getElementById('ap-msg').innerText = '';
+        tgl('p-approve', 1);
+    }
+
+    async function loadProducts() {
+        const url = document.getElementById('ap-page').value;
+        const ps = document.getElementById('ap-prod'), man = document.getElementById('ap-manual'), msg = document.getElementById('ap-msg');
+        man.style.display = 'none'; man.value = ''; msg.innerText = '';
+        if (!url) { ps.innerHTML = '<option value="">-- Select page first --</option>'; return; }
+        ps.innerHTML = '<option value="">Loading products...</option>';
+        try {
+            if (!prodCache[url]) {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('http');
+                const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+                const names = [];
+                doc.querySelectorAll('*').forEach(el => {
+                    if (el.textContent.trim().toLowerCase() !== 'view details') return;
+                    let p = el.parentElement;
+                    while (p) {
+                        const h = p.querySelector('h2');
+                        if (h) { const n = h.textContent.trim(); if (n && !names.includes(n)) names.push(n); break; }
+                        p = p.parentElement;
+                    }
+                });
+                if (!names.length) throw new Error('none');
+                prodCache[url] = names;
+            }
+            ps.innerHTML = '<option value="">-- Select Product --</option>' +
+                prodCache[url].map(n => `<option value="${n.replace(/"/g, '&quot;')}">${n}</option>`).join('');
+            msg.innerText = prodCache[url].length + ' products found';
+        } catch (e) {
+            ps.innerHTML = '<option value="">Auto list nahi mili</option>';
+            man.style.display = 'block';
+            msg.innerText = 'Products auto load nahi huay. Product ka naam khud type kar den.';
+        }
+    }
+
+    async function confirmApprove() {
+        const url = document.getElementById('ap-page').value;
+        const man = document.getElementById('ap-manual');
+        const name = (man.style.display !== 'none' ? man.value : document.getElementById('ap-prod').value).trim();
+        let data = { status: 'approved', prod: '', prodPage: '', prodLink: '' };
+        if (url && name) {
+            data.prod = name; data.prodPage = url;
+            data.prodLink = prodUrl(url, name);
+        } else if (!confirm('Product select nahi hua. Bina product link ke approve karein?')) return;
+        await db.collection("reviews").doc(apId).update(data);
+        tgl('p-approve', 0);
+    }
+
+    async function upStat(id, s) { await db.collection("reviews").doc(id).update({ status: s }); }
+    async function delRev(id) { if (confirm("Delete Review?")) await db.collection("reviews").doc(id).delete(); }
+    async function admRep(id) {
+        const t = prompt("Official Reply:");
+        if (t) await db.collection("reviews").doc(id).update({ reply: t, replyTime: getDT() });
+    }
+    async function delCm(rid, idx) {
+        const r = reviews.find(x => x.id === rid);
+        r.comments.splice(idx, 1);
+        await db.collection("reviews").doc(rid).update({ comments: r.comments });
+    }
+    async function delRp(rid, ci, ri) {
+        const r = reviews.find(x => x.id === rid);
+        r.comments[ci].reps.splice(ri, 1);
+        await db.collection("reviews").doc(rid).update({ comments: r.comments });
+    }
+    async function bulkDel() {
+        const ids = [...document.querySelectorAll('.blk:checked')].map(i => i.value);
+        if (ids.length > 0 && confirm(`Delete ${ids.length} reviews?`)) {
+            for (let id of ids) await db.collection("reviews").doc(id).delete();
+        }
+    }
+</script>

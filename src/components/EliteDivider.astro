@@ -1,0 +1,45 @@
+---
+// Do sections ke beech patli elite pink divider line
+---
+<style is:global>
+.mfs-divider{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  width:100%;max-width:1100px;
+  margin:0 auto;
+  padding:0 24px;
+  height:28px;
+  background:#fff;
+}
+.mfs-divider::before,
+.mfs-divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, rgba(230,0,126,0) 0%, rgba(230,0,126,.55) 55%, #e6007e 100%);
+}
+.mfs-divider::after{
+  background:linear-gradient(270deg, rgba(230,0,126,0) 0%, rgba(230,0,126,.55) 55%, #e6007e 100%);
+}
+.mfs-divider-gem{
+  position:relative;
+  width:9px;height:9px;
+  background:#e6007e;
+  transform:rotate(45deg);
+  box-shadow:0 0 0 3px #fff, 0 0 0 4px rgba(230,0,126,.45), 0 2px 8px rgba(230,0,126,.35);
+  flex-shrink:0;
+}
+.mfs-divider-dot{
+  width:3px;height:3px;border-radius:50%;
+  background:#e6007e;opacity:.55;flex-shrink:0;
+}
+@media(max-width:767px){
+  .mfs-divider{padding:0 14px;height:22px;gap:10px;}
+}
+</style>
+
+<div class="mfs-divider" role="separator" aria-hidden="true">
+  <span class="mfs-divider-dot"></span>
+  <span class="mfs-divider-gem"></span>
+  <span class="mfs-divider-dot"></span>
+</div>

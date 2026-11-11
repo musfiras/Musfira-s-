@@ -94,6 +94,7 @@
       <option value="broken">Broken links</option>
       <option value="old">Purane links (pattern)</option>
       <option value="external">External links</option>
+      <option value="contact">Email / Phone links</option>
     </select>
     <input id="oldre" placeholder="Purana pattern, e.g. old-site\.com|/old-" size="26" title="Regex. Isse match hone wale links 'old' mark honge" />
     <span class="sp"></span>
@@ -116,9 +117,16 @@
   }).then((r) => r.json());
 
   let DATA = null, ver = -1, tab = 'search', cat = 'all', editing = false;
-  const S = { q: '', page: 'all', kind: 'all', limit: 200, sel: new Set(), list: [] };
+  const S = { q: '', page: 'all', kind: 'all', quick: '', limit: 200, sel: new Set(), list: [] };
   let PR = null, PRQ = '', PRdirty = false, IM = null, BK = null;
   $('#oldre').value = localStorage.getItem('oldre') || '';
+
+  // quick filters: email / phone / price
+  const QUICK = {
+    email: /[\w.+-]+@[\w-]+\.[\w.-]+/,
+    phone: /\+?\d[\d\s().-]{6,}\d/,
+    price: /(rs\.?|pkr|usd|\$|€|£)\s*\d|\d[\d,.]*\s*(rs|pkr|usd|\/-)|^\d[\d,.]*$/i,
+  };
 
   const oldRe = () => { try { const v = $('#oldre').value.trim(); return v ? new RegExp(v, 'i') : null; } catch { return null; } };
   const toast = (m, bad) => { const t = $('#toast'); t.textContent = m; t.className = 'toast' + (bad ? ' err' : ''); t.style.display = 'block'; setTimeout(() => (t.style.display = 'none'), bad ? 7000 : 3500); };
@@ -157,24 +165,29 @@
     return text.split(new RegExp('(' + escRe(q) + ')', 'ig')).map((p, i) => (i % 2 ? '<mark>' + esc(p) + '</mark>' : esc(p))).join('');
   };
   const keyOf = (t) => t.file + ':' + t.pos;
-  const kindName = { text: 'page text', attr: 'alt/placeholder', str: 'config/script' };
+  const kindName = { text: 'page text', attr: 'alt/placeholder', str: 'config/script', num: 'number/price' };
 
   function renderSearch() {
     const q = S.q.trim().toLowerCase();
+    const qk = S.quick ? QUICK[S.quick] : null;
     S.list = DATA.texts.filter((t) =>
       (S.kind === 'all' || t.kind === S.kind) &&
       (S.page === 'all' || t.pages.includes(S.page)) &&
+      (!qk || qk.test(t.text) || (S.quick === 'price' && t.kind === 'num')) &&
       (!q || t.text.toLowerCase().includes(q) || t.file.toLowerCase().includes(q)));
     const shown = S.list.slice(0, S.limit);
     const pageOpts = '<option value="all">Sab pages</option>' + DATA.pages.map((p) => '<option value="' + esc(p.route) + '"' + (S.page === p.route ? ' selected' : '') + '>' + esc(pageLabel(p.route)) + '</option>').join('');
-    const kindOpts = [['all', 'Sab qism'], ['text', 'Page ka text'], ['attr', 'Alt / placeholder'], ['str', 'Config / script text']].map(([v, l]) => '<option value="' + v + '"' + (S.kind === v ? ' selected' : '') + '>' + l + '</option>').join('');
+    const kindOpts = [['all', 'Sab qism'], ['text', 'Page ka text'], ['attr', 'Alt / placeholder'], ['str', 'Config / script text'], ['num', 'Number / price']].map(([v, l]) => '<option value="' + v + '"' + (S.kind === v ? ' selected' : '') + '>' + l + '</option>').join('');
+    const quickBtns = [['', 'Sab'], ['email', '📧 Email'], ['phone', '📞 Phone'], ['price', '💰 Price']].map(([v, l]) => '<button class="chip ' + (S.quick === v ? 'on' : '') + '" data-quick="' + v + '">' + l + '</button>').join('');
     let h = '<div class="panel"><div class="bar" style="margin:0">' +
-      '<input id="sq" placeholder="Koi bhi text dhoondo: Shop Now, Terms, footer ka naam, product naam…" size="46" value="' + esc(S.q) + '" />' +
+      '<input id="sq" placeholder="Koi bhi text dhoondo: Shop Now, Terms, policy, email, phone, price, product naam…" size="46" value="' + esc(S.q) + '" />' +
       '<select id="spage">' + pageOpts + '</select><select id="skind">' + kindOpts + '</select>' +
-      '<span class="ln">' + S.list.length + ' mile</span></div>';
+      '<span class="ln">' + S.list.length + ' mile</span></div>' +
+      '<div class="bar">' + quickBtns + '</div>';
     if (q) h += '<div class="bar"><b>Replace:</b> "' + esc(S.q) + '" →<input id="rep" placeholder="naya text" size="28" />' +
       '<button data-act="selall">Sab chunein</button><button data-act="selnone">Clear</button>' +
-      '<button class="p" data-act="repsel">Chune hue (' + S.sel.size + ') par apply</button></div>';
+      '<button class="p" data-act="repsel">Chune hue (' + S.sel.size + ') par apply</button>' +
+      '<button class="d" data-act="rawall" title="Poori site me har jagah, links (href/tel/mailto) bhi">Poori site raw replace</button></div>';
     h += '</div>';
     if (!shown.length) return h + '<div class="empty">Kuch nahi mila. Pehle upar kuch likhein ya filter badlein.</div>';
     h += shown.map((t) => {
@@ -195,7 +208,7 @@
     S.sel.clear(); editing = false; load();
   }
 
-  /* ================= LINKS / FILES (purane features) ================= */
+  /* ================= LINKS / FILES ================= */
   function visibleItems() {
     const q = $('#q').value.toLowerCase(), f = $('#filt').value, re = oldRe();
     return DATA.items.filter((it) => {
@@ -205,6 +218,7 @@
       if (f === 'broken') return it.links.some((l) => l.broken);
       if (f === 'old') return !!re && it.links.some((l) => re.test(l.url));
       if (f === 'external') return it.links.some((l) => l.type === 'external');
+      if (f === 'contact') return it.links.some((l) => l.type === 'contact');
       return true;
     });
   }
@@ -213,6 +227,7 @@
     if (f === 'broken' && !l.broken) return false;
     if (f === 'old' && !(re && re.test(l.url))) return false;
     if (f === 'external' && l.type !== 'external') return false;
+    if (f === 'contact' && l.type !== 'contact') return false;
     return true;
   };
   const badges = (l) => {
@@ -375,6 +390,7 @@
     const d = b.dataset;
     if (d.tab) { tab = d.tab; return render(); }
     if (d.cat) { cat = d.cat; return render(); }
+    if (d.quick !== undefined) { S.quick = d.quick; S.limit = 200; return render(); }
     if (b.id === 'refresh') return load();
     if (b.id === 'seen') { await api('/seen', {}); return load(); }
     if (b.id === 'pub') {
@@ -417,6 +433,14 @@
       const pre = items.slice(0, 6).map((x) => '• ' + x.from + '  →  ' + x.to).join('\n');
       if (!confirm(items.length + ' jagah badlegi:\n\n' + pre + (items.length > 6 ? '\n…' : '') + '\n\nBackup khud banega. Theek hai?')) return;
       return applyItems(items, 'Replace: ' + q + ' -> ' + to);
+    }
+    if (d.act === 'rawall') {
+      const q = S.q.trim(), to = ($('#rep') || {}).value;
+      if (!q || to === undefined) return toast('Replace box me naya text likhein', true);
+      if (!confirm('"' + q + '" → "' + to + '"\nPOORI site me har jagah (case-sensitive, links href/tel/mailto bhi) badlega.\nBackup banega, Backups tab se undo ho sakta hai.\n\nTheek hai?')) return;
+      const r = await api('/replace', { from: q, to, raw: true });
+      toast(r.changed + ' jagah badla (' + r.files.length + ' files)');
+      S.sel.clear(); return load();
     }
 
     // links

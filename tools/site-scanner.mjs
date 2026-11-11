@@ -1,4 +1,4 @@
-// tools/site-scanner.mjs  (SMART VERSION)
+// tools/site-scanner.mjs  (SMART VERSION v2)
 // Astro integration: poori site scan, text/link/product/image edit, backup/undo, git publish.
 // Dashboard sirf dev mode (npm run dev) me /dashboard par chalta hai.
 import fs from 'node:fs';
@@ -104,7 +104,7 @@ function restoreBackup(stamp) {
 // ---------- link extraction ----------
 const ATTR = /\b(?:href|to|url|link|action|path)\s*[:=]\s*\{?\s*["'`]([^"'`\n]+)["'`]/g;
 const MD = /\]\(\s*<?([^)\s>]+)>?(?:\s+["'][^)]*["'])?\s*\)/g;
-const STR = /["'`]((?:https?:)?\/\/[^"'`\s]+|\/[A-Za-z0-9_\-[][^"'`\s]*)["'`]/g;
+const STR = /["'`]((?:https?:)?\/\/[^"'`\s]+|\/[A-Za-z0-9_\-[][^"'`\s]*|(?:mailto|tel|sms|whatsapp):[^"'`\s]+)["'`]/g;
 const ASSET = /\.(png|jpe?g|webp|svg|gif|avif|ico|pdf|mp4|webm|woff2?)$/i;
 
 function extractLinks(content, ext) {
@@ -112,11 +112,12 @@ function extractLinks(content, ext) {
   const lineAt = (i) => content.slice(0, i).split('\n').length;
   const add = (url, idx) => {
     url = url.trim();
-    if (!url || url.startsWith('#') || /^(mailto:|tel:|javascript:|data:|sms:|whatsapp:)/i.test(url)) return;
+    if (!url || url.startsWith('#') || /^(javascript:|data:)/i.test(url)) return;
     const line = lineAt(idx);
     const key = url + '@' + line;
     if (found.has(key)) return;
-    const type = ASSET.test(url.split(/[?#]/)[0]) ? 'asset'
+    const type = /^(mailto:|tel:|sms:|whatsapp:)/i.test(url) ? 'contact'
+      : ASSET.test(url.split(/[?#]/)[0]) ? 'asset'
       : /^(https?:)?\/\//i.test(url) ? 'external'
       : url.startsWith('/') ? 'internal' : 'relative';
     found.set(key, { url, line, type, dynamic: /[{}$]/.test(url) });
@@ -134,10 +135,14 @@ function findTitle(content) {
   return m ? m[1].trim() : '';
 }
 
-// ---------- TEXT extraction (visible text, attributes, config strings) ----------
+// ---------- TEXT extraction (visible text, attributes, config strings, numbers) ----------
 const blank = (s) => s.replace(/[^\n]/g, ' ');
-const isTextOk = (t) => t.length >= 2 && /\p{L}/u.test(t) && !/^(&#?\w+;)+$/.test(t);
+const EMAIL = /^[\w.+-]+@[\w-]+(\.[\w-]+)+$/;
+const PHONE = /^\+?\d[\d\s().-]{6,}$/;
+const PRICE = /^(?:(?:rs\.?|pkr|usd|\$|€|£)\s*)?\d[\d,.]*(?:\s*(?:rs\.?|pkr|usd|\/-))?$/i;
+const isTextOk = (t) => t.length >= 2 && (/\p{L}/u.test(t) || PHONE.test(t) || PRICE.test(t)) && !/^(&#?\w+;)+$/.test(t);
 function isCodeLike(t) {
+  if (EMAIL.test(t) || PHONE.test(t) || PRICE.test(t)) return false;
   if (/^[a-z0-9_\-.:\/#@?=&%]+$/.test(t)) return true;
   if (/^(https?:|\/|\.|#|data:|mailto:|tel:)/i.test(t)) return true;
   if (/\.(png|jpe?g|webp|svg|gif|avif|ico|pdf|mp4|css|js|mjs|astro|json)$/i.test(t)) return true;
@@ -162,10 +167,26 @@ function extractTexts(file, src) {
       const lead = line.length - line.trimStart().length;
       if (t.startsWith('```')) fence = !fence;
       else if (fm && off > 0 && t === '---') fm = false;
-      else if (!fence && !fm && t && isTextOk(t)) add(off + lead, t.replace(/\r$/, ''), 'text', 'raw');
+      else if (fm) {
+        // frontmatter: title, description, price etc.
+        const k = /^(\s*[\w-]+:\s*)(["']?)(.+?)\2\s*$/.exec(line.replace(/\r$/, ''));
+        if (k && isTextOk(k[3]) && !/^(true|false|null)$/i.test(k[3])) {
+          add(off + k[1].length + k[2].length, k[3], 'text', k[2] ? 'js' + k[2] : 'raw');
+        }
+      }
+      else if (!fence && t && isTextOk(t)) add(off + lead, t.replace(/\r$/, ''), 'text', 'raw');
       off += line.length + 1;
     }
     return finish(out, src);
+  }
+
+  // JSON numbers (price, phone, stock...)
+  if (ext === '.json') {
+    for (const mm of src.matchAll(/"([\w -]+)"\s*:\s*(-?\d+(?:\.\d+)?)(?=\s*[,}\r\n])/g)) {
+      if (/price|amount|cost|phone|mobile|whatsapp|number|discount|sale|mrp|rate|fee|stock|qty/i.test(mm[1])) {
+        add(mm.index + mm[0].lastIndexOf(mm[2]), mm[2], 'num', 'raw');
+      }
+    }
   }
 
   const code = []; let fmEnd = 0;
@@ -198,7 +219,7 @@ function extractTexts(file, src) {
     for (const mm of m.matchAll(/>([^<>]+)</g)) {
       const raw = mm[1], lead = raw.length - raw.trimStart().length, t = raw.trim();
       const pos = mm.index + 1 + lead;
-      if (pos < fmEnd || !isTextOk(t) || /[=;(){}]/.test(t)) continue;
+      if (pos < fmEnd || !isTextOk(t) || /[=;{}]/.test(t)) continue;
       add(pos, t, 'text', inCode(pos) ? 'html+js' : 'html');
     }
   }
@@ -335,7 +356,7 @@ export function scan(state = loadState()) {
   const matchers = items.filter((i) => i.route).map((i) =>
     new RegExp('^' + esc(i.route).replace(/\\\[\\\.\\\.\\\.[^\]]*\\\]/g, '.*').replace(/\\?\[[^\]]+\\?\]/g, '[^/]+') + '/?$'));
   const isBroken = (l) => {
-    if (l.type === 'external' || l.type === 'relative' || l.dynamic) return false;
+    if (l.type === 'external' || l.type === 'relative' || l.type === 'contact' || l.dynamic) return false;
     let p = l.url.split(/[?#]/)[0];
     if (p.length > 1) p = p.replace(/\/$/, '');
     if (!p || p === '/') return false;
@@ -359,11 +380,13 @@ export function scan(state = loadState()) {
   return result;
 }
 
-// ---------- link replace ----------
-export function replaceLink({ from, to, file }) {
+// ---------- link / raw replace ----------
+export function replaceLink({ from, to, file, raw }) {
   if (!from || typeof to !== 'string' || from === to) return { changed: 0, files: [] };
   const targets = file ? [file] : SCAN_DIRS.flatMap((d) => walk(path.join(ROOT, d)).map(rel));
-  const re = new RegExp('(?<![\\w\\-/.:%])' + esc(from) + '(?![\\w\\-/.%])', 'g');
+  const re = raw
+    ? new RegExp(esc(from), 'g')
+    : new RegExp('(?<![\\w\\-/.:%])' + esc(from) + '(?![\\w\\-/.%])', 'g');
   const plan = [];
   for (const f of targets) {
     const abs = path.resolve(ROOT, f);
@@ -375,7 +398,7 @@ export function replaceLink({ from, to, file }) {
   }
   let backup = null;
   if (plan.length) {
-    backup = makeBackup(plan.map((p) => p.f), 'Link: ' + from + ' -> ' + to);
+    backup = makeBackup(plan.map((p) => p.f), (raw ? 'Raw: ' : 'Link: ') + from + ' -> ' + to);
     for (const p of plan) fs.writeFileSync(path.resolve(ROOT, p.f), p.out);
   }
   return { changed: plan.reduce((a, p) => a + p.n, 0), files: plan.map((p) => p.f), backup };

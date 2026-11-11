@@ -14,50 +14,79 @@
   * { box-sizing: border-box; }
   body { margin:0; font:14px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--txt); }
   header { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 20px; }
-  h1 { font-size:18px; margin:0 0 8px; }
+  h1 { font-size:18px; margin:0 0 8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
   .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
   .stat { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 12px; }
   .stat b { font-size:16px; }
-  .bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  input, select, button { font:inherit; color:var(--txt); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:6px 10px; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+  input, select, button, textarea { font:inherit; color:var(--txt); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:6px 10px; }
+  textarea { width:100%; resize:vertical; }
   button { cursor:pointer; } button:hover { border-color:var(--acc); }
   button.p { background:var(--acc); border-color:var(--acc); color:#fff; }
-  .tabs button.on { background:var(--acc); border-color:var(--acc); color:#fff; }
+  button.ok { background:var(--ok); border-color:var(--ok); color:#000; font-weight:700; }
+  button.d { color:var(--bad); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; }
+  .tabs button.on, .chip.on { background:var(--acc); border-color:var(--acc); color:#fff; }
   .chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
-  .chip.on { background:var(--acc); border-color:var(--acc); color:#fff; }
-  main { padding:16px 20px 60px; max-width:1200px; margin:auto; }
+  main { padding:16px 20px 80px; max-width:1200px; margin:auto; }
   h2 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--mut); margin:22px 0 8px; }
   .item { background:var(--card); border:1px solid var(--line); border-radius:8px; margin-bottom:8px; }
   .item > summary { padding:10px 12px; cursor:pointer; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .route { font-weight:600; } .file { color:var(--mut); font-size:12px; }
-  .badge { font-size:11px; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--mut); }
-  .badge.new { color:var(--ok); border-color:var(--ok); } .badge.changed { color:var(--warn); border-color:var(--warn); }
-  .badge.broken { color:var(--bad); border-color:var(--bad); } .badge.old { color:var(--warn); border-color:var(--warn); }
+  .badge { font-size:11px; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--mut); white-space:nowrap; }
+  .badge.new, .badge.add { color:var(--ok); border-color:var(--ok); } .badge.changed, .badge.change { color:var(--warn); border-color:var(--warn); }
+  .badge.broken, .badge.unlink { color:var(--bad); border-color:var(--bad); } .badge.old { color:var(--warn); border-color:var(--warn); }
+  .badge.pg { color:var(--acc); border-color:var(--acc); }
   .links { border-top:1px solid var(--line); padding:6px 12px 10px; }
-  .row { display:flex; gap:8px; align-items:center; padding:4px 0; flex-wrap:wrap; }
+  .row { display:flex; gap:8px; align-items:center; padding:6px 0; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  .row:last-child { border-bottom:0; }
   .row code { background:var(--bg); padding:1px 6px; border-radius:4px; word-break:break-all; }
+  .txt { flex:1; min-width:240px; word-break:break-word; }
+  mark { background:#ffe60066; color:inherit; border-radius:3px; }
   .ln { color:var(--mut); font-size:12px; }
   .edit { display:flex; gap:6px; flex-wrap:wrap; padding:4px 0 8px; width:100%; }
-  .edit input { flex:1; min-width:220px; }
+  .edit input, .edit textarea { flex:1; min-width:220px; }
   .sp { flex:1; }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
   .banner { background:var(--warn); color:#000; padding:8px 20px; display:none; }
-  .toast { position:fixed; bottom:20px; right:20px; background:var(--ok); color:#000; padding:10px 14px; border-radius:8px; display:none; max-width:360px; }
+  .toast { position:fixed; bottom:20px; right:20px; background:var(--ok); color:#000; padding:10px 14px; border-radius:8px; display:none; max-width:420px; white-space:pre-wrap; z-index:50; }
+  .toast.err { background:var(--bad); color:#fff; }
   table { width:100%; border-collapse:collapse; } td { padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
   .empty { color:var(--mut); padding:20px; }
   a { color:var(--acc); text-decoration:none; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+  .gi { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:6px; }
+  .gi img { width:100%; height:120px; object-fit:contain; background:var(--bg); border-radius:6px; }
+  .fld { display:grid; grid-template-columns:130px 1fr; gap:8px; padding:5px 0; align-items:start; }
+  .fld label { color:var(--mut); font-size:12px; padding-top:7px; word-break:break-word; }
+  .fld input[type=text], .fld input[type=number] { width:100%; }
+  .imgs { display:flex; flex-direction:column; gap:6px; }
+  .im { display:flex; gap:6px; align-items:center; }
+  .im img { width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid var(--line); }
+  .im input { flex:1; }
+  .up { display:inline-block; border:1px dashed var(--acc); color:var(--acc); border-radius:6px; padding:5px 12px; cursor:pointer; width:max-content; }
+  .bad { border-color:var(--bad) !important; }
 </style>
 </head>
 <body>
 <div class="banner" id="banner">Naye changes detect hue hain — <button id="refresh">Refresh karo</button></div>
 <header>
-  <h1>🧭 Site Dashboard <span class="ln">(sirf dev mode)</span></h1>
+  <h1>🧭 Site Dashboard <span class="ln">(sirf dev mode)</span>
+    <span class="sp"></span>
+    <span class="badge" id="gitst">git…</span>
+    <button id="pub" class="ok">🚀 Publish (git push)</button>
+  </h1>
   <div class="stats" id="stats"></div>
-  <div class="bar">
-    <span class="tabs">
-      <button data-tab="pages" class="on">Pages / Files</button>
-      <button data-tab="links">Links (unique)</button>
-      <button data-tab="activity">Activity</button>
-    </span>
+  <div class="tabs" id="tabs">
+    <button data-tab="search" class="on">🔎 Search &amp; Edit</button>
+    <button data-tab="links">🔗 Links</button>
+    <button data-tab="products">🛍 Products</button>
+    <button data-tab="images">🖼 Images</button>
+    <button data-tab="files">📄 Files</button>
+    <button data-tab="backups">↩ Backups / Undo</button>
+    <button data-tab="activity">Activity</button>
+  </div>
+  <div class="bar" id="linkbar" style="display:none">
     <input id="q" placeholder="Search: page, file, link…" size="28" />
     <select id="filt">
       <option value="all">Sab</option>
@@ -78,26 +107,95 @@
 <script is:inline>
 (() => {
   const $ = (s) => document.querySelector(s);
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-  const api = (p, body) => fetch('/__dashboard' + p, body ? { method:'POST', body:JSON.stringify(body) } : {}).then((r) => r.json());
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const api = (p, body) => fetch('/__dashboard' + p, {
+    method: body ? 'POST' : 'GET',
+    headers: Object.assign({ 'x-dash': '1' }, body ? { 'Content-Type': 'application/json' } : {}),
+    body: body ? JSON.stringify(body) : undefined,
+  }).then((r) => r.json());
 
-  let DATA = null, ver = -1, tab = 'pages', cat = 'all', editing = false;
+  let DATA = null, ver = -1, tab = 'search', cat = 'all', editing = false;
+  const S = { q: '', page: 'all', kind: 'all', limit: 200, sel: new Set(), list: [] };
+  let PR = null, PRQ = '', PRdirty = false, IM = null, BK = null;
   $('#oldre').value = localStorage.getItem('oldre') || '';
 
   const oldRe = () => { try { const v = $('#oldre').value.trim(); return v ? new RegExp(v, 'i') : null; } catch { return null; } };
-  const toast = (m) => { const t = $('#toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => (t.style.display = 'none'), 3500); };
+  const toast = (m, bad) => { const t = $('#toast'); t.textContent = m; t.className = 'toast' + (bad ? ' err' : ''); t.style.display = 'block'; setTimeout(() => (t.style.display = 'none'), bad ? 7000 : 3500); };
+  const pageLabel = (route) => { const p = DATA.pages.find((x) => x.route === route); return (p && p.title ? p.title + ' ' : '') + '(' + route + ')'; };
+  const kb = (n) => (n / 1024).toFixed(0) + ' KB';
 
+  async function refreshGit() {
+    const g = await api('/git');
+    $('#gitst').textContent = g.error ? 'git: ?' : 'Git: ' + g.changed + ' file badli';
+    $('#gitst').title = (g.files || []).join('\n');
+  }
+  const showErr = (m) => { $('#app').innerHTML = '<div class="panel" style="border-color:var(--bad)"><b style="color:var(--bad)">⚠ Dashboard load nahi hua</b><br>' + esc(m) + '</div>'; };
+  window.addEventListener('error', (e) => showErr(e.message || 'script error'));
+  window.addEventListener('unhandledrejection', (e) => showErr((e.reason && e.reason.message) || String(e.reason)));
   async function load() {
-    DATA = await api('/scan'); ver = DATA.version; editing = false;
-    $('#banner').style.display = 'none'; render();
+    try {
+      const d = await api('/scan');
+      if (d.error) throw new Error('Server ne error diya: ' + d.error);
+      if (!d.texts || !d.pages) throw new Error('Purana dev server chal raha hai (naya code load nahi hua). Terminal me Ctrl+C dabayein, phir npm run dev dobara chalayein, aur page refresh (Ctrl+F5) karein.');
+      DATA = d; ver = DATA.version; editing = false; PRdirty = false;
+      $('#banner').style.display = 'none';
+      if (tab === 'products') PR = null; if (tab === 'images') IM = null; if (tab === 'backups') BK = null;
+      await render(); refreshGit();
+    } catch (e) { showErr(e.message || String(e)); }
   }
   setInterval(async () => {
     try {
       const v = await api('/version');
-      if (v.version !== ver) { if (editing) $('#banner').style.display = 'block'; else load(); }
+      if (v.version !== ver) { if (editing || PRdirty) $('#banner').style.display = 'block'; else load(); }
     } catch {}
   }, 2000);
 
+  /* ================= SEARCH & EDIT ================= */
+  const hl = (text, q) => {
+    if (!q) return esc(text);
+    return text.split(new RegExp('(' + escRe(q) + ')', 'ig')).map((p, i) => (i % 2 ? '<mark>' + esc(p) + '</mark>' : esc(p))).join('');
+  };
+  const keyOf = (t) => t.file + ':' + t.pos;
+  const kindName = { text: 'page text', attr: 'alt/placeholder', str: 'config/script' };
+
+  function renderSearch() {
+    const q = S.q.trim().toLowerCase();
+    S.list = DATA.texts.filter((t) =>
+      (S.kind === 'all' || t.kind === S.kind) &&
+      (S.page === 'all' || t.pages.includes(S.page)) &&
+      (!q || t.text.toLowerCase().includes(q) || t.file.toLowerCase().includes(q)));
+    const shown = S.list.slice(0, S.limit);
+    const pageOpts = '<option value="all">Sab pages</option>' + DATA.pages.map((p) => '<option value="' + esc(p.route) + '"' + (S.page === p.route ? ' selected' : '') + '>' + esc(pageLabel(p.route)) + '</option>').join('');
+    const kindOpts = [['all', 'Sab qism'], ['text', 'Page ka text'], ['attr', 'Alt / placeholder'], ['str', 'Config / script text']].map(([v, l]) => '<option value="' + v + '"' + (S.kind === v ? ' selected' : '') + '>' + l + '</option>').join('');
+    let h = '<div class="panel"><div class="bar" style="margin:0">' +
+      '<input id="sq" placeholder="Koi bhi text dhoondo: Shop Now, Terms, footer ka naam, product naam…" size="46" value="' + esc(S.q) + '" />' +
+      '<select id="spage">' + pageOpts + '</select><select id="skind">' + kindOpts + '</select>' +
+      '<span class="ln">' + S.list.length + ' mile</span></div>';
+    if (q) h += '<div class="bar"><b>Replace:</b> "' + esc(S.q) + '" →<input id="rep" placeholder="naya text" size="28" />' +
+      '<button data-act="selall">Sab chunein</button><button data-act="selnone">Clear</button>' +
+      '<button class="p" data-act="repsel">Chune hue (' + S.sel.size + ') par apply</button></div>';
+    h += '</div>';
+    if (!shown.length) return h + '<div class="empty">Kuch nahi mila. Pehle upar kuch likhein ya filter badlein.</div>';
+    h += shown.map((t) => {
+      const k = keyOf(t);
+      const pgs = t.pages.slice(0, 3).map((r) => '<span class="badge pg">' + esc(pageLabel(r)) + '</span>').join('') + (t.pages.length > 3 ? '<span class="badge">+' + (t.pages.length - 3) + '</span>' : '');
+      return '<div class="row" data-key="' + esc(k) + '"><input type="checkbox" data-sel="' + esc(k) + '"' + (S.sel.has(k) ? ' checked' : '') + ' />' +
+        '<div class="txt">' + hl(t.text, q) + '</div><span class="badge">' + kindName[t.kind] + '</span>' + pgs +
+        '<span class="file">' + esc(t.file) + ':' + t.line + '</span><button data-act="tedit" data-key="' + esc(k) + '">Edit</button></div>';
+    }).join('');
+    if (S.list.length > shown.length) h += '<div style="text-align:center;padding:12px"><button data-act="more">Aur dikhao (' + (S.list.length - shown.length) + ' baqi)</button></div>';
+    return h;
+  }
+
+  async function applyItems(items, label) {
+    const r = await api('/edit', { items, label });
+    if (r.errors && r.errors.length) toast(r.errors.join('\n'), true);
+    else toast(r.changed + ' jagah badla (' + r.files.length + ' files). Undo: Backups tab');
+    S.sel.clear(); editing = false; load();
+  }
+
+  /* ================= LINKS / FILES (purane features) ================= */
   function visibleItems() {
     const q = $('#q').value.toLowerCase(), f = $('#filt').value, re = oldRe();
     return DATA.items.filter((it) => {
@@ -111,7 +209,7 @@
     });
   }
   const linkOk = (l) => {
-    const f = $('#filt').value, re = oldRe(), q = $('#q').value.toLowerCase();
+    const f = $('#filt').value, re = oldRe();
     if (f === 'broken' && !l.broken) return false;
     if (f === 'old' && !(re && re.test(l.url))) return false;
     if (f === 'external' && l.type !== 'external') return false;
@@ -119,27 +217,21 @@
   };
   const badges = (l) => {
     const re = oldRe();
-    return (l.broken ? '<span class="badge broken">broken</span>' : '') +
-      (re && re.test(l.url) ? '<span class="badge old">old</span>' : '') +
-      '<span class="badge">' + l.type + '</span>';
+    return (l.broken ? '<span class="badge broken">broken</span>' : '') + (re && re.test(l.url) ? '<span class="badge old">old</span>' : '') + '<span class="badge">' + l.type + '</span>';
   };
 
   function stats() {
     const all = DATA.items, links = all.flatMap((i) => i.links);
-    const s = [
-      ['Pages', all.filter((i) => i.kind === 'page').length],
-      ['Files', all.length], ['Links', links.length],
-      ['Broken', links.filter((l) => l.broken).length],
-      ['Naye/Changed', all.filter((i) => i.status).length],
-    ];
+    const s = [['Pages', DATA.pages.length], ['Files', all.length], ['Texts', DATA.texts.length], ['Links', links.length], ['Broken', links.filter((l) => l.broken).length], ['Naye/Changed', all.filter((i) => i.status).length]];
     $('#stats').innerHTML = s.map(([k, v]) => '<div class="stat">' + k + ' <b>' + v + '</b></div>').join('');
-    const counts = {}; all.forEach((i) => (counts[i.category] = (counts[i.category] || 0) + 1));
-    const cats = ['all', ...Object.keys(counts).sort()];
-    $('#chips').innerHTML = cats.map((c) =>
-      '<button class="chip ' + (c === cat ? 'on' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + (c === 'all' ? ' (' + all.length + ')' : ' (' + counts[c] + ')') + '</button>').join('');
+    if (tab === 'files' || tab === 'links') {
+      const counts = {}; all.forEach((i) => (counts[i.category] = (counts[i.category] || 0) + 1));
+      const cats = ['all', ...Object.keys(counts).sort()];
+      $('#chips').innerHTML = cats.map((c) => '<button class="chip ' + (c === cat ? 'on' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + ' (' + (c === 'all' ? all.length : counts[c]) + ')</button>').join('');
+    } else $('#chips').innerHTML = '';
   }
 
-  function renderPages() {
+  function renderFiles() {
     const items = visibleItems();
     if (!items.length) return '<div class="empty">Kuch nahi mila.</div>';
     const groups = {};
@@ -147,19 +239,13 @@
     return Object.keys(groups).sort().map((c) => '<h2>' + esc(c) + ' (' + groups[c].length + ')</h2>' +
       groups[c].sort((a, b) => a.file.localeCompare(b.file)).map((it) => {
         const ls = it.links.filter(linkOk);
-        return '<details class="item"><summary>' +
-          '<span class="route">' + esc(it.route || it.file) + '</span>' +
-          (it.title ? '<span class="ln">— ' + esc(it.title) + '</span>' : '') +
-          '<span class="file">' + esc(it.file) + '</span>' +
-          (it.status ? '<span class="badge ' + it.status + '">' + it.status + '</span>' : '') +
-          '<span class="badge">' + it.kind + '</span>' +
-          '<span class="sp"></span>' +
+        return '<details class="item"><summary><span class="route">' + esc(it.route || it.file) + '</span>' +
+          (it.title ? '<span class="ln">— ' + esc(it.title) + '</span>' : '') + '<span class="file">' + esc(it.file) + '</span>' +
+          (it.status ? '<span class="badge ' + it.status + '">' + it.status + '</span>' : '') + '<span class="badge">' + it.kind + '</span><span class="sp"></span>' +
           (it.kind === 'page' && !/[[\]]/.test(it.route) ? '<a href="' + esc(it.route) + '" target="_blank" onclick="event.stopPropagation()">open ↗</a>' : '') +
           (it.status ? '<button data-act="seen" data-file="' + esc(it.file) + '" onclick="event.stopPropagation()">seen</button>' : '') +
-          '<span class="badge">' + ls.length + ' links</span></summary>' +
-          '<div class="links">' + (ls.length ? ls.map((l) =>
-            '<div class="row"><code>' + esc(l.url) + '</code><span class="ln">line ' + l.line + '</span>' + badges(l) +
-            '<span class="sp"></span><button data-act="edit" data-url="' + esc(l.url) + '" data-file="' + esc(it.file) + '">Replace</button></div>').join('')
+          '<span class="badge">' + ls.length + ' links</span></summary><div class="links">' + (ls.length ? ls.map((l) =>
+            '<div class="row"><code>' + esc(l.url) + '</code><span class="ln">line ' + l.line + '</span>' + badges(l) + '<span class="sp"></span><button data-act="edit" data-url="' + esc(l.url) + '" data-file="' + esc(it.file) + '">Replace</button></div>').join('')
             : '<span class="ln">Is file me koi link nahi.</span>') + '</div></details>';
       }).join('')).join('');
   }
@@ -167,66 +253,256 @@
   function renderLinks() {
     const map = new Map();
     visibleItems().forEach((it) => it.links.filter(linkOk).forEach((l) => {
-      if (!map.has(l.url)) map.set(l.url, { l, uses: [] });
-      map.get(l.url).uses.push(it.file + ':' + l.line);
+      if (!map.has(l.url)) map.set(l.url, { l, uses: [], pages: new Set() });
+      const e = map.get(l.url); e.uses.push(it.file + ':' + l.line); it.pages.forEach((p) => e.pages.add(p));
     }));
     const rows = [...map.values()].sort((a, b) => b.uses.length - a.uses.length);
     if (!rows.length) return '<div class="empty">Koi link nahi mila.</div>';
-    return '<table>' + rows.map(({ l, uses }) =>
-      '<tr><td><code>' + esc(l.url) + '</code> ' + badges(l) + '<details><summary class="ln">' + uses.length + ' jagah use</summary><div class="ln">' +
-      uses.map(esc).join('<br>') + '</div></details></td>' +
-      '<td style="width:130px"><button data-act="edit" data-url="' + esc(l.url) + '" data-count="' + uses.length + '">Sab jagah replace</button></td></tr>').join('') + '</table>';
+    return '<table>' + rows.map(({ l, uses, pages }) =>
+      '<tr><td><code>' + esc(l.url) + '</code> ' + badges(l) + ' ' + [...pages].slice(0, 4).map((p) => '<span class="badge pg">' + esc(pageLabel(p)) + '</span>').join('') +
+      '<details><summary class="ln">' + uses.length + ' jagah use</summary><div class="ln">' + uses.map(esc).join('<br>') + '</div></details></td>' +
+      '<td style="width:150px"><button data-act="edit" data-url="' + esc(l.url) + '" data-count="' + uses.length + '">Sab jagah replace</button></td></tr>').join('') + '</table>';
   }
 
   function renderActivity() {
     const ev = DATA.events || [];
-    if (!ev.length) return '<div class="empty">Abhi koi change record nahi hua. Koi file edit/add/delete karo.</div>';
-    return '<table>' + ev.map((e) => '<tr><td class="ln" style="width:170px">' + new Date(e.t).toLocaleString() + '</td><td><span class="badge ' +
-      (e.type === 'add' ? 'new' : e.type === 'unlink' ? 'broken' : 'changed') + '">' + e.type + '</span></td><td>' + esc(e.file) + '</td></tr>').join('') + '</table>';
+    if (!ev.length) return '<div class="empty">Abhi koi change record nahi hua.</div>';
+    return '<table>' + ev.map((e) => '<tr><td class="ln" style="width:170px">' + new Date(e.t).toLocaleString() + '</td><td><span class="badge ' + e.type + '">' + e.type + '</span></td><td>' + esc(e.file) + '</td></tr>').join('') + '</table>';
   }
 
-  function render() {
+  /* ================= PRODUCTS ================= */
+  const slugify = (s) => String(s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const prodArr = () => (Array.isArray(PR.data) ? PR.data : PR.data[PR.key]);
+  const isImgKey = (k) => /image|img|photo|pic|thumb|gallery/i.test(k);
+  async function loadProducts() {
+    const r = await api('/products');
+    if (r.missing) return (PR = { missing: true });
+    if (r.error) return (PR = { error: r.error });
+    const data = r.data;
+    const key = Array.isArray(data) ? null : Object.keys(data).find((k) => Array.isArray(data[k]));
+    PR = { data, key };
+    if (!Array.isArray(data) && key === undefined) PR = { error: 'products.json me products ki list (array) nahi mili.' };
+  }
+  function fieldHtml(i, k, v) {
+    const id = i + '|' + k;
+    if (isImgKey(k) && (typeof v === 'string' || (Array.isArray(v) && v.every((x) => typeof x === 'string')))) {
+      const arr = typeof v === 'string' ? (v ? [v] : []) : v;
+      const multi = Array.isArray(v);
+      return '<div class="imgs">' + arr.map((p, j) => '<div class="im"><img src="' + esc(p) + '" /><input type="text" data-pf="' + id + '|img|' + j + '" value="' + esc(p) + '" /><button class="d" data-act="pimgdel" data-i="' + i + '" data-k="' + esc(k) + '" data-j="' + j + '">✕</button></div>').join('') +
+        '<label class="up">+ Upload photo' + (multi ? 's' : '') + '<input type="file" accept="image/*" ' + (multi ? 'multiple ' : '') + 'hidden data-up="' + id + '" /></label></div>';
+    }
+    if (typeof v === 'boolean') return '<input type="checkbox" data-pf="' + id + '|bool"' + (v ? ' checked' : '') + ' />';
+    if (typeof v === 'number') return '<input type="number" step="any" data-pf="' + id + '|num" value="' + v + '" />';
+    if (typeof v === 'string') return v.length > 70 || /desc|about|detail/i.test(k)
+      ? '<textarea rows="3" data-pf="' + id + '|str">' + esc(v) + '</textarea>' : '<input type="text" data-pf="' + id + '|str" value="' + esc(v) + '" />';
+    if (Array.isArray(v) && v.every((x) => typeof x === 'string' || typeof x === 'number'))
+      return '<textarea rows="' + Math.min(8, Math.max(2, v.length + 1)) + '" data-pf="' + id + '|lines" placeholder="har line me ek">' + esc(v.join('\n')) + '</textarea>';
+    return '<textarea rows="4" data-pf="' + id + '|json">' + esc(JSON.stringify(v, null, 2)) + '</textarea>';
+  }
+  function renderProducts() {
+    if (!PR) return '<div class="empty">Load ho raha hai…</div>';
+    if (PR.missing) return '<div class="empty">src/data/products.json abhi nahi bani. Pehle products ka kaam karte hain, phir yahan khud nazar aayenge.</div>';
+    if (PR.error) return '<div class="empty">' + esc(PR.error) + '</div>';
+    const arr = prodArr(), q = PRQ.toLowerCase();
+    let h = '<div class="panel"><div class="bar" style="margin:0"><input id="pq" placeholder="Product dhoondo…" size="30" value="' + esc(PRQ) + '" />' +
+      '<span class="ln">' + arr.length + ' products' + (PRdirty ? ' — <b style="color:var(--warn)">save nahi hue</b>' : '') + '</span><span class="sp"></span>' +
+      '<button data-act="padd">+ Naya product</button><button class="ok" data-act="psave">💾 Save products</button></div></div>';
+    h += arr.map((it, i) => {
+      if (q && !JSON.stringify(it).toLowerCase().includes(q)) return '';
+      const name = it.name || it.title || '(naam nahi)';
+      const im = Object.keys(it).find((k) => isImgKey(k) && (typeof it[k] === 'string' ? it[k] : (it[k] || [])[0]));
+      const thumb = im ? (typeof it[im] === 'string' ? it[im] : it[im][0]) : '';
+      return '<details class="item"><summary>' + (thumb ? '<img src="' + esc(thumb) + '" width="34" height="34" style="border-radius:6px;object-fit:cover" />' : '') +
+        '<span class="route">' + esc(name) + '</span>' + (it.price !== undefined ? '<span class="badge">' + esc(it.price) + '</span>' : '') + '<span class="sp"></span>' +
+        (it.slug ? '<a href="/product/' + esc(it.slug) + '" target="_blank" onclick="event.stopPropagation()">page ↗</a>' : '') + '</summary><div class="links">' +
+        Object.keys(it).map((k) => '<div class="fld"><label>' + esc(k) + '</label><div>' + fieldHtml(i, k, it[k]) + '</div></div>').join('') +
+        '<div class="row"><button data-act="pdup" data-i="' + i + '">Duplicate</button><button data-act="pup" data-i="' + i + '">↑</button><button data-act="pdown" data-i="' + i + '">↓</button><span class="sp"></span><button class="d" data-act="pdel" data-i="' + i + '">Delete</button></div></div></details>';
+    }).join('');
+    return h;
+  }
+  function setPF(el) {
+    const [i, k, type, j] = el.dataset.pf.split('|'); const it = prodArr()[+i];
+    if (type === 'str') { const old = it[k]; it[k] = el.value;
+      if ((k === 'name' || k === 'title') && 'slug' in it && (!it.slug || it.slug === slugify(old))) { it.slug = slugify(el.value); const s = el.closest('details').querySelector('[data-pf="' + i + '|slug|str"]'); if (s) s.value = it.slug; } }
+    else if (type === 'num') it[k] = el.value === '' ? 0 : Number(el.value);
+    else if (type === 'bool') it[k] = el.checked;
+    else if (type === 'lines') it[k] = el.value.split('\n').map((x) => x.trim()).filter(Boolean).map((x) => (Array.isArray(it[k]) && it[k].every((y) => typeof y === 'number') ? Number(x) : x));
+    else if (type === 'img') { if (Array.isArray(it[k])) it[k][+j] = el.value; else it[k] = el.value; }
+    else if (type === 'json') { try { it[k] = JSON.parse(el.value); el.classList.remove('bad'); } catch { el.classList.add('bad'); return; } }
+    PRdirty = true; editing = true;
+  }
+  const readFile = (f) => new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(f); });
+  async function uploadFiles(files, folder) {
+    const out = [];
+    for (const f of files) { const r = await api('/upload', { name: f.name, data: await readFile(f), folder }); if (r.error) toast(r.error, true); else out.push(r.path); }
+    return out;
+  }
+  function blankLike(o) { const n = {}; for (const k of Object.keys(o)) { const v = o[k]; n[k] = typeof v === 'number' ? 0 : typeof v === 'boolean' ? false : Array.isArray(v) ? [] : typeof v === 'object' && v ? {} : ''; } return n; }
+
+  /* ================= IMAGES / BACKUPS ================= */
+  function renderImages() {
+    if (!IM) return '<div class="empty">Load ho raha hai…</div>';
+    return '<div class="panel"><div class="bar" style="margin:0"><label class="up">+ Nayi photos upload karo<input type="file" accept="image/*" multiple hidden id="imup" /></label><span class="ln">' + IM.length + ' images (public folder). "Replace" same naam se purani photo badal deta hai, site me har jagah auto apply.</span></div></div>' +
+      '<div class="grid">' + IM.map((m) => '<div class="gi"><img src="' + esc(m.path) + '?v=' + Math.round(m.mtime) + '" /><code style="word-break:break-all">' + esc(m.path) + '</code><span class="ln">' + kb(m.size) + '</span>' +
+        '<div class="bar" style="margin:0"><button data-act="imcopy" data-p="' + esc(m.path) + '">Copy path</button><label class="up" style="padding:5px 8px">Replace<input type="file" accept="image/*" hidden data-imrep="' + esc(m.path) + '" /></label><button class="d" data-act="imdel" data-p="' + esc(m.path) + '">Delete</button></div></div>').join('') + '</div>';
+  }
+  function renderBackups() {
+    if (!BK) return '<div class="empty">Load ho raha hai…</div>';
+    if (!BK.length) return '<div class="empty">Abhi koi backup nahi. Har edit se pehle khud ban jata hai.</div>';
+    return '<table>' + BK.map((b) => '<tr><td class="ln" style="width:170px">' + (b.t ? new Date(b.t).toLocaleString() : b.stamp) + '</td><td>' + esc(b.label) + '<div class="ln">' + esc([...b.files, ...b.created.map((c) => c + ' (nayi)')].slice(0, 6).join(', ')) + (b.files.length + b.created.length > 6 ? ' …' : '') + '</div></td>' +
+      '<td style="width:110px"><button data-act="restore" data-s="' + esc(b.stamp) + '">↩ Undo / Restore</button></td></tr>').join('') + '</table>';
+  }
+
+  /* ================= RENDER ================= */
+  async function render() {
     if (!DATA) return;
     stats();
-    $('#app').innerHTML = tab === 'pages' ? renderPages() : tab === 'links' ? renderLinks() : renderActivity();
     document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+    $('#linkbar').style.display = tab === 'files' || tab === 'links' ? 'flex' : 'none';
+    if (tab === 'products' && !PR) { $('#app').innerHTML = renderProducts(); await loadProducts(); }
+    if (tab === 'images' && !IM) { $('#app').innerHTML = renderImages(); IM = (await api('/images')).images; }
+    if (tab === 'backups' && !BK) { $('#app').innerHTML = renderBackups(); BK = (await api('/backups')).backups; }
+    const fn = { search: renderSearch, links: renderLinks, products: renderProducts, images: renderImages, files: renderFiles, backups: renderBackups, activity: renderActivity }[tab];
+    const keep = document.activeElement && document.activeElement.id;
+    const pos = keep && document.activeElement.selectionStart;
+    $('#app').innerHTML = fn();
+    if (keep && $('#' + keep)) { const el = $('#' + keep); el.focus(); try { el.setSelectionRange(pos, pos); } catch {} }
   }
 
-  // events
+  /* ================= EVENTS ================= */
   document.addEventListener('click', async (e) => {
     const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.tab) { tab = b.dataset.tab; return render(); }
-    if (b.dataset.cat) { cat = b.dataset.cat; return render(); }
+    const d = b.dataset;
+    if (d.tab) { tab = d.tab; return render(); }
+    if (d.cat) { cat = d.cat; return render(); }
     if (b.id === 'refresh') return load();
     if (b.id === 'seen') { await api('/seen', {}); return load(); }
-    if (b.dataset.act === 'seen') { await api('/seen', { file: b.dataset.file }); return load(); }
-    if (b.dataset.act === 'edit') {
+    if (b.id === 'pub') {
+      const msg = prompt('Commit message (publish karne se site live ho jayegi):', 'site update via dashboard');
+      if (msg === null) return;
+      b.disabled = true; b.textContent = 'Publishing…';
+      const r = await api('/publish', { message: msg });
+      b.disabled = false; b.textContent = '🚀 Publish (git push)';
+      toast(r.ok ? 'Publish ho gaya ✅\nCloudflare 1-2 minute me live kar dega.' : 'Publish fail:\n' + r.error, !r.ok);
+      return refreshGit();
+    }
+    if (d.act === 'seen') { await api('/seen', { file: d.file }); return load(); }
+
+    // search & edit
+    if (d.act === 'more') { S.limit += 200; return render(); }
+    if (d.act === 'selall') { S.list.forEach((t) => S.sel.add(keyOf(t))); return render(); }
+    if (d.act === 'selnone') { S.sel.clear(); return render(); }
+    if (d.act === 'tedit') {
+      editing = true;
+      const t = DATA.texts.find((x) => keyOf(x) === d.key), row = b.closest('.row');
+      row.querySelector('.txt').innerHTML = (t.text.length > 80 ? '<textarea rows="3"></textarea>' : '<input type="text" />') +
+        '<div style="margin-top:6px"><button class="p" data-act="tsave" data-key="' + esc(d.key) + '">Save</button> <button data-act="tcancel">Cancel</button></div>';
+      const inp = row.querySelector('input,textarea'); inp.value = t.text; inp.focus(); inp.select();
+      return;
+    }
+    if (d.act === 'tcancel') { editing = false; return render(); }
+    if (d.act === 'tsave') {
+      const t = DATA.texts.find((x) => keyOf(x) === d.key), to = b.closest('.row').querySelector('input,textarea').value;
+      if (to === t.text) { editing = false; return render(); }
+      return applyItems([{ file: t.file, pos: t.pos, from: t.text, to, esc: t.esc }], 'Text: ' + t.text.slice(0, 40) + ' -> ' + to.slice(0, 40));
+    }
+    if (d.act === 'repsel') {
+      const q = S.q.trim(), to = ($('#rep') || {}).value;
+      if (!q || to === undefined) return;
+      const sel = S.list.filter((t) => S.sel.has(keyOf(t)));
+      if (!sel.length) return toast('Pehle jin jagah badalna hai unhe tick karein (ya "Sab chunein")', true);
+      const re = new RegExp(escRe(q), 'gi');
+      const items = sel.map((t) => ({ file: t.file, pos: t.pos, from: t.text, to: t.text.replace(re, () => to), esc: t.esc })).filter((x) => x.to !== x.from);
+      if (!items.length) return toast('Chune hue me kuch badalne wala nahi', true);
+      const pre = items.slice(0, 6).map((x) => '• ' + x.from + '  →  ' + x.to).join('\n');
+      if (!confirm(items.length + ' jagah badlegi:\n\n' + pre + (items.length > 6 ? '\n…' : '') + '\n\nBackup khud banega. Theek hai?')) return;
+      return applyItems(items, 'Replace: ' + q + ' -> ' + to);
+    }
+
+    // links
+    if (d.act === 'edit') {
       editing = true;
       const host = b.closest('.row') || b.closest('tr').firstElementChild;
       host.querySelector('.edit')?.remove();
       const box = document.createElement('div'); box.className = 'edit';
-      box.innerHTML = '<input value="' + esc(b.dataset.url) + '" /><button class="p" data-act="go">Replace</button><button data-act="cancel">Cancel</button>';
-      box.dataset.from = b.dataset.url; if (b.dataset.file) box.dataset.file = b.dataset.file; if (b.dataset.count) box.dataset.count = b.dataset.count;
+      box.innerHTML = '<input value="' + esc(d.url) + '" /><button class="p" data-act="go">Replace</button><button data-act="cancel">Cancel</button>';
+      box.dataset.from = d.url; if (d.file) box.dataset.file = d.file; if (d.count) box.dataset.count = d.count;
       host.appendChild(box); box.querySelector('input').focus(); box.querySelector('input').select();
       return;
     }
-    if (b.dataset.act === 'cancel') { b.closest('.edit').remove(); editing = !!document.querySelector('.edit'); return; }
-    if (b.dataset.act === 'go') {
+    if (d.act === 'cancel') { b.closest('.edit').remove(); editing = !!document.querySelector('.edit'); return; }
+    if (d.act === 'go') {
       const box = b.closest('.edit'), to = box.querySelector('input').value.trim(), from = box.dataset.from;
       if (!to || to === from) return;
       const where = box.dataset.file ? 'sirf ' + box.dataset.file + ' me' : 'POORI site me (' + (box.dataset.count || '?') + ' jagah)';
-      if (!confirm('"' + from + '" → "' + to + '"\n' + where + ' replace karna hai?\n(Backup .site-dashboard/backups me banega)')) return;
+      if (!confirm('"' + from + '" → "' + to + '"\n' + where + ' replace karna hai?\n(Backup banega, Backups tab se undo ho sakta hai)')) return;
       const r = await api('/replace', { from, to, file: box.dataset.file });
       toast(r.changed + ' jagah replace hua (' + r.files.length + ' files)');
-      load();
+      return load();
+    }
+
+    // products
+    if (d.act === 'padd') { const a = prodArr(); a.unshift(a[0] ? blankLike(a[0]) : { name: '', slug: '', price: '' }); PRdirty = true; editing = true; return render(); }
+    if (d.act === 'pdup') { const a = prodArr(), c = JSON.parse(JSON.stringify(a[+d.i])); if (c.slug) c.slug += '-copy'; a.splice(+d.i + 1, 0, c); PRdirty = true; editing = true; return render(); }
+    if (d.act === 'pdel') { const a = prodArr(); if (confirm('"' + (a[+d.i].name || a[+d.i].title || 'product') + '" delete karna hai? (Save se pehle wapas nahi aayega, save ke baad Backups se aa sakta hai)')) { a.splice(+d.i, 1); PRdirty = true; editing = true; render(); } return; }
+    if (d.act === 'pup' || d.act === 'pdown') { const a = prodArr(), i = +d.i, j = d.act === 'pup' ? i - 1 : i + 1; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; PRdirty = true; editing = true; return render(); }
+    if (d.act === 'pimgdel') { const it = prodArr()[+d.i]; if (Array.isArray(it[d.k])) it[d.k].splice(+d.j, 1); else it[d.k] = ''; PRdirty = true; editing = true; return render(); }
+    if (d.act === 'psave') {
+      for (const el of document.querySelectorAll('.bad')) return toast('Kisi field me JSON galat hai (laal border), pehle theek karein', true);
+      const r = await api('/products', { data: PR.data });
+      if (r.error) return toast(r.error, true);
+      toast('Products save ho gaye ✅ (backup bana). Live karne ke liye Publish dabayein.');
+      PRdirty = false; editing = false; return load();
+    }
+
+    // images
+    if (d.act === 'imcopy') { navigator.clipboard?.writeText(d.p); return toast('Copy: ' + d.p); }
+    if (d.act === 'imdel') { if (!confirm(d.p + ' delete karni hai? (backup se wapas aa sakti hai)')) return; const r = await api('/imgdel', { path: d.p }); if (r.error) return toast(r.error, true); toast('Delete hui'); return load(); }
+
+    // backups
+    if (d.act === 'restore') {
+      if (!confirm('Is backup par wapas jana hai? Abhi ki files ka bhi naya backup ban jayega.')) return;
+      const r = await api('/restore', { stamp: d.s });
+      if (r.error) return toast(r.error, true);
+      toast(r.restored + ' file wapas aayi ✅'); return load();
     }
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && e.target.closest('.edit')) e.target.closest('.edit').querySelector('[data-act=go]').click();
+
+  document.addEventListener('change', async (e) => {
+    const t = e.target;
+    if (t.dataset.sel) { t.checked ? S.sel.add(t.dataset.sel) : S.sel.delete(t.dataset.sel); const b = document.querySelector('[data-act=repsel]'); if (b) b.textContent = 'Chune hue (' + S.sel.size + ') par apply'; return; }
+    if (t.id === 'spage') { S.page = t.value; S.limit = 200; return render(); }
+    if (t.id === 'skind') { S.kind = t.value; S.limit = 200; return render(); }
+    if (t.id === 'filt') return render();
+    if (t.dataset.up) {
+      const [i, k] = t.dataset.up.split('|'); const it = prodArr()[+i];
+      const paths = await uploadFiles([...t.files], 'images/products');
+      if (!paths.length) return;
+      if (Array.isArray(it[k])) it[k].push(...paths); else it[k] = paths[0];
+      PRdirty = true; editing = true; toast(paths.length + ' photo upload hui'); return render();
+    }
+    if (t.id === 'imup') { const p = await uploadFiles([...t.files], 'images'); if (p.length) toast(p.length + ' photo upload hui'); IM = null; return load(); }
+    if (t.dataset.imrep) {
+      const f = t.files[0]; if (!f) return;
+      const r = await api('/upload', { name: f.name, data: await readFile(f), dest: t.dataset.imrep });
+      if (r.error) return toast(r.error, true);
+      toast('Photo replace ho gayi ✅'); IM = null; return load();
+    }
+    if (t.dataset.pf && t.type === 'checkbox') setPF(t);
   });
-  $('#q').addEventListener('input', render);
-  $('#filt').addEventListener('change', render);
-  $('#oldre').addEventListener('input', () => { localStorage.setItem('oldre', $('#oldre').value); render(); });
+
+  document.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id === 'sq') { S.q = t.value; S.limit = 200; return render(); }
+    if (t.id === 'pq') { PRQ = t.value; return render(); }
+    if (t.id === 'q') return render();
+    if (t.id === 'oldre') { localStorage.setItem('oldre', t.value); return render(); }
+    if (t.dataset.pf && t.type !== 'checkbox') setPF(t);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && e.target.closest('.edit')) e.target.closest('.edit').querySelector('[data-act=go]').click();
+    else if (e.key === 'Enter' && !e.shiftKey && e.target.closest('.row') && e.target.closest('.row').querySelector('[data-act=tsave]') && e.target.tagName === 'INPUT') e.target.closest('.row').querySelector('[data-act=tsave]').click();
+  });
 
   load();
 })();

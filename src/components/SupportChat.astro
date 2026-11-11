@@ -1,0 +1,400 @@
+---
+// SupportChat.astro : elite auto-reply support widget (free, koi API / server nahi).
+// Live agent button ka WhatsApp number src/config/site.js se aata hai (whatsappUrl), yahan number likhna nahi.
+// Jawab badalne hon to neeche <script> ke andar ANSWERS mein sirf text badlein.
+import { whatsappUrl } from '../config/site.js';
+
+let wa = '';
+try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
+---
+<div id="mscRoot" class="msc-root" data-wa={wa}>
+
+  <!-- Floating launcher -->
+  <button type="button" id="mscLauncher" class="msc-launcher" aria-label="Open Musfira's support chat" aria-expanded="false" aria-controls="mscPanel">
+    <span class="msc-launcher-tip">Need help?</span>
+    <svg class="msc-ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.8 8.8 0 0 1-3.6-.8L3 20.5l1.5-4.9A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/><circle cx="8.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="12" cy="11.5" r=".8" fill="currentColor"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/></svg>
+    <svg class="msc-ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+
+  <!-- Chat panel -->
+  <section id="mscPanel" class="msc-panel" role="dialog" aria-label="Musfira's support chat" aria-hidden="true">
+    <header class="msc-head">
+      <div class="msc-avatar" aria-hidden="true">M</div>
+      <div class="msc-head-text">
+        <div class="msc-title">Musfira’s Support</div>
+        <div class="msc-sub"><i></i>Online · Instant answers</div>
+      </div>
+      <button type="button" id="mscClose" class="msc-close" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+
+    <div id="mscBody" class="msc-body" aria-live="polite"></div>
+
+    <div id="mscChips" class="msc-chips"></div>
+
+    <footer class="msc-foot">
+      <a id="mscAgent" class="msc-agent" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span>Need help? Chat with a live agent</span>
+      </a>
+      <div class="msc-note">Replies instantly · Live agent on WhatsApp</div>
+    </footer>
+  </section>
+</div>
+
+<style is:global>
+.msc-root{
+  --msc-pink:#e6007e;
+  --msc-maroon:var(--orange-maroon,#a3301f);
+  --msc-head:#9c2954;
+  --msc-lpink:#fce4f0;
+  --msc-line:#f4dde9;
+  --msc-text:#5b4651;
+  font-family:'Montserrat',system-ui,sans-serif;
+}
+
+/* ───── Launcher ───── */
+.msc-launcher{
+  position:fixed; z-index:8900;
+  right:16px; right:max(16px, env(safe-area-inset-right,0px));
+  bottom:18px; bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  width:54px; height:54px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--msc-maroon),var(--msc-pink));
+  color:#fff; border:2px solid #fff; cursor:pointer;
+  box-shadow:0 10px 26px rgba(230,0,126,.34), 0 3px 8px rgba(0,0,0,.1);
+  transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s ease;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.msc-launcher svg{ width:25px; height:25px; display:block; }
+.msc-launcher .msc-ic-x{ display:none; }
+.msc-launcher.is-open .msc-ic-chat{ display:none; }
+.msc-launcher.is-open .msc-ic-x{ display:block; }
+.msc-launcher::before{
+  content:""; position:absolute; inset:-3px; border-radius:50%;
+  border:2px solid rgba(230,0,126,.45); opacity:0;
+  animation:mscRing 5s ease-out infinite; pointer-events:none;
+}
+.msc-launcher.is-open::before{ animation:none; }
+@keyframes mscRing{
+  0%,70%{ transform:scale(1); opacity:0; }
+  76%{ opacity:.7; }
+  100%{ transform:scale(1.55); opacity:0; }
+}
+.msc-launcher:active{ transform:scale(.94); }
+.msc-launcher-tip{
+  position:absolute; right:calc(100% + 12px); top:50%;
+  transform:translateY(-50%) translateX(6px);
+  padding:8px 14px; border-radius:999px; background:#fff; color:var(--msc-maroon);
+  border:1px solid #f5cfe3; box-shadow:0 8px 22px rgba(156,41,84,.14);
+  font-size:10.5px; font-weight:800; letter-spacing:1.1px; text-transform:uppercase; white-space:nowrap;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);
+}
+.msc-launcher.is-open .msc-launcher-tip{ display:none; }
+@media (hover:hover){
+  .msc-launcher:hover{ transform:translateY(-3px); box-shadow:0 14px 30px rgba(230,0,126,.4), 0 4px 10px rgba(0,0,0,.12); }
+  .msc-launcher:hover .msc-launcher-tip{ opacity:1; transform:translateY(-50%) translateX(0); }
+}
+
+/* ───── Panel ───── */
+.msc-panel{
+  position:fixed; z-index:8950;
+  right:16px; right:max(16px, env(safe-area-inset-right,0px));
+  bottom:84px; bottom:calc(84px + env(safe-area-inset-bottom,0px));
+  width:372px; max-width:calc(100vw - 24px);
+  height:560px; max-height:calc(100vh - 110px); max-height:calc(100dvh - 110px);
+  display:flex; flex-direction:column; overflow:hidden;
+  background:#fff; border:1px solid var(--msc-line); border-radius:24px;
+  box-shadow:0 24px 70px rgba(156,41,84,.26), 0 4px 14px rgba(0,0,0,.08);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transform:translateY(16px) scale(.97); transform-origin:bottom right;
+  transition:opacity .3s ease, transform .4s cubic-bezier(.22,.61,.36,1), visibility 0s linear .4s;
+}
+.msc-panel.is-open{
+  opacity:1; visibility:visible; pointer-events:auto; transform:none;
+  transition:opacity .3s ease, transform .4s cubic-bezier(.22,.61,.36,1), visibility 0s;
+}
+
+.msc-head{
+  display:flex; align-items:center; gap:12px; padding:16px 16px 15px 18px; color:#fff;
+  background:linear-gradient(135deg,var(--msc-maroon),var(--msc-pink));
+}
+.msc-avatar{
+  flex-shrink:0; width:42px; height:42px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.55);
+  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:22px; font-weight:600;
+}
+.msc-head-text{ flex:1; min-width:0; }
+.msc-title{ font-size:14.5px; font-weight:800; letter-spacing:.4px; }
+.msc-sub{ display:flex; align-items:center; gap:6px; margin-top:3px; font-size:11px; font-weight:600; opacity:.92; }
+.msc-sub i{ width:7px; height:7px; border-radius:50%; background:#6ef0a6; box-shadow:0 0 0 3px rgba(110,240,166,.28); display:block; }
+.msc-close{
+  flex-shrink:0; width:32px; height:32px; border-radius:50%; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.16); color:#fff; transition:background .25s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.msc-close svg{ width:15px; height:15px; }
+.msc-close:hover{ background:rgba(255,255,255,.3); }
+
+/* ───── Messages ───── */
+.msc-body{
+  flex:1; overflow-y:auto; padding:18px 16px 8px; -webkit-overflow-scrolling:touch;
+  background:linear-gradient(180deg,#fff 0%,#fff8fb 100%);
+  display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth;
+}
+.msc-msg{
+  max-width:86%; padding:11px 15px; font-size:13.5px; line-height:1.65; font-weight:500;
+  white-space:pre-line; word-break:break-word;
+  animation:mscIn .35s cubic-bezier(.22,.61,.36,1);
+}
+.msc-msg.bot{
+  align-self:flex-start; color:var(--msc-text); background:#fff;
+  border:1px solid var(--msc-line); border-radius:4px 18px 18px 18px;
+  box-shadow:0 4px 14px rgba(156,41,84,.06);
+}
+.msc-msg.me{
+  align-self:flex-end; color:#fff; font-weight:600;
+  background:linear-gradient(135deg,var(--msc-maroon),var(--msc-pink));
+  border-radius:18px 4px 18px 18px;
+  box-shadow:0 6px 16px rgba(230,0,126,.22);
+}
+@keyframes mscIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+.msc-typing{
+  align-self:flex-start; display:flex; gap:5px; padding:14px 16px;
+  background:#fff; border:1px solid var(--msc-line); border-radius:4px 18px 18px 18px;
+}
+.msc-typing span{ width:7px; height:7px; border-radius:50%; background:var(--msc-pink); opacity:.35; animation:mscDot 1.1s infinite ease-in-out; }
+.msc-typing span:nth-child(2){ animation-delay:.18s; }
+.msc-typing span:nth-child(3){ animation-delay:.36s; }
+@keyframes mscDot{ 0%,70%,100%{ transform:translateY(0); opacity:.35; } 35%{ transform:translateY(-4px); opacity:1; } }
+
+/* ───── Quick-reply chips ───── */
+.msc-chips{
+  display:flex; flex-wrap:wrap; gap:8px; padding:10px 16px 12px;
+  background:#fff8fb; border-top:1px solid var(--msc-line);
+  max-height:42%; overflow-y:auto;
+}
+.msc-chips:empty{ display:none; }
+.msc-chip{
+  padding:9px 14px; border-radius:999px; cursor:pointer;
+  background:#fff; color:var(--msc-maroon); border:1.5px solid #f1c4da;
+  font-family:inherit; font-size:12.5px; font-weight:700; letter-spacing:.2px; text-align:left;
+  transition:all .22s ease; animation:mscIn .4s ease backwards;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.msc-chip:active{ background:linear-gradient(135deg,var(--msc-maroon),var(--msc-pink)); color:#fff; border-color:transparent; }
+@media (hover:hover){
+  .msc-chip:hover{ background:linear-gradient(135deg,var(--msc-maroon),var(--msc-pink)); color:#fff; border-color:transparent; transform:translateY(-2px); box-shadow:0 8px 18px rgba(230,0,126,.24); }
+}
+.msc-chip.agent{ background:#f0fdf4; color:#15803d; border-color:#bbf7d0; text-decoration:none; display:inline-block; }
+.msc-chip.agent:active{ background:#16a34a; color:#fff; border-color:transparent; }
+@media (hover:hover){
+  .msc-chip.agent:hover{ background:linear-gradient(145deg,#52d98c,#27b867); color:#fff; border-color:transparent; box-shadow:0 8px 18px rgba(39,184,103,.28); }
+}
+.msc-chips.is-busy .msc-chip{ opacity:.5; pointer-events:none; }
+
+/* ───── Footer: live agent ───── */
+.msc-foot{ padding:12px 16px 14px; background:#fff; border-top:1px solid var(--msc-line); }
+.msc-agent{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:13px 18px; border-radius:999px; text-decoration:none; color:#fff;
+  background:linear-gradient(145deg,#52d98c,#27b867);
+  font-size:12px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
+  box-shadow:0 8px 20px rgba(39,184,103,.28);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.msc-agent svg{ width:18px; height:18px; fill:currentColor; flex-shrink:0; }
+.msc-agent:active{ transform:scale(.97); }
+@media (hover:hover){ .msc-agent:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(39,184,103,.36); } }
+.msc-note{ margin-top:9px; text-align:center; font-size:10.5px; font-weight:600; color:#a08b97; letter-spacing:.3px; }
+
+/* ───── Mobile ───── */
+@media (max-width:520px){
+  .msc-panel{
+    right:10px; left:10px; width:auto; max-width:none;
+    bottom:76px; bottom:calc(76px + env(safe-area-inset-bottom,0px));
+    height:min(560px, calc(100dvh - 100px)); border-radius:22px;
+  }
+  .msc-launcher{ width:50px; height:50px; right:14px; bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); }
+  .msc-msg{ font-size:13px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .msc-launcher, .msc-panel, .msc-chip, .msc-agent, .msc-msg{ transition:none; animation:none; }
+  .msc-launcher::before{ animation:none; }
+  .msc-typing span{ animation:none; opacity:.8; }
+}
+</style>
+
+<script is:inline>
+(function () {
+  var root = document.getElementById('mscRoot');
+  if (!root) return;
+
+  var launcher = document.getElementById('mscLauncher');
+  var panel = document.getElementById('mscPanel');
+  var closeBtn = document.getElementById('mscClose');
+  var body = document.getElementById('mscBody');
+  var chips = document.getElementById('mscChips');
+  var agentBtn = document.getElementById('mscAgent');
+  var WA = root.getAttribute('data-wa') || '';
+
+  // ===== JAWAB (sirf yahan text badlein) =====
+  var GREETING = "Hi 👋 Welcome to Musfira’s!\nI’m here to help. What would you like to know?";
+  var TOPICS = [
+    { id: 'order', label: '🛍️ I want to place an order',
+      answer: "Placing an order is quick and easy ✨\n\nYou can order in whichever way you like:\n\n• Buy it now: open any product and tap Buy it now to check out straight away.\n• Add to Cart: collect your favourites, then open your cart and check out together.\n\nEnter your delivery details and confirm. We will message you on WhatsApp to verify your order and dispatch it right away.\n\nPay when it reaches your door with Cash on Delivery." },
+    { id: 'delivery', label: '🚚 Delivery time',
+      answer: "We deliver across the UAE 🇦🇪\n\nYour order usually arrives within 1–3 working days. Once it is dispatched, we send you the courier name and tracking details on WhatsApp, so you can follow your parcel every step of the way 📦" },
+    { id: 'payment', label: '💳 Payment methods',
+      answer: "We offer Cash on Delivery 💵\n\nYou pay only when your order arrives at your door. No advance payment and no card details needed, so you can shop with complete peace of mind." },
+    { id: 'shipping', label: '📦 Shipping charges',
+      answer: "Shipping is complimentary 🎁\n\nWe deliver across the UAE at no extra cost, so the price you see is the price you pay." },
+    { id: 'returns', label: '🔄 Returns & refund',
+      answer: "You have 30 days to return or exchange your order 💖\n\nIf something is not right, just message us within 30 days of receiving your parcel and we will gladly help with a return, exchange or refund.\n\nPlease keep the item unused and in its original packaging." }
+  ];
+  var AGENT_LABEL = '💬 Talk to a live agent';
+  var FOLLOW = "Was that helpful? You can pick another question, or our team is happy to help personally 💕";
+  // ============================================
+
+  var busy = false;
+  var started = false;
+  var lastTopic = '';
+
+  function agentUrl(topic) {
+    if (!WA) return '';
+    var text = topic ? ("Hi Musfira's, I need help with: " + topic) : "Hi Musfira's, I need help.";
+    try {
+      var u = new URL(WA, window.location.href);
+      u.searchParams.set('text', text);
+      return u.toString();
+    } catch (e) { return WA; }
+  }
+  function refreshAgent() {
+    var url = agentUrl(lastTopic);
+    if (url) { agentBtn.setAttribute('href', url); }
+    else { agentBtn.style.display = 'none'; }
+  }
+
+  function scrollDown() { body.scrollTop = body.scrollHeight; }
+
+  function addMsg(text, who) {
+    var d = document.createElement('div');
+    d.className = 'msc-msg ' + who;
+    d.textContent = text;
+    body.appendChild(d);
+    scrollDown();
+    return d;
+  }
+  function showTyping() {
+    var t = document.createElement('div');
+    t.className = 'msc-typing';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    body.appendChild(t);
+    scrollDown();
+    return t;
+  }
+
+  // Bot ka jawab: pehle typing dots, phir text khud type hota hai
+  function botSay(text, done) {
+    var dots = showTyping();
+    var wait = 650 + Math.min(text.length * 4, 700);
+    setTimeout(function () {
+      dots.remove();
+      var el = addMsg('', 'bot');
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) { el.textContent = text; scrollDown(); if (done) done(); return; }
+      var i = 0;
+      var step = text.length > 220 ? 3 : 2;
+      (function tick() {
+        i = Math.min(i + step, text.length);
+        el.textContent = text.slice(0, i);
+        scrollDown();
+        if (i < text.length) { setTimeout(tick, 16); }
+        else if (done) { done(); }
+      })();
+    }, wait);
+  }
+
+  function renderChips(exceptId) {
+    chips.innerHTML = '';
+    TOPICS.forEach(function (t, idx) {
+      if (t.id === exceptId) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'msc-chip';
+      b.textContent = t.label;
+      b.style.animationDelay = (idx * 60) + 'ms';
+      b.addEventListener('click', function () { choose(t); });
+      chips.appendChild(b);
+    });
+    var url = agentUrl(lastTopic);
+    if (url) {
+      var a = document.createElement('a');
+      a.className = 'msc-chip agent';
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = AGENT_LABEL;
+      chips.appendChild(a);
+    }
+    chips.classList.remove('is-busy');
+  }
+
+  function choose(topic) {
+    if (busy) return;
+    busy = true;
+    chips.classList.add('is-busy');
+    lastTopic = topic.label.replace(/^[^A-Za-z]+/, '');
+    refreshAgent();
+    addMsg(topic.label, 'me');
+    botSay(topic.answer, function () {
+      botSay(FOLLOW, function () {
+        renderChips(topic.id);
+        busy = false;
+        scrollDown();
+      });
+    });
+  }
+
+  function start() {
+    if (started) return;
+    started = true;
+    busy = true;
+    refreshAgent();
+    botSay(GREETING, function () {
+      renderChips('');
+      busy = false;
+    });
+  }
+
+  function openChat() {
+    panel.classList.add('is-open');
+    launcher.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+    launcher.setAttribute('aria-expanded', 'true');
+    start();
+  }
+  function closeChat() {
+    panel.classList.remove('is-open');
+    launcher.classList.remove('is-open');
+    panel.setAttribute('aria-hidden', 'true');
+    launcher.setAttribute('aria-expanded', 'false');
+  }
+
+  launcher.addEventListener('click', function () {
+    if (panel.classList.contains('is-open')) closeChat(); else openChat();
+  });
+  closeBtn.addEventListener('click', closeChat);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) closeChat();
+  });
+
+  refreshAgent();
+})();
+</script>

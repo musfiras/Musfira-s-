@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import ProductCardScripts from '../components/ProductCardScripts.astro';
 import ReviewTab from '../components/ReviewTab.astro';
 import CartDrawer from '../components/CartDrawer.astro';
+import SupportChat from '../components/SupportChat.astro';
 const {
   title = "Musfira's Store - Luxury Bags & Backpacks",
   description = "Musfira's: hand-selected ladies' bags, jewellery, wallets, watches and accessories, delivered across the UAE.",
@@ -48,13 +49,16 @@ const {
   <body>
     <Header />
     <slot />
-    <!-- Footer ke andar hi floating WhatsApp button bhi hai (alag WhatsAppFloat ki zaroorat nahi) -->
+    <!-- Footer mein ab WhatsApp button nahi hai (WhatsApp sirf Contact page aur SupportChat ke live agent button mein) -->
     <Footer />
     <ProductCardScripts />
     <ReviewTab />
 
     <!-- Cart drawer: har page par khud load hota hai (HTML + CSS + live stock script) -->
     <CartDrawer />
+
+    <!-- Support chat: auto-reply buttons + live agent (WhatsApp). Har page par aata hai -->
+    <SupportChat />
 
     <!-- Safety: cart drawer script na chale to bhi cart icon par click error na de.
          CartDrawer ke baad hai, isliye asli openDrawer maujood ho to ye kuch nahi karta. -->

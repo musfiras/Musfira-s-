@@ -1,8 +1,9 @@
 ---
-// Footer.astro : poora footer ek hi file mein (floating WhatsApp button bhi isi mein hai).
-// Links, number, email, social sab src/config/site.js se aate hain, yahan kuch badalna nahi.
+// Footer.astro : poora footer ek hi file mein.
+// WhatsApp button, floating WhatsApp, number aur email footer se hata diye gaye hain (ye sirf Contact page par rahenge).
+// Links aur social src/config/site.js se aate hain, yahan kuch badalna nahi.
 // Colour variables ka naam --mfs-... hai, taake header ke colours se takrao na ho.
-import { site, whatsappUrl } from '../config/site.js';
+import { site } from '../config/site.js';
 
 const icons: Record<string, string> = {
   facebook: `<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>`,
@@ -11,8 +12,6 @@ const icons: Record<string, string> = {
   website: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>`,
 };
 
-const w = site.whatsapp;
-const wa = whatsappUrl();
 // "-BAGS & CARRYING-" jaise naam se kinare ke dash hata kar footer mein saaf dikhane ke liye
 const clean = (s: string) => String(s).replace(/^[-\s]+|[-\s]+$/g, '');
 const year = new Date().getFullYear();
@@ -82,19 +81,6 @@ const year = new Date().getFullYear();
         ))}
       </nav>
 
-      <div class="mfs-col mfs-contact-col">
-        <div class="mfs-col-title">Talk to us</div>
-        <p class="mfs-contact-text">Questions about a piece or an order? Message us, we are happy to help you choose.</p>
-        {w.show && (
-          <a href={wa} target="_blank" rel="noopener noreferrer" class="mfs-wa-btn">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            <span>Chat on WhatsApp</span>
-          </a>
-          <div class="mfs-contact-line">{w.display}</div>
-        )}
-        <a href={`mailto:${site.email}`} class="mfs-mail">{site.email}</a>
-      </div>
-
     </div>
   </div>
 
@@ -109,13 +95,6 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
-  <!-- ══ Floating WhatsApp (chhota, soft). Cart khulne par khud chup jata hai ══ -->
-  {w.show && (
-    <a href={wa} target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label={w.label}>
-      <span class="whatsapp-float-tip">{w.label}</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-    </a>
-  )}
 </footer>
 
 <style is:global>
@@ -176,10 +155,10 @@ const year = new Date().getFullYear();
   color:var(--mfs-text); font-weight:500;
 }
 
-/* ───── 2. Main grid ───── */
+/* ───── 2. Main grid (3 columns: Brand, Shop, Help & Info) ───── */
 .mfs-grid{
   display:grid;
-  grid-template-columns:1.5fr 1fr 1fr 1.25fr;
+  grid-template-columns:1.6fr 1fr 1fr;
   gap:44px 40px;
   padding-bottom:44px;
 }
@@ -250,41 +229,6 @@ const year = new Date().getFullYear();
   .mfs-link:hover{ color:var(--mfs-pink); transform:translateX(5px); }
 }
 
-.mfs-contact-text{
-  margin:0 0 16px;
-  font-family:'Montserrat',sans-serif; font-size:13.5px; line-height:1.85;
-  color:var(--mfs-text); font-weight:500;
-}
-.mfs-wa-btn{
-  display:inline-flex; align-items:center; gap:10px;
-  padding:12px 22px; border-radius:999px;
-  background:linear-gradient(145deg,#52d98c,#27b867);
-  color:#fff; text-decoration:none;
-  font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;
-  box-shadow:0 8px 20px rgba(39,184,103,.26);
-  transition:transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease;
-  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
-}
-.mfs-wa-btn svg{ width:18px; height:18px; fill:currentColor; flex-shrink:0; }
-.mfs-wa-btn:active{ transform:scale(.97); }
-@media (hover:hover){
-  .mfs-wa-btn:hover{ transform:translateY(-3px); box-shadow:0 12px 26px rgba(39,184,103,.34); }
-}
-.mfs-contact-line{
-  margin:12px 0 4px;
-  font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700; letter-spacing:.4px;
-  color:var(--mfs-maroon);
-}
-.mfs-mail{
-  display:inline-block; margin-top:4px;
-  font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600;
-  color:var(--mfs-pink); text-decoration:none;
-  border-bottom:1px solid rgba(230,0,126,.35);
-  word-break:break-all;
-  transition:border-color .25s ease;
-}
-@media (hover:hover){ .mfs-mail:hover{ border-bottom-color:var(--mfs-pink); } }
-
 /* ───── 3. Bottom ───── */
 .mfs-bottom{ border-top:1px solid var(--mfs-line); padding-top:26px; text-align:center; }
 .mfs-closing{
@@ -319,82 +263,25 @@ const year = new Date().getFullYear();
   .mfs-top-btn:hover b{ transform:translateY(-2px); }
 }
 
-/* ───── Floating WhatsApp (chhota + soft) ───── */
-.whatsapp-float{
-  position:fixed;
-  right:16px; right:max(16px, env(safe-area-inset-right, 0px));
-  bottom:18px; bottom:calc(18px + env(safe-area-inset-bottom, 0px));
-  z-index:9000;
-  width:42px; height:42px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(145deg,#52d98c,#27b867);
-  color:#fff;
-  border:2px solid #fff;
-  box-shadow:0 6px 16px rgba(39,184,103,.28), 0 2px 6px rgba(0,0,0,.08);
-  text-decoration:none;
-  transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s ease;
-  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
-}
-.whatsapp-float svg{ width:21px; height:21px; fill:currentColor; display:block; }
-.whatsapp-float::before{
-  content:""; position:absolute; top:-2px; right:-2px; bottom:-2px; left:-2px;
-  border-radius:50%; border:2px solid rgba(39,184,103,.4);
-  opacity:0; animation:mWaRing 5s ease-out infinite; pointer-events:none;
-}
-@keyframes mWaRing{
-  0%,72%{ transform:scale(1); opacity:0; }
-  76%{ opacity:.7; }
-  100%{ transform:scale(1.6); opacity:0; }
-}
-.whatsapp-float-tip{
-  position:absolute; right:calc(100% + 10px); top:50%;
-  transform:translateY(-50%) translateX(6px);
-  padding:7px 13px; border-radius:999px;
-  background:#fff; color:var(--mfs-maroon);
-  border:1px solid #f5cfe3;
-  font-family:'Montserrat',sans-serif; font-size:10.5px; font-weight:800; letter-spacing:1px; text-transform:uppercase;
-  white-space:nowrap;
-  box-shadow:0 6px 18px rgba(156,41,84,.12);
-  opacity:0; pointer-events:none;
-  transition:opacity .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);
-}
-.whatsapp-float:active{ transform:scale(.95); }
-@media (hover:hover){
-  .whatsapp-float:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(39,184,103,.34), 0 3px 8px rgba(0,0,0,.1); }
-  .whatsapp-float:hover .whatsapp-float-tip{ opacity:1; transform:translateY(-50%) translateX(0); }
-}
-
 /* ───── Responsive ───── */
 @media (max-width:950px){
   .mfs-footer{ padding-top:44px; }
   .mfs-promises{ grid-template-columns:1fr; gap:14px; margin-bottom:44px; }
   .mfs-grid{ grid-template-columns:1fr 1fr; gap:36px 28px; }
-  .mfs-brand-col, .mfs-contact-col{ grid-column:1 / -1; }
-  .mfs-brand-col{ text-align:center; }
+  .mfs-brand-col{ grid-column:1 / -1; text-align:center; }
   .mfs-footer-logo-img{ margin-left:auto; margin-right:auto; }
   .mfs-tag{ justify-content:center; }
   .mfs-about{ margin-left:auto; margin-right:auto; }
   .mfs-social-row{ justify-content:center; }
-  .mfs-contact-col{ text-align:center; }
-  .mfs-contact-col .mfs-col-title::after{ left:50%; margin-left:-15px; }
-  .mfs-contact-text{ max-width:420px; margin-left:auto; margin-right:auto; }
 }
 @media (max-width:600px){
   .mfs-wrap{ padding:0 18px; }
   .mfs-footer{ padding-bottom:22px; }
   .mfs-promise{ padding:18px 18px; }
   .mfs-closing{ font-size:14.5px; }
-  .whatsapp-float{
-    width:40px; height:40px;
-    right:14px; right:max(14px, env(safe-area-inset-right, 0px));
-    bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px));
-  }
-  .whatsapp-float svg{ width:20px; height:20px; }
 }
 @media (prefers-reduced-motion: reduce){
-  .mfs-link, .mfs-social-icon, .mfs-wa-btn, .mfs-top-btn, .mfs-top-btn b, .mfs-promise,
-  .whatsapp-float, .whatsapp-float-tip{ transition:none; }
-  .whatsapp-float::before{ animation:none; }
+  .mfs-link, .mfs-social-icon, .mfs-top-btn, .mfs-top-btn b, .mfs-promise{ transition:none; }
 }
 </style>
 

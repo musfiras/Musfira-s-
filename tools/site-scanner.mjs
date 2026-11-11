@@ -443,8 +443,12 @@ export default function siteDashboard() {
         logger.info('Dashboard: http://localhost:4321/dashboard');
       },
       'astro:server:setup': ({ server }) => {
-        let cache = null, version = 0, timer = null;
-        const refresh = () => { cache = scan(loadState()); version++; };
+        let cache = null, version = 0, timer = null, lastErr = null;
+        const refresh = () => {
+          try { cache = scan(loadState()); lastErr = null; }
+          catch (e) { lastErr = e; console.error('[dashboard] scan error:', e); }
+          version++;
+        };
         refresh();
 
         const json = (res, data, code = 200) => {
@@ -466,7 +470,10 @@ export default function siteDashboard() {
             const post = req.method === 'POST';
 
             if (url === '/version') return json(res, { version });
-            if (url === '/scan') return json(res, { ...cache, version });
+            if (url === '/scan') {
+              if (!cache) return json(res, { error: 'Scan fail hua: ' + String((lastErr && lastErr.message) || lastErr) });
+              return json(res, { ...cache, version });
+            }
 
             if (url === '/edit' && post) {
               const { items, label } = await body(req);
@@ -479,6 +486,7 @@ export default function siteDashboard() {
             if (url === '/seen' && post) {
               const { file } = await body(req);
               const st = loadState();
+              if (!cache) return json(res, { error: 'scan nahi hua' }, 500);
               for (const it of cache.items) if (!file || it.file === file) st.seen[it.file] = it.hash;
               saveState(st); refresh();
               return json(res, { ok: true });
@@ -553,3 +561,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const links = r.items.flatMap((i) => i.links);
   console.log(`Files: ${r.items.length} | Pages: ${r.pages.length} | Texts: ${r.texts.length} | Links: ${links.length} | Broken: ${links.filter((l) => l.broken).length}`);
 }
+

@@ -172,7 +172,7 @@
 #mDash .lock-remember input {margin-top: 2px; }
 #mDash .lock-card .popup-confirm-btn {width: 100%; padding: 13px; }
 #mDash .lock-error {margin-top: 12px; font-size: 12px; font-weight: 700; color: #dc2626; min-height: 16px; }
-/* ELITE SOFT ALERT (sab alerts ab isi style mein) */
+/* ELITE SOFT ALERT */
 #mDash .m-alert-toast {position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #fecce6; border-top: 3px solid var(--maroon); box-shadow: 0 18px 50px rgba(128,0,0,.18), 0 2px 10px rgba(230,0,126,.08); padding: 13px 22px; border-radius: 16px; display: flex; align-items: center; gap: 10px; z-index: 100000; max-width: calc(100% - 32px); opacity: 0; pointer-events: none; transition: top .45s cubic-bezier(.22,1,.36,1), opacity .35s ease; }
 #mDash .m-alert-toast.is-visible {top: 20px; opacity: 1; }
 #mDash .m-alert-icon {font-size: 16px; flex-shrink: 0; }
@@ -313,7 +313,7 @@
 #mDash .al-chip.al-red{background:#fef2f2;color:#dc2626;border-color:#fecaca}
 #mDash .al-chip.al-low{background:#fff7ed;color:#ea580c;border-color:#fed7aa}
 
-/* ===== COMPACT ORDER CARD (MOBILE) : height kam, details poori ===== */
+/* ===== COMPACT ORDER CARD (MOBILE) ===== */
 @media (max-width: 768px) {
 #mDash .orders-list {padding: 8px 6px 0; }
 #mDash .order-card {border-left-width: 4px; border-radius: 12px; margin-bottom: 9px; }
@@ -327,14 +327,11 @@
 #mDash .oc-clock {font-size: 9px; margin-top: 0; }
 #mDash .oc-body {grid-template-columns: 1fr; gap: 5px; padding: 7px 8px; }
 #mDash .oc-body > .oc-col:not(.oc-status) > .oc-label {display: none; }
-/* Customer: naam + WA button ek line mein, neeche address */
 #mDash .oc-cust {display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; }
 #mDash .oc-cust strong {display: inline; font-size: 12px; }
 #mDash .oc-cust .wa-btn {margin-top: 0; padding: 4px 9px; font-size: 10.5px; }
 #mDash .oc-addr {flex: 0 0 100%; margin-top: 0; font-size: 10px; line-height: 1.25; }
-/* Order details: poori width, saaf */
 #mDash .prod-card {max-width: none; padding: 5px 8px; font-size: 11px; line-height: 1.3; border-radius: 8px; }
-/* Status + activity */
 #mDash .oc-status {display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 #mDash .oc-status .oc-label {flex: 0 0 100%; margin-bottom: 0; font-size: 8.5px; }
 #mDash .oc-status .m-badge {padding: 2px 8px; min-width: 0; font-size: 9px; }
@@ -344,7 +341,6 @@
 #mDash .act-line {font-size: 10px; margin-bottom: 0; line-height: 1.3; }
 #mDash .act-sub {font-size: 9px; margin-bottom: 1px; }
 #mDash .act-row {font-size: 8.5px; line-height: 1.25; }
-/* Actions: 6 buttons, 3 x 2 grid (Zambeel button ke saath) */
 #mDash .oc-actions .oc-label {display: none; }
 #mDash .action-group {display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; min-width: 0; max-width: 100%; }
 #mDash .btn-action {min-width: 0; padding: 6px 1px; font-size: 9.5px; line-height: 1.2; border-radius: 8px; }
@@ -352,7 +348,7 @@
 #mDash .stock-sec-title, #mDash .stock-rest-toggle {padding-left: 22px; }
 #mDash .stock-alertline {padding-left: 22px; padding-right: 14px; } }
 
-/* ===== ORDER SUMMARY: Total Qty + Grand Total (bohat bold) + product name dark ===== */
+/* ===== ORDER SUMMARY ===== */
 #mDash .oc-sum {display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 #mDash .sum-box {flex: 1 1 120px; border-radius: 12px; padding: 8px 12px; line-height: 1.15; }
 #mDash .sum-box .sum-lbl {display: block; font-size: 10px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; opacity: .85; }
@@ -374,7 +370,7 @@
 #mDash .prod-card .pi {padding: 2px 0; }
 #mDash .prod-card .pm {font-size: 10px; padding-top: 2px; } }
 
-/* ===== ELITE DROPDOWNS: low/out stock + attention (page lamba nahi hota) ===== */
+/* ===== ELITE DROPDOWNS ===== */
 #mDash .urg-toggle{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 14px 6px 22px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,#fef2f2,#fff7ed);border:1px solid #fecaca;border-left:5px solid #dc2626;font-size:12px;font-weight:800;color:#991b1b;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(220,38,38,.08)}
 #mDash .urg-toggle:hover{filter:brightness(.97)}
 #mDash .urg-hint{font-size:10px;font-weight:700;color:var(--text-muted)}
@@ -396,7 +392,7 @@
 #mDash .stock-scroll .stock-row,#mDash .stock-scroll .stock-prod-title{padding-left:12px}
 }
 
-/* ===== + MORE button (5 dropdowns ke baad) ===== */
+/* ===== + MORE button ===== */
 #mDash .more-wrap{text-align:center;padding:4px 14px 12px 22px}
 #mDash .more-btn{background:#fff;color:var(--purple-postex);border:2px dashed var(--purple-postex);padding:8px 22px;border-radius:20px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s}
 #mDash .more-btn:hover{background:var(--purple-postex);color:#fff;border-style:solid}
@@ -418,7 +414,7 @@
 #mDash .zm-opt.zm-opt-undo:hover{border-color:#ea580c;background:#fff7ed}
 @media (max-width:768px){#mDash .oc-head .zm-tag{font-size:9px;padding:2px 6px}}
 
-/* ===== ZAMBEEL SKU PANEL (sirf admin ko nazar aata hai) ===== */
+/* ===== ZAMBEEL SKU PANEL ===== */
 #mDash .zsk{margin-top:8px;border-radius:12px;border:1px solid #ddd6fe;background:linear-gradient(135deg,#faf5ff,#f5f3ff);padding:8px 10px;box-shadow:0 2px 8px rgba(124,58,237,.08)}
 #mDash .zsk-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
 #mDash .zsk-title{font-size:10px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:#6d28d9;line-height:1.2}
@@ -451,7 +447,7 @@
   <span id="mAlertMessage" class="m-alert-text"></span>
 </div>
 
-<!-- ADMIN LOGIN: jab tak sahi admin key na ho, koi customer data nazar nahi aata -->
+<!-- ADMIN LOGIN -->
 <div id="lockScreen" class="lock-screen">
   <div class="lock-card">
     <div class="lock-icon">🔒</div>
@@ -740,11 +736,10 @@
 <script>
 const BASE_URL = "https://store.musfiras.workers.dev";
 
-// ADMIN KEY code mein NAHI likhi. Dashboard kholne par aap type karte hain (script ke aakhir wali ADMIN_KEY).
+// ADMIN KEY code mein NAHI likhi. Dashboard kholne par aap type karte hain.
 const KEY_STORE = 'musfirasAdminKey_v2';
 let ADMIN_KEY = "";
 try { ADMIN_KEY = sessionStorage.getItem(KEY_STORE) || localStorage.getItem(KEY_STORE) || ""; } catch(e) {}
-// Purane version ka local data (jis mein phone numbers ho sakte the) saaf kar do
 try { localStorage.removeItem('musfirasDashLog_v1'); } catch(e) {}
 
 let allOrders = [];
@@ -770,11 +765,11 @@ let stockUntracked = [];
 let stockPopup = null;
 const LOW_LIMIT = 5;   // left == 5 → ORANGE alert
 const RED_BELOW = 5;   // left 1–4 → RED alert (0 = Out of stock)
-const JUST_SOLD_MINUTES = 180; // is se kam der pehle bika to "Just sold"
+const JUST_SOLD_MINUTES = 180;
 
 function showLoader(v){ document.getElementById('loaderOverlay').style.display = v?'flex':'none'; }
 
-// Admin key ab URL mein NAHI jati, POST body mein jati hai (history / logs mein save nahi hoti)
+// Admin key URL mein NAHI jati, POST body mein jati hai
 function api(params){
   return fetch(BASE_URL, {
     method: 'POST',
@@ -789,7 +784,6 @@ function escHtml(s){
 }
 
 // ===== ZAMBEEL SKU: order text mein {ZM:CODE} ki shakal mein aata hai =====
-// Ye code sirf dashboard par dikhta hai. Customer ko jane wale WhatsApp message se hamesha hata diya jata hai.
 function stripZm(s){
   return String(s==null?"":s).replace(/\{\s*ZM\s*[:=][^}]*\}/gi,'').replace(/[ \t]{2,}/g,' ').trim();
 }
@@ -851,14 +845,13 @@ function unlockDash(){
   el.value = "";
   refreshDash();
 }
-// Script "Access Denied" de to foran lock
 function isDenied(res){ return res && !Array.isArray(res) && res.message === "Access Denied"; }
 function handleDenied(){
   forgetKey(); wipeScreen();
   showLock("Admin key galat hai ya badal chuki hai. Dobara likhein.");
 }
 
-// ===== Activity (sab record Google Sheet mein; browser mein customer data save nahi hota) =====
+// ===== Activity =====
 const WA_LABELS = {pending:'Pending', dispatched:'Dispatched', delivered:'Delivered', cancelled:'Cancelled'};
 function getRowLog(row){
   const wa = {};
@@ -869,7 +862,7 @@ function getRowLog(row){
   const ltime = String(row["last action time"]||"").trim();
   return {
     wa,
-    last: lt ? {text:(/WA/.test(lt)?"📲 ":"🔄 ")+lt, time:ltime} : null,
+    last: lt ? {text:(/^Email/i.test(lt)?"✉️ ":(/WA/.test(lt)?"📲 ":"🔄 "))+lt, time:ltime} : null,
     statusTxt: String(row["status changed"]||"").trim()
   };
 }
@@ -880,7 +873,6 @@ function sheetTimeNow(){
   return `${z(d.getDate())} ${M[d.getMonth()]} ${d.getFullYear()}, ${z(h)}:${z(d.getMinutes())}:${z(d.getSeconds())} ${ap}`;
 }
 function logWA(orderId, phone, type, rowNum){
-  // Pehle screen par foran dikha dete hain, phir sheet se sync
   const rn = parseInt(rowNum, 10);
   const t = sheetTimeNow();
   const r = allOrders.find(x=>x.rowNumber===rn);
@@ -897,7 +889,7 @@ function logWA(orderId, phone, type, rowNum){
     .catch(()=>{});
 }
 
-// Elite soft alert (browser ke default alert ki jagah)
+// Elite soft alert
 let alertTimer = null;
 function showEliteAlert(msg){
   const t = document.getElementById('mCustomAlert');
@@ -907,7 +899,7 @@ function showEliteAlert(msg){
   alertTimer = setTimeout(()=>t.classList.remove('is-visible'), 4500);
 }
 
-// Link check: https:// khud laga deta hai, space ya bina domain wala link reject
+// Link check
 function normalizeLink(raw){
   let l = String(raw||"").trim();
   if(!l || /\s/.test(l)) return "";
@@ -919,7 +911,7 @@ function normalizeLink(raw){
   }catch(e){ return ""; }
 }
 
-// Safe text for inline onclick attributes (quotes / & / newlines no longer break buttons)
+// Safe text for inline onclick attributes
 function esc(s){
   return String(s==null?"":s)
     .replace(/\\/g,'\\\\')
@@ -968,7 +960,6 @@ function detectDelivery(details){
 function parseDate(rawStr){
   if(!rawStr||rawStr==="N/A") return null;
   let clean=String(rawStr).replace("⏰","").trim();
-  // Sheet format: 31/10/2026, 04:47:44 (dd/mm/yyyy) -- pehle yehi check hota hai taake din/mahina ulta na ho
   let m=clean.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp][Mm])?)?/);
   if(m){
     let h=+(m[4]||0);
@@ -982,7 +973,6 @@ function parseDate(rawStr){
   return null;
 }
 
-// Order received date + exact time (seconds ke saath) + "kitni der pehle"
 function formatOrderTime(raw){
   const d=parseDate(raw);
   if(!d||isNaN(d.getTime())) return null;
@@ -1130,10 +1120,11 @@ function matchesSearch(row, term){
   if(!term) return true;
   let n=String(row["customer: name"]||"").toLowerCase();
   let p=String(row["phone: #"]||"").toLowerCase();
-  let d=String(row["product details"]||"").toLowerCase();   // Order ID + ZM SKU bhi isi mein hota hai
+  let d=String(row["product details"]||"").toLowerCase();
   let c=String(row["zm sku"]||row["zambeel sku"]||row["zm code"]||"").toLowerCase();
-  if(n.includes(term)||p.includes(term)||d.includes(term)||c.includes(term)) return true;
-  let td=term.replace(/\D/g,'');                            // phone: spaces / + / - ka farq nahi parta
+  let e=String(row["email"]||"").toLowerCase();
+  if(n.includes(term)||p.includes(term)||d.includes(term)||c.includes(term)||e.includes(term)) return true;
+  let td=term.replace(/\D/g,'');
   return td.length>=3 && p.replace(/\D/g,'').includes(td);
 }
 
@@ -1148,9 +1139,9 @@ function setFilter(f){
   renderTable(allOrders);
 }
 
-// Order details: product naam bold + dark black, baqi info normal (ZM SKU yahan nahi dikhta, uska alag panel hai)
+// Order details: product naam bold + dark black. Email line yahan nahi dikhti (card par alag dikhti hai).
 function detailsHTML(visualDetails){
-  const parts=stripZm(visualDetails||"").split(" | ").map(x=>x.trim()).filter(Boolean);
+  const parts=stripZm(visualDetails||"").split(" | ").map(x=>x.trim()).filter(Boolean).filter(x=>!/^Email:/i.test(x));
   if(!parts.length) return escHtml(stripZm(visualDetails));
   return parts.map(p=>{
     const isItem=/[\[\(][^\]\)]+[\]\)]\s*[x×*]\s*\d+/i.test(p) || /\s[x×*]\s*\d+\s*$/i.test(p);
@@ -1160,7 +1151,6 @@ function detailsHTML(visualDetails){
     return `<span class="pi"><span class="pn">${escHtml(p)}</span></span>`;
   }).join("");
 }
-// Total Qty + Grand Total: bade aur bold
 function summaryHTML(details){
   let qty=0;
   const mq=String(details||"").match(/Total Qty:\s*(\d+)/i);
@@ -1175,9 +1165,6 @@ function summaryHTML(details){
 }
 
 // ===== ZAMBEEL SKU panel (order card par) =====
-// Do tareeqon se SKU aa sakta hai:
-//  1) product details ke har item ke saath {ZM:CODE}    e.g.  Bag [Blush Pink] x2 {ZM:EGTH-BGE-PNK-GF-ZAM}
-//  2) sheet mein alag column "ZM SKU" (codes ; , ya | se alag)
 function zmSkuInfo(row){
   const details=String((row&&row["product details"])||"");
   const items=parseOrderItems(details);
@@ -1257,7 +1244,6 @@ function renderTable(rows){
 
   buildAnalyticsRows(rows);
 
-  // Filter chips: counts hamesha poori sheet ke hain (filter se nahi badalte)
   const fMap={all:'All',pending:'Pending',dispatched:'Dispatched',delivered:'Delivered',cancelled:'Cancelled'};
   const fCnt={all:rows.length,pending:pC,dispatched:dspC,delivered:dlvC,cancelled:cxC};
   Object.keys(fMap).forEach(k=>{
@@ -1268,7 +1254,6 @@ function renderTable(rows){
   const term=getSearchTerm();
   let filteredRows=rows.filter(r=>matchesFilter(r,currentFilter)&&matchesSearch(r,term));
   let activeRows=filteredRows.filter(r=>!hiddenRows.includes(r.rowNumber));
-  // Status filter ya search laga ho to saare matching orders dikhte hain; sirf "All" (bina search) mein 6-6 karke Load More
   const limited=(currentFilter==='all'&&!term);
   let subset=limited?activeRows.slice(0,visibleCount):activeRows;
   shownRowNums=subset.map(r=>r.rowNumber);
@@ -1278,7 +1263,7 @@ function renderTable(rows){
     let what=currentFilter==='all'?'':(' '+fMap[currentFilter]);
     infoTxt=`Showing ${activeRows.length}${what} order${activeRows.length===1?'':'s'}`+(term?` matching "${getSearchTerm()}"`:'')+` (out of ${rows.length} total)`;
   }
-  document.getElementById('filterInfo').innerText=infoTxt;   // innerText: safe
+  document.getElementById('filterInfo').innerText=infoTxt;
 
   subset.forEach((row,idx)=>{
     let ts=row["date & time"]||"N/A";
@@ -1308,15 +1293,12 @@ function renderTable(rows){
     let payHTML=payMethod==="PAID"?`<span class="advance-tag">💳 PAID</span>`:`<span class="cod-tag">💵 COD</span>`;
     let delHTML=delMethod==="EXPRESS"?`<span class="express-tag">⚡ EXPRESS</span>`:`<span class="standard-tag">📦 STANDARD</span>`;
 
-    // Zambeel: done hai ya pending
     const zmIsDone=zmDone(row);
     const zmTagHTML=zmIsDone?`<span class="zm-tag">🛒 ZM ✔ Done</span>`:'';
 
-    // Jo status abhi active hai uska button highlight + ✔ ke saath
     const actCls=k=>stLow.includes(k)?' is-active':'';
     const actMark=k=>stLow.includes(k)?'✔ ':'';
 
-    // Last action + kaun kaun sa WA message gaya (Google Sheet se)
     let lg=getRowLog(row);
     let lastHTML=lg.last
       ? `<div class="act-line">${escHtml(lg.last.text)}</div>${lg.last.time?`<div class="act-sub">🕒 ${escHtml(lg.last.time)}</div>`:''}`
@@ -1383,15 +1365,13 @@ function renderTable(rows){
 
 // =====================================================================
 //  ZAMBEEL  (ZM Pending / ZM Done + CSV download)
-//  Status sirf is browser mein save hota hai (sirf Order ID + waqt, customer ka data nahi).
 // =====================================================================
 const ZM_STORE = 'musfirasZambeel_v1';
 let zmState = {};
 try { zmState = JSON.parse(localStorage.getItem(ZM_STORE) || '{}') || {}; } catch(e) { zmState = {}; }
-let zmRow = null;   // popup mein kaun sa order (rowNumber)
+let zmRow = null;
 
 function zmSave(){ try { localStorage.setItem(ZM_STORE, JSON.stringify(zmState)); } catch(e) {} }
-// Row number sheet se delete hone par badal jata hai, is liye Order ID se pehchante hain
 function zmKey(row){
   const id = orderIdOf(row);
   return id ? id : ('t:' + String((row && row["date & time"]) || ''));
@@ -1438,7 +1418,7 @@ function zmMarkPending(){
   showEliteAlert("ZM wapas Pending kar diya.");
 }
 
-// CSV: customer ke text se Excel formula na ban sake (= @ + - se shuru hone wale text ke aage ' laga dete hain)
+// CSV: customer ke text se Excel formula na ban sake
 function csvCell(v, safe){
   let s = String(v == null ? "" : v).replace(/\r?\n/g, ' ').trim();
   if(!safe && /^[=+\-@\t]/.test(s)) s = "'" + s;
@@ -1449,8 +1429,9 @@ function zmBuildCsv(row){
   const orderId = orderIdOf(row);
   const name = String(row["customer: name"] || "");
   const phoneRaw = String(row["phone: #"] || "");
-  const phone = phoneRaw.replace(/[^\d+]/g, '');            // sirf digits / +
+  const phone = phoneRaw.replace(/[^\d+]/g, '');
   const wa = toWaNumber(phoneRaw);
+  const email = String(row["email"] || "");
   const address = String(row["address"] || "");
   const city = String(row["city"] || "");
   const country = (wa && wa.startsWith('92')) ? 'Pakistan' : 'United Arab Emirates';
@@ -1467,7 +1448,6 @@ function zmBuildCsv(row){
   let items = info.items.slice();
   let perItem = info.perItem.slice();
   if(!items.length){
-    // Item format samajh na aaye to poora text ek line mein de do
     items = [{product: cleanItems(details).replace(/\n/g, ' ; ') || stripZm(details), color: "-", qty: ""}];
     perItem = [info.extra.join(' / ')];
   } else if(info.extra.length){
@@ -1478,12 +1458,12 @@ function zmBuildCsv(row){
   if(mq) totalQty = parseInt(mq[1], 10) || 0;
   else totalQty = items.reduce((a,it)=>a + (parseInt(it.qty,10)||0), 0);
 
-  const head = ["Order ID","Order Date","Order Time","Customer Name","Phone","WhatsApp Number","Address","City","Country",
+  const head = ["Order ID","Order Date","Order Time","Customer Name","Phone","WhatsApp Number","Email","Address","City","Country",
                 "Item No","Product Name","Color / Variant","Zambeel SKU","Quantity","Total Qty","Order Total (AED)","Payment Method","COD Amount (AED)","Delivery Type","Order Status","Full Order Details"];
   const lines = [head.map(h=>csvCell(h, true)).join(',')];
   items.forEach((it, i)=>{
     lines.push([
-      csvCell(orderId), csvCell(oDate), csvCell(oTime), csvCell(name), csvCell(phone, true), csvCell(wa, true),
+      csvCell(orderId), csvCell(oDate), csvCell(oTime), csvCell(name), csvCell(phone, true), csvCell(wa, true), csvCell(email),
       csvCell(address), csvCell(city), csvCell(country),
       csvCell(i + 1, true), csvCell(it.product), csvCell(it.color === "-" ? "" : it.color), csvCell(perItem[i] || ""), csvCell(it.qty, true),
       csvCell(totalQty || "", true), csvCell(total || "", true), csvCell(pay === "PAID" ? "Paid" : "Cash on Delivery"),
@@ -1491,7 +1471,7 @@ function zmBuildCsv(row){
       csvCell(i === 0 ? stripZm(details) : "")
     ].join(','));
   });
-  return "\ufeff" + lines.join("\r\n");   // BOM: Excel mein Urdu/Arabic naam sahi dikhen
+  return "\ufeff" + lines.join("\r\n");
 }
 function zmDownload(){
   const row = zmCurrentRow(); if(!row) return;
@@ -1536,10 +1516,9 @@ function updateBulkBar(){
   if(a) a.checked=shownRowNums.length>0 && shownRowNums.every(r=>selectedRows.has(r));
 }
 function bulkDelete(){
-  // Bade row number pehle delete hote hain, taake neeche wali rows ke number na hilen
   const rows=Array.from(selectedRows).sort((a,b)=>b-a);
   if(!rows.length){ showEliteAlert("Pehle kam az kam ek order tick karein."); return; }
-  if(!confirm("⚠️ "+rows.length+" order(s) PERMANENTLY delete honge.\n\nDashboard aur Google Sheet dono se hat jayenge. Ye undo nahi hoga.\n\n(Stock: in orders ki qty stock mein wapas aa jayegi.)")) return;
+  if(!confirm("⚠️ "+rows.length+" order(s) PERMANENTLY delete honge.\n\nDashboard aur database dono se hat jayenge. Ye undo nahi hoga.\n\n(Stock: in orders ki qty stock mein wapas aa jayegi.)")) return;
   showLoader(true);
   const lo=document.getElementById('loaderOverlay');
   let ok=0, bad=0, denied=false, i=0;
@@ -1564,13 +1543,11 @@ function bulkDelete(){
 
 // =====================================================================
 //  STOCK MANAGER
-//  Sold = orders se khud hisaab (cancelled order sold nahi gina jata, delete hui order bhi nahi)
-//  Left = Total In - Sold
 // =====================================================================
 function sNorm(s){ return String(s==null?"":s).toLowerCase().replace(/\s+/g," ").trim(); }
 function sKey(p,c){ return sNorm(p)+"||"+sNorm(c); }
 
-// Order ke text se items nikalna: "Name [Color] x2 {ZM:CODE} | Name2 [Color2] x1 | Total Qty: 3 | ..."
+// "Name [Color] x2 {ZM:CODE} | Name2 [Color2] x1 | Total Qty: 3 | ..."
 function parseOrderItems(details){
   let s=String(details||"");
   if(s.indexOf(" | Items: ")>-1) s=s.split(" | Items: ")[1]||"";
@@ -1578,7 +1555,7 @@ function parseOrderItems(details){
   const items=[];
   s.split(" | ").forEach(part=>{
     part=part.trim(); if(!part) return;
-    const sku=zmSkuOf(part);        // {ZM:CODE} yahan se nikal kar alag rakhte hain
+    const sku=zmSkuOf(part);
     part=stripZm(part);
     if(!part) return;
     let m=part.match(/^(.*?)\s*[\[\(]([^\]\)]+)[\]\)]\s*[x×*]\s*(\d+)/i);
@@ -1611,7 +1588,7 @@ function computeStock(){
   let unread=0;
   allOrders.forEach(row=>{
     const st=String(row["status"]||"Pending").toLowerCase();
-    if(st.includes("cancel")) return;            // cancelled = qty wapas stock mein
+    if(st.includes("cancel")) return;
     const d=parseDate(row["date & time"]);
     const items=parseOrderItems(row["product details"]);
     if(!items.length){ unread++; return; }
@@ -1619,7 +1596,7 @@ function computeStock(){
       const k=sKey(it.product,it.color);
       const e=map[k];
       if(e){
-        if(e.s.since){                           // ginti sirf "Counting From" ke baad ke orders se
+        if(e.s.since){
           const sd=parseDate(e.s.since);
           if(sd && (!d || d<sd)) return;
         }
@@ -1635,13 +1612,12 @@ function computeStock(){
   return {map:map, untr:untr, unread:unread};
 }
 
-// ===== Stock panel: lambi list ke liye (collapse / page -> product -> colors / search / load more) =====
 let stockSearch="", stockOpen={}, stockVisible=15, untrOpen=false, stockOrder=[], stockAttn=[];
 let stockPageOpen={}, stockPageVis={}, stockPageList=[];
 let stockRestOpen={};
 let stockUrgOpen={}, attnOpen={just:false,need:false}, stockMatchCount=0;
 let stockUrgVis={}, attnVis={just:5,need:5};
-const PROD_PAGE=5;   // ek baar mein itne product dropdowns, baqi '+ more' mein
+const PROD_PAGE=5;
 let stockPanelOpen=false;
 try { stockPanelOpen = localStorage.getItem('musfirasStockPanel')==='1'; } catch(e) {}
 
@@ -1651,13 +1627,11 @@ function stockPageOpenNow(k){
 }
 function toggleStockPage(i){ const k=stockPageList[i]; if(k===undefined) return; stockPageOpen[k]=!stockPageOpenNow(k); renderStock(); }
 function stockMoreInPage(i){ const k=stockPageList[i]; if(k===undefined) return; stockPageVis[k]=(stockPageVis[k]||PROD_PAGE)+PROD_PAGE; renderStock(); }
-// "Baqi products" dropdown: search ho to khud khulta hai, warna band
 function stockRestOpenNow(k){
   if(stockRestOpen[k]!==undefined) return stockRestOpen[k];
   return !!stockSearch;
 }
 function toggleStockRest(i){ const k=stockPageList[i]; if(k===undefined) return; stockRestOpen[k]=!stockRestOpenNow(k); renderStock(); }
-// Low/Out dropdown: band rehta hai; search ya Low/Out filter lagne par khud khulta hai
 function stockUrgOpenNow(k){
   if(stockUrgOpen[k]!==undefined) return stockUrgOpen[k];
   return !!stockSearch || stockFilter!=='all';
@@ -1696,7 +1670,6 @@ function toggleStockProd(i){
 }
 function stockMoreProducts(){ stockVisible+=15; renderStock(); }
 function toggleUntracked(){ untrOpen=!untrOpen; renderStock(); }
-// Chip par click: usi product ka page + product khol do (baqi dropdown bhi khul jata hai)
 function jumpToProd(name){
   if(!name) return;
   document.getElementById('stockSearch').value=name;
@@ -1713,7 +1686,7 @@ function jumpToProd(name){
 function jumpToStock(i){ const a=stockAttn[i]; if(a) jumpToProd(a.product); }
 function stockOpenNow(k){
   if(stockOpen[k]!==undefined) return stockOpen[k];
-  return !!stockSearch && stockMatchCount<=2;   // warna har product dropdown band
+  return !!stockSearch && stockMatchCount<=2;
 }
 
 function setStockFilter(f){ stockFilter=f; stockUrgOpen={}; stockUrgVis={}; stockOpen={}; stockPageOpen={}; stockRestOpen={}; stockPageVis={}; stockVisible=15; renderStock(); }
@@ -1742,8 +1715,8 @@ function renderStock(){
     const left=s.total-sold;
     let state="ok";
     if(left<=0) state="out";
-    else if(left<RED_BELOW) state="crit";      // 1-4 : red
-    else if(left<=LOW_LIMIT) state="low";      // 5   : orange
+    else if(left<RED_BELOW) state="crit";
+    else if(left<=LOW_LIMIT) state="low";
     const justSold=!!(last && (Date.now()-last.getTime())/60000 < JUST_SOLD_MINUTES && (Date.now()-last.getTime())>=-60000);
     return {s:s, sold:sold, last:last, left:left, state:state, justSold:justSold};
   });
@@ -1764,7 +1737,6 @@ function renderStock(){
 
   const icon=st=>st==='out'?'❌':(st==='crit'?'🔴':'🟠');
 
-  // Hamesha nazar aane wali patti (panel band ho tab bhi): Just sold + Needs attention
   stockAttn=entries.filter(x=>x.state!=='ok')
     .sort((a,b)=>a.left-b.left)
     .map(x=>({product:x.s.product,color:x.s.color,left:x.left,state:x.state}));
@@ -1799,7 +1771,6 @@ function renderStock(){
   stockView=shown;
   stockMatchCount=new Set(shown.map(x=>sNorm(x.s.product))).size;
 
-  // Group: product (colors) -> page
   const groups={}; let order=[];
   shown.forEach((x,i)=>{
     const k=sNorm(x.s.product);
@@ -1817,7 +1788,6 @@ function renderStock(){
     return r(ga)-r(gb) || a.localeCompare(b);
   };
 
-  // Pages
   const pages={};
   order.forEach(k=>{
     const g=groups[k], pk=g.page?sNorm(g.page):'__other';
@@ -1836,7 +1806,6 @@ function renderStock(){
 
   const limited=(!term && stockFilter==='all');
 
-  // Ek product ka poora card (colors rows ke saath)
   const prodHTML=(k)=>{
     const gi=stockOrder.length; stockOrder.push(k);
     const g=groups[k];
@@ -1904,7 +1873,6 @@ function renderStock(){
         const isUrgent=k=>{ const g=groups[k]; return !!(g.out||g.crit||g.low); };
         const urgent=P.keys.filter(isUrgent);
         const rest=P.keys.filter(k=>!isUrgent(k));
-        // 1) Pehle low / khtm wale products
         if(urgent.length){
           const uOpen=stockUrgOpenNow(pk);
           const uo=urgent.reduce((a,k)=>a+groups[k].out,0), uc=urgent.reduce((a,k)=>a+groups[k].crit,0), ul=urgent.reduce((a,k)=>a+groups[k].low,0);
@@ -1916,7 +1884,6 @@ function renderStock(){
             if(urgent.length>uvis) html+=`<div class="more-wrap"><button class="more-btn" onclick="stockMoreUrg(${pi})">+ ${urgent.length-uvis} more</button></div>`;
           }
         }
-        // 2) Baqi products dropdown mein (click par khulte hain)
         if(rest.length){
           const rOpen=stockRestOpenNow(pk);
           html+=`<div class="stock-rest-toggle" onclick="toggleStockRest(${pi})">${rOpen?'▼':'▶'} ✅ ${urgent.length?'Baqi products':'Products'} (${rest.length}) — ${rOpen?'chhupane':'dekhne'} ke liye click karein</div>`;
@@ -1932,9 +1899,8 @@ function renderStock(){
     });
   }
 
-  // Orders mein aaye par stock mein add nahi (Not tracked yet) - band rehta hai, kholne par list
   let untrList=Object.keys(calc.untr).map(k=>calc.untr[k]).sort((a,b)=>sNorm(a.product).localeCompare(sNorm(b.product)) || sNorm(a.color).localeCompare(sNorm(b.color)));
-  stockUntracked=untrList;   // index 'track' button ke liye poori list par rehta hai
+  stockUntracked=untrList;
   if(untrList.length){
     html+=`<div class="stock-untracked"><div class="stock-untracked-title sp-toggle" onclick="toggleUntracked()">${untrOpen?'▼':'▶'} 🆕 Orders mein aaye hain par abhi stock mein add nahi (${untrList.length})</div>`;
     if(untrOpen){
@@ -1972,7 +1938,7 @@ function loadStock(){
       else {
         stockLoaded=false;
         stockError=(res && res.message==="Access Denied")
-          ? "Stock data abhi nahi aa raha. Pehle naya Apps Script paste karke Deploy → Manage deployments → Edit → New version karein."
+          ? "Stock data abhi nahi aa raha. Worker ka naya code deploy karein ya Refresh karein."
           : ((res&&res.message)?res.message:"Stock data unavailable.");
       }
       renderStock();
@@ -1980,8 +1946,8 @@ function loadStock(){
     .catch(()=>{ stockLoaded=false; stockError="Network error while loading stock. Refresh karein."; renderStock(); });
 }
 
-// ===== Product name dropdown (50 tak dikhata hai, scroll hota hai, type karne par filter) =====
-let catalog=[];   // store pages se aaye products: {name, colors:[{name,qty}]}
+// ===== Product name dropdown =====
+let catalog=[];
 function pdNames(){
   const n={};
   allStock.forEach(s=>{ n[sNorm(s.product)]=s.product; });
@@ -2006,7 +1972,7 @@ function pdPick(el){
   document.getElementById('spProduct').value=name;
   document.getElementById('pdList').style.display='none';
   const c=catalog.find(x=>sNorm(x.name)===sNorm(name));
-  if(c && c.colors.length){        // page se aa chuka ho to colors + qty khud bhar do
+  if(c && c.colors.length){
     const box=document.getElementById('spRows');
     const empty=Array.from(box.querySelectorAll('.sp-row')).every(r=>!r.querySelector('.sp-rc').value.trim()&&!r.querySelector('.sp-rq').value.trim());
     if(empty){
@@ -2039,7 +2005,7 @@ function removeColorRow(btn){
 }
 
 function openStockPopup(mode, idx){
-  if(!stockLoaded){ showEliteAlert("Stock data abhi load nahi hua. Pehle Apps Script update karein ya Refresh karein."); return; }
+  if(!stockLoaded){ showEliteAlert("Stock data abhi load nahi hua. Pehle Refresh karein."); return; }
   stockPopup={mode:mode, idx:idx};
   const title=document.getElementById('spTitle'), help=document.getElementById('spHelp');
   const nameWrap=document.getElementById('spNameWrap'), fixed=document.getElementById('spFixedWrap');
@@ -2063,7 +2029,6 @@ function openStockPopup(mode, idx){
     if(mode==='track' && stockUntracked[idx]){
       const t=stockUntracked[idx];
       pEl.value=t.product;
-      // isi product ke baqi untracked colors bhi saath mein bhar do
       stockUntracked.filter(u=>sNorm(u.product)===sNorm(t.product)).forEach(u=>addColorRow(u.color==='-'?"":u.color,""));
     }
     if(!document.getElementById('spRows').children.length) addColorRow("","");
@@ -2112,7 +2077,7 @@ function submitStockPopup(){
     for(const r of rowEls){
       const cIn=r.querySelector('.sp-rc'), qIn=r.querySelector('.sp-rq');
       const color=cIn.value.trim(), qRaw=qIn.value.trim();
-      if(!color && !qRaw) continue;                         // poori khali row ignore
+      if(!color && !qRaw) continue;
       const q=parseInt(qRaw,10);
       if(qRaw==="" || isNaN(q) || q<0){ qIn.classList.add('input-error'); showEliteAlert("Har color ki valid quantity likhein (0 ya zyada)."); qIn.focus(); return; }
       const k=sNorm(color);
@@ -2185,7 +2150,6 @@ function removeStockLine(idx){
 
 // =====================================================================
 //  IMPORT FROM STORE PAGE
-//  Apps Script ka 'readStorePage' action page ke products + colors (+ qty) wapas deta hai.
 // =====================================================================
 const STORE_PAGES=[
   {name:'Store (Home)',url:'https://www.musfiras.com/store'},
@@ -2198,7 +2162,6 @@ let impData=[];
 let impPageName='';
 function impTracked(name,color){ return allStock.some(s=>sKey(s.product,s.color)===sKey(name,color||'-')); }
 
-// Jo products pehle se stock mein hain par un ka page set nahi, unka page khud set kar do (qty nahi badalti)
 function impAssignPages(products, pageName){
   const todo=products.map(p=>p.name).filter(n=>allStock.some(s=>sNorm(s.product)===sNorm(n)&&!s.page));
   if(!todo.length) return Promise.resolve();
@@ -2246,7 +2209,7 @@ function impFetch(){
       impRender();
       impAssignPages(res.products, impPageName);
     } else if(res && res.message==='Access Denied'){
-      st.innerText='Apps Script mein readStorePage abhi add nahi hua. Sheet wala code update karke New version deploy karein.';
+      st.innerText='Worker mein readStorePage abhi add nahi hua. Naya worker code deploy karein.';
     } else {
       st.innerText=(res&&res.message)?res.message:'Page nahi khula. Dobara try karein.';
     }
@@ -2349,7 +2312,6 @@ function confirmAndSendDispatchWA(){
   let trackId=idEl.value.trim();
   let trackLink=linkEl.value.trim();
 
-  // Teeno zaroori hain: koi bhi khali ho to message nahi jayega
   let missing=[];
   if(!courierName){ missing.push("Courier Service Name"); nameEl.classList.add('input-error'); }
   if(!trackId){ missing.push("Tracking ID"); idEl.classList.add('input-error'); }
@@ -2377,22 +2339,22 @@ function confirmAndSendDispatchWA(){
   }
 }
 
-// Phone -> WhatsApp international number (UAE 971..., old Pakistan orders still work)
+// Phone -> WhatsApp international number
 function toWaNumber(phone){
   let p=String(phone||"").replace(/[^0-9]/g,'');
   if(!p) return "";
-  if(p.length>=11 && (p.startsWith("971")||p.startsWith("92"))) return p; // already international
-  if(/^03\d{9}$/.test(p)) return "92"+p.substring(1);                     // old Pakistan orders
-  if(p.startsWith("0")) return "971"+p.substring(1);                      // 05xxxxxxxx
-  return "971"+p;                                                         // 5xxxxxxxx
+  if(p.length>=11 && (p.startsWith("971")||p.startsWith("92"))) return p;
+  if(/^03\d{9}$/.test(p)) return "92"+p.substring(1);
+  if(p.startsWith("0")) return "971"+p.substring(1);
+  return "971"+p;
 }
 
-// Items only, one per line (no totals / extra fields). ZM SKU yahan se hamesha hat jata hai: customer ko kabhi nahi jata.
+// Items only, one per line. ZM SKU aur Email yahan se hamesha hat jate hain: customer ko WhatsApp par nahi jate.
 function cleanItems(details){
   let s=stripZm(details||"");
   if(s.includes(" | Items: ")) s=s.split(" | Items: ")[1]||s;
   s=s.split(" | Total Qty:")[0];
-  return s.split(" | ").map(x=>x.trim()).filter(Boolean).map(x=>"• "+x).join("\n");
+  return s.split(" | ").map(x=>x.trim()).filter(Boolean).filter(x=>!/^Email:/i.test(x)).map(x=>"• "+x).join("\n");
 }
 
 function sendStatusWA(statusLow, name, phone, orderId, details, address, city, trackingId, courierName, trackingLink, rowNum){
@@ -2422,13 +2384,12 @@ function sendStatusWA(statusLow, name, phone, orderId, details, address, city, t
         `— *Musfira's* 👑`;
 
   } else if(statusLow.includes("dispatch")){
-    // Courier name, Tracking ID aur link teeno zaroori hain (popup mein check ho chuka hota hai)
     if(!courierName || !trackingId || !trackingLink){
       showEliteAlert("Message not sent. Courier name, Tracking ID and Tracking Link are all required.");
       return;
     }
     let courier=courierName;
-    let idMono="```"+trackingId+"```";   // monospace: customer tap karke asani se copy kar sake
+    let idMono="```"+trackingId+"```";
     let link=trackingLink;
 
     waType="dispatched";
@@ -2482,8 +2443,6 @@ function tryUpdate(rowNum, currentStatus, target, orderId, phone){
   doUpdateStatus(rowNum, target, orderId, phone);
 }
 
-// Sheet se row delete hone par neeche wali rows ke number 1 se kam ho jate hain,
-// is liye status-change counter aur hidden list ko bhi usi hisab se shift karte hain
 function shiftRowRegistry(deletedRow){
   let nc={};
   Object.keys(changeReg).forEach(k=>{
@@ -2495,9 +2454,9 @@ function shiftRowRegistry(deletedRow){
   hiddenRows=hiddenRows.filter(r=>r!==deletedRow).map(r=>r>deletedRow?r-1:r);
 }
 
-// HIDE: dashboard + Google Sheet dono se row delete hoti hai (refresh par wapas nahi ayegi)
+// HIDE: dashboard + database dono se row delete hoti hai
 function hideRow(rowNum, orderId, phone){
-  if(!confirm("⚠️ Delete this order permanently?\n\nIt will be removed from the dashboard AND from the Google Sheet. This cannot be undone.\n\n(Stock: is order ki qty stock mein wapas aa jayegi.)")) return;
+  if(!confirm("⚠️ Delete this order permanently?\n\nIt will be removed from the dashboard AND from the database. This cannot be undone.\n\n(Stock: is order ki qty stock mein wapas aa jayegi.)")) return;
   showLoader(true);
   api({action:'deleteRow', row:rowNum, orderId:orderId||"", phone:phone||""})
     .then(res=>{
@@ -2535,7 +2494,7 @@ function refreshDash(silent){
       showApp();
       if(!silent) selectedRows.clear();
       allOrders=data; renderTable(data); renderStock(); showLoader(false);
-      loadStock();   // stock sheet bhi sath load hoti hai
+      loadStock();
     })
     .catch(()=>{ showLoader(false); if(!silent) showEliteAlert("Network error. Please try again."); });
 }
@@ -2547,5 +2506,227 @@ function doSearch(){ renderTable(allOrders); }
 setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
 
 </script>
+
+<script>
+(function(){
+  if(window.__mlAddon) return; window.__mlAddon=true;
+  const $=id=>document.getElementById(id);
+  let mlRow=null, mlCache={}, mlProds=[], mlBusy=false;
+
+  /* ---------- CSS ---------- */
+  const st=document.createElement('style');
+  st.textContent=`
+#mDash .ml-btn{color:#800000;font-weight:700;background:#fff8fa;padding:5px 10px;border-radius:8px;border:1px solid #fbcfe8;font-size:11px;cursor:pointer;margin:6px 0 0 6px;transition:.2s}
+#mDash .ml-btn:hover{background:#800000;color:#fff;border-color:#800000}
+#mDash .ml-btn.ml-none{color:#94a3b8;border-color:#e2e8f0;background:#f8fafc}
+#mDash .ml-btn.ml-none:hover{background:#475569;color:#fff;border-color:#475569}
+#mDash .ml-line{display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-top:6px;word-break:break-all}
+#mDash .ml-pop textarea{width:100%;padding:12px 14px;border:2px solid var(--border-color);border-radius:10px;font-size:13px;font-weight:600;outline:none;margin-bottom:12px;font-family:inherit;resize:vertical;min-height:64px}
+#mDash .ml-pop textarea:focus{border-color:var(--purple-postex);box-shadow:0 0 0 4px rgba(93,37,178,.1)}
+#mDash .ml-pop{max-width:470px}
+#mDash .ml-hint{font-size:11px;font-weight:600;color:var(--text-muted);margin:-6px 0 12px;line-height:1.45}
+#mDash .ml-sku-list{max-height:300px;overflow-y:auto;border:1px solid var(--border-color);border-radius:10px;margin-bottom:12px}
+#mDash .ml-sku-row{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:700}
+#mDash .ml-sku-row:last-child{border-bottom:none}
+#mDash .ml-sku-row.bad{background:#fef2f2;color:#dc2626}
+#mDash .ml-sku-row code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px}
+@media (max-width:768px){#mDash .oc-cust .ml-line{flex:0 0 100%;margin-top:0}#mDash .oc-cust .ml-btn{margin:0;padding:4px 9px;font-size:10.5px}}
+`;
+  document.head.appendChild(st);
+
+  /* ---------- Popups ---------- */
+  const host=$('secureArea')||document.body;
+  const pop=document.createElement('div');
+  pop.id='mlPopupBg'; pop.className='tracking-popup-bg';
+  pop.innerHTML=`
+  <div class="tracking-popup ml-pop">
+    <h3>✉️ Email to Customer</h3>
+    <p id="mlInfo"></p>
+
+    <label for="mlTo">Customer email <span class="req">*</span></label>
+    <input type="text" id="mlTo" oninput="this.classList.remove('input-error')" placeholder="customer@example.com" autocomplete="off" />
+
+    <label for="mlKind">Email type</label>
+    <select id="mlKind">
+      <option value="arrival">✨ New Arrival</option>
+      <option value="offer">🎁 Special Offer</option>
+      <option value="thanks">💖 Thank You</option>
+      <option value="custom">📝 Short Message</option>
+    </select>
+
+    <label for="mlPage">Store page</label>
+    <select id="mlPage"></select>
+
+    <label for="mlProd">Product (list se chunein ya naam likhein)</label>
+    <input type="text" id="mlProd" list="mlProdList" placeholder="e.g. Celeste Crossbody Sling" autocomplete="off" />
+    <datalist id="mlProdList"></datalist>
+
+    <label for="mlLink">Link (button isi par jayega)</label>
+    <input type="text" id="mlLink" placeholder="https://www.musfiras.com/..." autocomplete="off" />
+    <div id="mlLinkNote" class="ml-hint">Pehle store page chunein, link khud aa jayega.</div>
+
+    <label for="mlOffer">Offer (short, optional)</label>
+    <input type="text" id="mlOffer" maxlength="70" placeholder="e.g. 10% OFF · code MUSFIRA10" autocomplete="off" />
+
+    <label for="mlNote">Chhota message (optional)</label>
+    <textarea id="mlNote" maxlength="260" placeholder="e.g. Our newest crossbody is here. Soft, elegant and made for everyday."></textarea>
+
+    <label for="mlSubject">Subject (khali = khud ban jayega)</label>
+    <input type="text" id="mlSubject" maxlength="120" placeholder="optional" autocomplete="off" />
+
+    <label for="mlBtn">Button text</label>
+    <input type="text" id="mlBtn" maxlength="30" value="Shop now" autocomplete="off" />
+
+    <div class="tracking-popup-btns">
+      <button class="popup-cancel-btn" onclick="window.__mlClose()">Cancel</button>
+      <button class="popup-confirm-btn" onclick="window.__mlSend()">Send Email ✅</button>
+    </div>
+  </div>`;
+  host.appendChild(pop);
+
+  const sk=document.createElement('div');
+  sk.id='mlSkuBg'; sk.className='tracking-popup-bg';
+  sk.innerHTML=`
+  <div class="tracking-popup ml-pop">
+    <h3>🔐 Zambeel SKU Check</h3>
+    <div id="mlSkuBody"></div>
+    <button type="button" class="popup-cancel-btn" style="width:100%;" onclick="document.getElementById('mlSkuBg').style.display='none'">Close</button>
+  </div>`;
+  host.appendChild(sk);
+
+  /* ---------- Email popup logic ---------- */
+  function mlFillPages(){
+    const sel=$('mlPage');
+    sel.innerHTML='<option value="">— Koi page nahi —</option>'+STORE_PAGES.map(p=>`<option value="${escHtml(p.url)}">${escHtml(p.name)}</option>`).join('');
+  }
+  function openMail(rn){
+    const row=allOrders.find(x=>x.rowNumber===rn);
+    if(!row){ showEliteAlert('Order nahi mila. Refresh karke dobara try karein.'); return; }
+    mlRow=rn; mlProds=[];
+    const id=orderIdOf(row);
+    $('mlInfo').innerText=(id?('Order #'+id+' — '):'')+String(row['customer: name']||'');
+    $('mlTo').value=String(row.email||'').trim(); $('mlTo').classList.remove('input-error');
+    $('mlKind').value='arrival';
+    mlFillPages(); $('mlPage').value='';
+    $('mlProd').value=''; $('mlProdList').innerHTML='';
+    $('mlLink').value=''; $('mlLink').dataset.edited='';
+    $('mlOffer').value=''; $('mlNote').value=''; $('mlSubject').value=''; $('mlBtn').value='Shop now';
+    $('mlLinkNote').innerText='Pehle store page chunein, link khud aa jayega.';
+    pop.style.display='flex';
+  }
+  function mlClose(){ pop.style.display='none'; mlRow=null; }
+
+  function mlAutoLink(){
+    const url=$('mlPage').value, linkEl=$('mlLink'), note=$('mlLinkNote');
+    const nm=sNorm($('mlProd').value);
+    const p=nm?mlProds.find(x=>sNorm(x.name)===nm):null;
+    if(linkEl.dataset.edited && linkEl.value.trim()) return;   // aap ne khud likha ho to na badlo
+    if(p && p.link){ linkEl.value=p.link; note.innerText='🔗 Product ka link page se auto aa gaya.'; }
+    else if(url){ linkEl.value=url; note.innerText=p?'ℹ️ Is product ka alag link page par nahi mila, store page ka link laga diya. Chahein to badal dein.':'ℹ️ Store page ka link laga diya. Product chunein ya link badal dein.'; }
+  }
+  function mlSetProds(list){
+    mlProds=list;
+    $('mlProdList').innerHTML=list.map(p=>`<option value="${escHtml(p.name)}">`).join('');
+    mlAutoLink();
+  }
+  function mlLoadPage(){
+    const url=$('mlPage').value, note=$('mlLinkNote');
+    mlProds=[]; $('mlProdList').innerHTML='';
+    if(!url) return;
+    if(mlCache[url]){ mlSetProds(mlCache[url]); return; }
+    note.innerText='⌛ Page se products la raha hun...';
+    api({action:'readStorePage',url:url}).then(res=>{
+      if(isDenied(res)){ handleDenied(); return; }
+      if(res && res.status==='success' && Array.isArray(res.products)){
+        mlCache[url]=res.products; mlSetProds(res.products);
+        const withLink=res.products.filter(p=>p.link).length;
+        note.innerText='✅ '+res.products.length+' products mile'+(withLink?(' ('+withLink+' ka link auto).'):' (product links page par nahi mile, page ka link lagega).')+' Naam type karein ya list se chunein.';
+      } else note.innerText=(res&&res.message)||'Page nahi khula. Dobara try karein.';
+    }).catch(()=>{ note.innerText='Network error. Dobara try karein.'; });
+  }
+  $('mlPage').addEventListener('change',()=>{ $('mlLink').dataset.edited=''; $('mlLink').value=''; mlLoadPage(); });
+  $('mlProd').addEventListener('input',mlAutoLink);
+  $('mlProd').addEventListener('change',mlAutoLink);
+  $('mlLink').addEventListener('input',()=>{ $('mlLink').dataset.edited='1'; });
+
+  function mlSend(){
+    if(mlBusy) return;
+    const row=allOrders.find(x=>x.rowNumber===mlRow)||{};
+    const toEl=$('mlTo'); const to=toEl.value.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)){ toEl.classList.add('input-error'); showEliteAlert('Customer ki sahi email likhein.'); toEl.focus(); return; }
+    let link=$('mlLink').value.trim();
+    if(link){
+      link=normalizeLink(link);
+      let okHost=false; try{ okHost=/(^|\.)musfiras\.com$/i.test(new URL(link).hostname); }catch(e){}
+      if(!link||!okHost){ showEliteAlert('Link musfiras.com ka hona chahiye.'); return; }
+    }
+    const kind=$('mlKind').value, product=$('mlProd').value.trim(), offer=$('mlOffer').value.trim(), note=$('mlNote').value.trim();
+    if(kind!=='thanks' && !product && !offer && !note){ showEliteAlert('Kam az kam product, offer ya message mein se kuch likhein.'); return; }
+    if(!confirm('Ye email '+to+' par bheji jaye?')) return;
+    mlBusy=true; showLoader(true);
+    api({action:'sendEmail', row:mlRow, orderId:orderIdOf(row), to:to, kind:kind, subject:$('mlSubject').value.trim(),
+         product:product, offer:offer, note:note, link:link, button:$('mlBtn').value.trim()})
+      .then(res=>{
+        if(isDenied(res)){ handleDenied(); return; }
+        if(res && res.status==='success'){ showEliteAlert('Email bhej di gayi ✅'); mlClose(); refreshDash(true); }
+        else showEliteAlert((res&&res.message)||'Email nahi gayi.');
+      })
+      .catch(()=>showEliteAlert('Network error. Email nahi gayi.'))
+      .then(()=>{ mlBusy=false; showLoader(false); });
+  }
+  window.__mlClose=mlClose; window.__mlSend=mlSend;
+
+  /* ---------- Order cards mein Email button + email line ---------- */
+  function decorate(){
+    const cards=document.querySelectorAll('#ordersBody .order-card');
+    cards.forEach((card,i)=>{
+      if(card.querySelector('.ml-btn')) return;
+      const rn=shownRowNums[i];
+      const row=allOrders.find(x=>x.rowNumber===rn);
+      const wrap=card.querySelector('.oc-cust');
+      if(!row||!wrap) return;
+      const email=String(row.email||'').trim();
+      const b=document.createElement('button');
+      b.type='button'; b.className='ml-btn'+(email?'':' ml-none');
+      b.textContent=email?'✉️ Email':'✉️ Email (no address)';
+      b.onclick=()=>openMail(rn);
+      const wa=wrap.querySelector('.wa-btn');
+      if(wa) wa.after(b); else wrap.appendChild(b);
+      if(email){
+        const l=document.createElement('span'); l.className='ml-line'; l.textContent='✉️ '+email;
+        const addr=wrap.querySelector('.oc-addr');
+        if(addr) wrap.insertBefore(l,addr); else wrap.appendChild(l);
+      }
+    });
+  }
+  const _rt=renderTable;
+  renderTable=function(rows){ _rt(rows); try{ decorate(); }catch(e){} };
+  try{ if(allOrders&&allOrders.length) renderTable(allOrders); }catch(e){}
+
+  /* ---------- SKU Check ---------- */
+  function skuRun(){
+    showLoader(true);
+    api({action:'skuReport'}).then(res=>{
+      showLoader(false);
+      if(isDenied(res)){ handleDenied(); return; }
+      if(!res||res.status!=='success'){ showEliteAlert('SKU report nahi aayi. Worker ka naya code deploy karein.'); return; }
+      const miss=res.lines.filter(l=>!l.sku);
+      let h=`<div class="zm-state ${miss.length?'':'is-done'}">${miss.length?('⚠️ '+miss.length+' product/color ka ZM SKU worker ki list mein nahi mila'):'✅ Sab products/colors ka ZM SKU mil gaya'} (${res.lines.length} lines check hui)</div>`;
+      h+='<div class="ml-sku-list">'+res.lines.map(l=>`<div class="ml-sku-row ${l.sku?'':'bad'}"><span>${escHtml(l.product)}${l.color&&l.color!=='-'?' — '+escHtml(l.color):''}</span>${l.sku?'<code>'+escHtml(l.sku)+'</code>':'<span>MISSING</span>'}</div>`).join('')+'</div>';
+      if(res.unusedInMap&&res.unusedInMap.length) h+=`<div class="ml-hint">ℹ️ Worker ki list mein ye naam hain par stock/orders mein nahi mile (spelling check karein): ${res.unusedInMap.map(escHtml).join(', ')}</div>`;
+      $('mlSkuBody').innerHTML=h;
+      sk.style.display='flex';
+    }).catch(()=>{ showLoader(false); showEliteAlert('Network error.'); });
+  }
+  const hr=document.querySelector('#stockSection .stock-head-r');
+  if(hr){
+    const b=document.createElement('button');
+    b.className='stock-import-btn'; b.textContent='🔐 SKU Check';
+    b.onclick=function(e){ e.stopPropagation(); skuRun(); };
+    hr.insertBefore(b,hr.firstChild);
+  }
+})();
+</script>
+
 </body>
 </html>

@@ -22,41 +22,50 @@ Classic Black
 Warm Beige`;
 
 // ============================================================================
-//  PLACEMENTS (jahan dikhana ho wahan ka tag likho)
-//  Har product par jitne chaho tags: ['shop-all', 'home', 'bags', 'fashion', 'choice']
-//  Naya tag banana ho to bas koi bhi naam likh do, aur us page par productsFor('naam') use karo.
+//  NAYA PRODUCT JODNE KA TAREEQA (sirf neeche list me ek { ... } block add karo)
+//
+//  Zaroori:   name, price, oldPrice, stock, placements
+//  Optional:  images, offer2, offer3, descriptionHtml, slug, id
+//             (jo na likho wo khud ban jata hai: slug naam se, id slug se,
+//              images/offers/description neeche DEFAULTS se)
+//
+//  placements = jahan dikhana ho:  'shop-all' (store page), 'home' (home page),
+//               'bags', 'fashion', 'choice' ... koi bhi naam, aur page par productsFor('naam')
+//
+//  stock ke color naam aur product ka name Account B (live stock) se bilkul
+//  same hone chahiye, warna live stock match nahi hoga.
 // ============================================================================
 
-// Asli dummy product (PROD_30)
-const base = {
-  id: 'PROD_30',
-  slug: 'celeste-crossbody-sling',
-  name: 'Celeste Crossbody Sling',
-  placements: ['shop-all', 'home'],
-  price: 50,
+// Jo cheez product me na likho, wo yahan se aati hai (apni marzi se badlo)
+const DEFAULTS = {
   oldPrice: 100,
   offer2: 95,
   offer3: 140,
-  stock: { 'Classic Black': 6, 'Warm Beige': 7 },
   images: IMAGES,
-  descriptionHtml: desc('Celeste Crossbody Sling'),
+  placements: ['shop-all'],
 };
 
-// Baqi dummy copies: id, slug, naam aur placements alag
-const copyOf = (id, slug, name, placements) => ({
-  ...base,
-  id,
-  slug,
-  name,
-  placements,
-  descriptionHtml: desc(name),
-});
+const slugify = (s) =>
+  String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+const make = (p) => {
+  const slug = p.slug ?? slugify(p.name);
+  return {
+    ...DEFAULTS,
+    ...p,
+    slug,
+    id: p.id ?? slug,
+    descriptionHtml: p.descriptionHtml ?? desc(p.name),
+  };
+};
+
+const STOCK = { 'Classic Black': 6, 'Warm Beige': 7 };
 
 export const products = [
-  base,
-  copyOf('PROD_31', 'sample-product-2', 'Sample Product 2', ['shop-all', 'bags']),
-  copyOf('PROD_32', 'sample-product-3', 'Sample Product 3', ['shop-all', 'home', 'bags']),
-  copyOf('PROD_33', 'sample-product-4', 'Sample Product 4', ['shop-all', 'fashion']),
+  make({ id: 'PROD_30', slug: 'celeste-crossbody-sling', name: 'Celeste Crossbody Sling', price: 50, stock: STOCK, placements: ['shop-all', 'home'] }),
+  make({ id: 'PROD_31', slug: 'sample-product-2',       name: 'Sample Product 2',       price: 50, stock: STOCK, placements: ['shop-all', 'home', 'bags'] }),
+  make({ id: 'PROD_32', slug: 'sample-product-3',       name: 'Sample Product 3',       price: 50, stock: STOCK, placements: ['shop-all', 'home', 'bags'] }),
+  make({ id: 'PROD_33', slug: 'sample-product-4',       name: 'Sample Product 4',       price: 50, stock: STOCK, placements: ['shop-all', 'home', 'fashion'] }),
 ];
 
 // Kisi bhi page ke liye: productsFor('home'), productsFor('bags'), productsFor('shop-all') waghera

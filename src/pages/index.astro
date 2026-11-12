@@ -5,7 +5,7 @@ import EliteDivider from '../components/EliteDivider.astro';
 import CategoryBanner from '../components/CategoryBanner.astro';
 import MusfirasChoice from '../components/MusfirasChoice.astro';
 import ProductCard from '../components/ProductCard.astro';
-import { productsFor } from '../data/products.js';
+import { productsFor, CHECKOUT_URL } from '../data/products.js';
 
 // Sirf wo products jin ke placements me 'home' likha ho (products.js se control hota hai)
 const homeProducts = productsFor('home');
@@ -18,7 +18,7 @@ const homeProducts = productsFor('home');
 
   {homeProducts.length > 0 && (
     <div class="m-super-grid">
-      {homeProducts.map((p) => <ProductCard product={p} />)}
+      {homeProducts.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
     </div>
   )}
 </Layout>

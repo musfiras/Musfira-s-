@@ -52,4 +52,12 @@ html.m-product-page:has(.m-pop-overlay[style]),
 body.m-product-page:has(.m-pop-overlay[style]) {
     overflow: visible !important; overscroll-behavior: auto !important;
 }
+
+/* SCROLL FIX: product page par mouse content par ho tab bhi page scroll ho */
+.m-page-mode .m-pop-overlay,
+.m-page-mode .m-pop-box,
+.m-page-mode .m-pop-layout,
+.m-page-mode .m-pop-right { overscroll-behavior: auto !important; }
+.m-page-mode .m-pop-box { overflow: clip !important; }
+.m-page-mode .m-pop-right { overflow: visible !important; }
 </style>

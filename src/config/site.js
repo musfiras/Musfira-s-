@@ -44,6 +44,7 @@ export const site = {
   // Har category apne alag page par jati hai (home par nahi).
   // Nai category: ek nayi line add karo. Hatani ho: line delete kar do.
   collections: [
+    { label: "-SHOP ALL-",               href: "/store/" },
     { label: "-BAGS & CARRYING-",        href: "/bags_carrying" },
     { label: "-FASHION & ACCESSORIES-",  href: "/fashion_accessories" },
     { label: "-MUSFIRA'S CHOICE-",       href: "/musfiras_choice" },

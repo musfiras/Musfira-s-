@@ -2,12 +2,18 @@
 // SupportChat.astro : elite auto-reply support widget (free, koi API / server nahi).
 // Live agent button ka WhatsApp number src/config/site.js se aata hai (whatsappUrl), yahan number likhna nahi.
 // Jawab badalne hon to neeche <script> ke andar TOPICS mein sirf text badlein.
+//
+// [NEW] hideLauncher prop: true ho to floating chat icon nahi dikhta (order page par use hota hai).
+//       Chat tab "Need help?" button se window.openSupportChat() ke zariye khulta hai.
+//       Store ke baqi pages par pehle jaisa chalta hai (prop dene ki zaroorat nahi).
 import { whatsappUrl } from '../config/site.js';
+
+const { hideLauncher = false } = Astro.props;
 
 let wa = '';
 try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
 ---
-<div id="mscRoot" class="msc-root" data-wa={wa}>
+<div id="mscRoot" class={"msc-root" + (hideLauncher ? " msc-no-launcher" : "")} data-wa={wa}>
 
   <!-- Soft backdrop: chat khulne par baqi page niche chhup jata hai -->
   <div id="mscBackdrop" class="msc-backdrop" aria-hidden="true"></div>
@@ -289,6 +295,22 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-chips{ padding:8px 12px; }
   .msc-chip{ padding:7px 12px; font-size:12px; }
 }
+
+/* ───── [NEW] Launcher chhupa hua (order page): icon nahi, panel neeche ke qareeb ───── */
+.msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
+.msc-root.msc-no-launcher .msc-panel{
+  bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  max-height:calc(100vh - 40px);
+  max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+}
+@media (max-width:520px){
+  .msc-root.msc-no-launcher .msc-panel{
+    bottom:10px; bottom:calc(10px + env(safe-area-inset-bottom,0px));
+    max-height:calc(100vh - 30px);
+    max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  }
+}
+
 @media (prefers-reduced-motion: reduce){
   .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-agent, .msc-msg{ transition:none; animation:none; }
   .msc-launcher::before, .msc-launcher::after{ animation:none; }
@@ -486,6 +508,10 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   panel.addEventListener('touchmove', function (e) {
     if (!e.target.closest('.msc-body, .msc-chips')) e.preventDefault();
   }, { passive: false });
+
+  // [NEW] Bahar se (order page ka "Need help?" button) chat kholne / band karne ke liye
+  window.openSupportChat = openChat;
+  window.closeSupportChat = closeChat;
 
   refreshAgent();
 })();

@@ -1,0 +1,777 @@
+---
+// src/pages/order.astro : standalone checkout page.
+// Yahan koi site Layout use NAHI hota, is liye store ka header / footer / links / cart yahan auto nahi aate.
+// Sirf SupportChat component use hota hai (floating icon ke baghair), "Need help?" text button se khulta hai.
+import SupportChat from '../components/SupportChat.astro';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#FFB6C1" />
+  <title>Secure Checkout | Musfira's</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ===================== HEADER (sirf brand name, click nahi hota) ===================== -->
+<div class="header-section">
+    <nav class="nav-container">
+        <div class="nav-center-logo">
+            <div class="brand-logo-area">
+                <div class="brand-name-text">Musfira's</div>
+                <div class="tagline-container">
+                    <span class="tag-line"></span>
+                    <span class="tag-text">Made to adore</span>
+                    <span class="tag-line"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<!-- ===================== CHECKOUT ===================== -->
+<div id="mCustomAlert" class="m-alert-toast">
+    <span class="m-alert-icon">✨</span>
+    <span id="mAlertMessage" class="m-alert-text">Please fill all details!</span>
+</div>
+
+<div class="m-checkout-wrapper">
+    <div class="m-checkout-container">
+        <div class="m-top-gradient-bar"></div>
+
+        <h3 class="m-main-heading">SECURE CHECKOUT</h3>
+
+        <div class="m-checkout-grid">
+            <div id="orderSummary" class="m-summary-box">
+                <div class="m-summary-header">Order Summary</div>
+
+                <div id="mStockWarn" class="m-stock-warn" style="display:none;"></div>
+
+                <div id="itemListWrapper" class="m-item-list"></div>
+
+                <div class="m-summary-footer">
+                    <div class="m-summary-row">
+                        <span class="m-label">Total Quantity:</span>
+                        <span id="displayQty" class="m-value"></span>
+                    </div>
+                    <div class="m-summary-row">
+                        <span class="m-label">Item Subtotal:</span>
+                        <span class="m-value">AED <span id="displaySubtotal"></span></span>
+                    </div>
+                    <div class="m-summary-row m-discount-row" id="displayDiscountRow" style="display:none;">
+                        <span class="m-label">Bundle Offer:</span>
+                        <span class="m-value">− AED <span id="displayDiscount"></span></span>
+                    </div>
+                    <div class="m-summary-row m-shipping-row">
+                        <span class="m-label">Delivery (<span id="displayDeliveryType" style="font-size: 10.5px; font-weight: 800;"></span>):</span>
+                        <span id="displayDeliveryCharges" class="m-value"></span>
+                    </div>
+                    <div class="m-total-payable-row">
+                        <strong class="m-total-label">TOTAL PAYABLE:</strong>
+                        <span class="m-total-amount"><span id="displayOldTotal" class="m-old-total" style="display:none;"></span>AED <span id="displayTotal"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="m-form-box">
+                <div class="m-form-header">Payment Method</div>
+                <div class="m-payment-selector">
+                    <label class="m-method-option" id="mCodOptionWrapper">
+                        <input type="radio" name="paymentMethod" id="mMethodCod" value="COD" checked />
+                        <span class="m-custom-tick"></span>
+                        <span class="m-method-text">Cash on Delivery (COD)</span>
+                    </label>
+                </div>
+
+                <div class="m-form-header" style="margin-top: 20px;">Shipping Details</div>
+                <div class="m-input-group">
+                    <div class="m-readonly-box">
+                        <span class="m-box-label">Country / Region</span>
+                        <span class="m-box-val">
+                            <span class="m-flag-icon"></span> United Arab Emirates
+                        </span>
+                    </div>
+
+                    <input type="text" id="custName" placeholder="Full Name" class="m-input" maxlength="80" autocomplete="name" enterkeyhint="next" />
+
+                    <div class="m-phone-container">
+                        <span class="m-phone-flag-prefix"><span class="m-flag-icon"></span><span class="m-phone-code">+971</span></span>
+                        <input type="tel" id="custPhone" placeholder="Phone Number (5xxxxxxxx)" maxlength="10" class="m-input m-phone-input" inputmode="tel" enterkeyhint="next" />
+                    </div>
+
+                    <input type="text" id="custAddress" placeholder="Complete Home Address" class="m-input" maxlength="250" autocomplete="street-address" enterkeyhint="next" />
+                    <input type="text" id="custCity" placeholder="City" class="m-input" maxlength="60" autocomplete="address-level2" enterkeyhint="next" />
+
+                    <!-- OPTIONAL EMAIL (elite) -->
+                    <div class="m-email-box">
+                        <div class="m-email-top">
+                            <span class="m-email-title">Stay in the loop</span>
+                            <span class="m-email-opt">Optional</span>
+                        </div>
+                        <input type="email" id="custEmail" placeholder="Email Address" class="m-input m-email-input" maxlength="120" autocomplete="email" inputmode="email" enterkeyhint="go" />
+                        <p class="m-email-note">Be the first to hear about our new arrivals and upcoming offers. We will only use your email for this, never for spam.</p>
+                    </div>
+                </div>
+
+                <input type="text" id="company_site" name="company_site" style="display:none !important;" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <button type="button" id="orderBtn" class="m-confirm-btn">CONFIRM ORDER →</button>
+
+                <p class="m-secure-text">🛡️ Secure SSL Encrypted Checkout</p>
+
+                <!-- Need help? : ab WhatsApp par nahi jata, SupportChat khulta hai -->
+                <div class="m-help-wrap">
+                    <button type="button" id="needHelpBtn" class="m-help-link">
+                        <svg class="m-help-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg>
+                        Need help?
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-reply support chat: launcher icon chhupa hua, sirf "Need help?" se khulta hai -->
+<SupportChat hideLauncher={true} />
+
+<style is:global>
+    :root { --maroon: #800000; --pink: #e6007e; --soft-pink: #fecce6; }
+
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { margin: 0; background: #fafafa; padding-top: 46px; padding-top: calc(46px + env(safe-area-inset-top, 0px)); }
+    /* patli pink strip sab se upar */
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: #FFB6C1; z-index: 10000; pointer-events: none; }
+
+    /* ---------- HEADER ---------- */
+    .header-section { width: 100%; background: #fff; border-bottom: 1px solid #f0f0f0; position: fixed; top: 3px; left: 0; z-index: 9999; box-sizing: border-box; height: 44px; height: calc(44px + env(safe-area-inset-top, 0px)); padding-top: env(safe-area-inset-top, 0px); display: flex; align-items: center; overflow: visible; transition: background-color .9s ease, border-color .9s ease; }
+    .header-section.scrolling { background-color: transparent; border-bottom-color: transparent; transition: background-color .25s ease, border-color .25s ease; }
+    .header-section.scrolling .brand-name-text,
+    .header-section.scrolling .tagline-container { filter: drop-shadow(0 0 3px rgba(255,255,255,0.95)) drop-shadow(0 0 6px rgba(255,255,255,0.8)); }
+    .nav-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 20px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); display: flex; justify-content: center; align-items: center; box-sizing: border-box; }
+    .nav-center-logo { text-align: center; flex: 1; padding: 2px 0; cursor: default; user-select: none; -webkit-user-select: none; }
+    .brand-name-text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, 'Playfair Display', Georgia, serif; font-size: 21px; font-weight: 670; letter-spacing: 0; font-variant-ligatures: common-ligatures; font-feature-settings: "liga" 1, "kern" 1; color: var(--pink); line-height: 1.15; font-synthesis: none; font-kerning: normal; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .tagline-container { display: flex; align-items: center; justify-content: center; gap: 3px; margin-top: 3px; }
+    .tag-text { font-family: 'Bodoni Moda', 'Bodoni 72', Didot, 'Playfair Display', Georgia, serif; font-size: 8.5px; font-weight: 600; line-height: 1; color: var(--pink); }
+    .tag-line { width: 6px; height: 1px; background: var(--pink); margin-top: 0; }
+    @media (max-width: 950px) { .brand-name-text { font-size: 20px; } }
+    @media (max-width: 600px) {
+        .nav-container { padding-left: 14px; padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: 14px; padding-right: max(14px, env(safe-area-inset-right, 0px)); }
+        .brand-name-text { font-size: 19px; }
+    }
+    @media (max-width: 380px) {
+        .nav-container { padding-left: 10px; padding-right: 10px; }
+        .brand-name-text { font-size: 17px; }
+        .tag-text { font-size: 7.5px; }
+        .tag-line { width: 4px; }
+    }
+
+    /* ---------- CHECKOUT ---------- */
+    .m-checkout-wrapper { width: 100%; padding: 40px 15px; box-sizing: border-box; min-height: calc(100vh - 46px); display: flex; align-items: center; justify-content: center; background-color: #fafafa; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+    .m-checkout-container {
+        width: 100%; max-width: 1040px;
+        margin: 0 auto; padding: 35px; border-radius: 20px; background-color: #ffffff;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.05); border: 1px solid var(--soft-pink);
+        position: relative; overflow: hidden; box-sizing: border-box;
+    }
+
+    .m-top-gradient-bar { position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--maroon), var(--pink), var(--maroon)); }
+    .m-main-heading { text-align: center; color: var(--maroon); margin-top: 0; margin-bottom: 25px; letter-spacing: 3px; font-weight: 900; text-transform: uppercase; font-size: 20px; -webkit-text-stroke: 0.4px var(--maroon); }
+
+    .m-checkout-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 35px; align-items: start; }
+
+    .m-summary-box { background: #ffffff !important; padding: 22px; border-radius: 14px; border: 1px solid var(--soft-pink); display: none; }
+    .m-summary-header, .m-form-header { color: #C11C84; font-weight: 900; -webkit-text-stroke: 0.3px #C11C84; margin-bottom: 18px; font-size: 13.5px; text-transform: uppercase; border-bottom: 1px solid var(--soft-pink); padding-bottom: 8px; letter-spacing: 2px; }
+
+    .m-item-list { margin-bottom: 12px; }
+    .m-product-entry { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid #f3dfe9; padding: 12px 0; }
+
+    .m-prod-name { color: var(--maroon); font-weight: 800; font-size: 14px; max-width: 62%; line-height: 1.35; }
+    .m-prod-detail { display: block; font-size: 12.5px; margin-top: 5px; line-height: 1.3; }
+    .m-prod-label { color: var(--maroon); font-weight: 800; }
+    .m-prod-value { color: #C11C84; font-weight: 700; }
+    .m-prod-calc-text { display: block; font-size: 11.5px; color: #6b4a5a; font-weight: 700; margin-top: 5px; letter-spacing: 0.3px; }
+
+    .m-prod-price-block { display: flex; align-items: center; justify-content: flex-end; text-align: right; }
+    .m-prod-item-price { color: var(--pink); font-weight: 800; font-size: 14px; letter-spacing: 0.3px; white-space: nowrap; }
+
+    .m-summary-row { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 13.5px; }
+    .m-label { color: #800000; font-weight: 800; }
+    .m-value { color: var(--pink); font-weight: 800; text-align: right; }
+    .m-shipping-row { border-bottom: 1px dashed var(--soft-pink); padding-bottom: 6px; margin-bottom: 6px; }
+
+    .m-total-payable-row { margin-top: 12px; border-top: 1.5px solid var(--maroon); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .m-total-label { color: #FF007F; font-size: 12.5px; font-weight: 900; letter-spacing: 1px; }
+    .m-total-amount { color: var(--pink); font-weight: 900; font-size: 19px; }
+
+    .m-old-total { color: #8a8a8a; text-decoration: line-through; font-size: 13px; font-weight: 700; margin-right: 8px; }
+    .m-discount-row .m-value { color: #800000; }
+
+    .m-stock-warn { background: #fff5f9; border: 1px solid #f6b3d4; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 12.5px; line-height: 1.6; color: #800000; font-weight: 700; }
+    .m-stock-warn b { color: #c0182b; }
+    .m-stock-warn button { margin-top: 10px; padding: 10px 18px; border: none; border-radius: 30px; background: var(--maroon); color: #fff; font-weight: 800; font-size: 11.5px; letter-spacing: 1px; cursor: pointer; touch-action: manipulation; }
+    .m-prod-soldout { display: block; margin-top: 5px; font-size: 12px; font-weight: 800; color: #c0182b; letter-spacing: 0.5px; }
+    .m-confirm-btn.is-blocked { background: #b9a3ad !important; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+
+    .m-payment-selector { display: flex; flex-direction: column; gap: 10px; margin-bottom: 5px; }
+    .m-method-option { display: flex; align-items: center; position: relative; padding: 19px 20px; min-height: 58px; box-sizing: border-box; background: #fafafa; border: 1px solid #e2e2e2; border-radius: 10px; cursor: pointer; transition: 0.2s ease; }
+    .m-method-option input { position: absolute; opacity: 0; cursor: pointer; }
+
+    .m-custom-tick { height: 16px; width: 16px; background-color: #fff; border: 2px solid #ccc; border-radius: 50%; display: inline-block; margin-right: 12px; position: relative; transition: 0.2s; }
+    .m-method-option:hover { border-color: var(--pink); }
+    .m-method-option input:checked ~ .m-custom-tick { border-color: var(--maroon); background-color: var(--maroon); }
+    .m-method-option input:checked ~ .m-custom-tick::after { content: ""; position: absolute; display: block; left: 4.5px; top: 1.5px; width: 4px; height: 7px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .m-method-text { font-size: 15.5px; font-weight: 800; color: var(--maroon); }
+
+    .m-input-group { display: flex; flex-direction: column; gap: 16px; }
+    .m-input { width: 100%; padding: clamp(17px, 1.2vw + 12px, 20px) 20px; min-height: 58px; border: 1px solid #e2e2e2; border-radius: 10px; outline: none; transition: 0.3s; box-sizing: border-box; background: #fafafa; font-size: 16px; color: #333; font-family: inherit; }
+    .m-input:focus { border-color: var(--pink) !important; background: #fff !important; box-shadow: 0 0 8px rgba(230,0,126,0.08); }
+    .m-input::placeholder { color: #9a9a9a; opacity: 1; font-weight: 400; font-size: 15px; }
+    .m-input::-webkit-input-placeholder { color: #9a9a9a; opacity: 1; font-weight: 400; font-size: 15px; }
+    .m-input::-moz-placeholder { color: #9a9a9a; opacity: 1; font-weight: 400; font-size: 15px; }
+
+    /* ELITE OPTIONAL EMAIL BOX */
+    .m-email-box { position: relative; padding: 16px 16px 14px; border-radius: 14px; border: 1px dashed #f1b4d3; background: linear-gradient(180deg, #fff9fc 0%, #ffffff 100%); }
+    .m-email-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+    .m-email-title { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 15px; font-weight: 600; color: var(--pink); letter-spacing: 0.3px; }
+    .m-email-opt { font-size: 9.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--maroon); background: #fff; border: 1px solid #f5cfe3; border-radius: 999px; padding: 4px 10px; }
+    .m-email-input { background: #fff; }
+    .m-email-note { margin: 10px 2px 0; font-size: 11.5px; line-height: 1.55; font-weight: 600; color: #8a6c7a; letter-spacing: 0.2px; }
+
+    .m-flag-icon {
+        display: inline-block; width: 20px; height: 14px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 14'%3E%3Crect width='20' height='4.67' fill='%2300732f'/%3E%3Crect y='4.67' width='20' height='4.67' fill='%23ffffff'/%3E%3Crect y='9.33' width='20' height='4.67' fill='%23000000'/%3E%3Crect width='5' height='14' fill='%23ff0000'/%3E%3C/svg%3E");
+        background-size: 100% 100%; background-position: center; background-repeat: no-repeat;
+        border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); vertical-align: middle; margin-right: 6px;
+    }
+
+    .m-readonly-box { background: #f4f4f4; border: 1px solid #e2e2e2; padding: 19px 20px; min-height: 58px; box-sizing: border-box; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .m-box-label { font-size: 12px; color: #888; text-transform: uppercase; font-weight: 700; }
+    .m-box-val { font-size: 15px; color: var(--maroon); font-weight: 700; display: flex; align-items: center; }
+
+    .m-phone-container { position: relative; display: flex; align-items: center; width: 100%; }
+    .m-phone-flag-prefix { position: absolute; left: 20px; border-right: 1px solid #ddd; padding-right: 10px; height: 20px; display: flex; align-items: center; pointer-events: none; }
+    .m-phone-flag-prefix .m-flag-icon { margin-right: 0 !important; width: 22px; height: 15px; }
+    .m-phone-code { margin-left: 7px; font-size: 15px; font-weight: 700; color: var(--maroon); letter-spacing: 0.3px; }
+    .m-phone-input { padding-left: 124px !important; }
+
+    .m-confirm-btn { width: 100%; min-height: 60px; padding: 21px; background: var(--maroon); color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 16px; letter-spacing: 2px; transition: all 0.4s ease; box-shadow: 0 8px 15px rgba(128,0,0,0.1); margin-top: 20px; font-family: inherit; }
+    .m-confirm-btn:hover { background: var(--pink); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(230,0,126,0.25); }
+    .m-confirm-btn.is-loading { background: #f0f0f0 !important; color: #999 !important; cursor: not-allowed; animation: glass-glow 1.5s infinite ease-in-out; }
+    @keyframes glass-glow { 0%, 100% { box-shadow: 0 5px 15px rgba(230,0,126,0.1); } 50% { box-shadow: 0 10px 35px rgba(230,0,126,0.7); } }
+
+    .m-secure-text { font-size: 9.5px; color: #aaa; text-align: center; margin-top: 12px; letter-spacing: 0.5px; }
+
+    /* Need help? text button (SupportChat kholta hai) */
+    .m-help-wrap { text-align: center; margin-top: 8px; }
+    .m-help-link { display: inline-flex; align-items: center; gap: 5px; padding: 6px 4px; border: none; background: none; border-radius: 0; color: var(--maroon); font-family: inherit; font-size: 12.5px; font-weight: 600; letter-spacing: 0.4px; cursor: pointer; text-decoration: none; transition: color 0.25s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .m-help-link:hover, .m-help-link:active, .m-help-link:focus { color: var(--pink); background: none; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; outline: none; }
+    .m-help-icon { flex-shrink: 0; }
+
+    .m-alert-toast {
+        position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+        background: #ffffff; border: 1.5px solid var(--maroon); box-shadow: 0 15px 40px rgba(128,0,0,0.12);
+        padding: 12px 24px; border-radius: 30px; display: flex; align-items: center; gap: 10px;
+        max-width: 92vw; box-sizing: border-box;
+        z-index: 99999; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; pointer-events: none;
+    }
+    .m-alert-toast.is-visible { top: 25px; opacity: 1; }
+    .m-alert-icon { font-size: 14px; color: var(--pink); }
+    .m-alert-text { font-size: 12px; font-weight: 700; color: var(--maroon); font-family: 'Segoe UI', sans-serif; letter-spacing: 0.5px; white-space: normal; text-align: center; line-height: 1.4; }
+
+    @media (max-width: 768px) {
+        .m-checkout-grid { grid-template-columns: 1fr; gap: 20px; }
+        .m-checkout-container { padding: 22px 18px; }
+        .m-input { font-size: 16px; }
+        .m-main-heading { font-size: 17px; }
+        .m-alert-toast { width: 85%; box-sizing: border-box; justify-content: center; }
+    }
+    @media (max-width: 900px) { .m-checkout-grid { grid-template-columns: 1fr; gap: 24px; } }
+    @media (max-width: 480px) {
+        .m-checkout-wrapper { padding: 24px 10px; }
+        .m-checkout-container { padding: 22px 14px; }
+        .m-phone-input { padding-left: 118px !important; }
+    }
+
+    /* Keyboard khulne par Confirm button upar scroll ho sake */
+    .m-checkout-wrapper { padding-bottom: calc(40px + var(--kb, 0px)); }
+    @media (max-width: 480px) { .m-checkout-wrapper { padding-bottom: calc(24px + var(--kb, 0px)); } }
+</style>
+
+<script is:inline>
+// Scroll par header chup jaye, rukne ke baad slowly wapas aa jaye
+(function () {
+    var hdr = document.querySelector(".header-section");
+    if (!hdr) return;
+    var stopTimer = null;
+    window.addEventListener("scroll", function () {
+        if ((window.pageYOffset || document.documentElement.scrollTop) > 5) hdr.classList.add("scrolling");
+        clearTimeout(stopTimer);
+        stopTimer = setTimeout(function () { hdr.classList.remove("scrolling"); }, 350);
+    }, { passive: true });
+})();
+</script>
+
+<script is:inline>
+// =====================================================================
+//  SETTINGS (sirf yahan)
+// =====================================================================
+const SCRIPT_URL = "https://store.musfiras.workers.dev";
+const ORDER_KEY = "4Zr0aVGBeRo0aqIE52k1Jq";
+const THANK_YOU_URL = "https://www.musfiras.com/thank_you";
+const SHOP_URL = "https://www.musfiras.com/store";
+const PAGE_VERSION = "order-page v6 astro + support-chat + email (2026-11-13)";
+
+try { console.log("Musfira's " + PAGE_VERSION); } catch (e) {}
+
+try {
+    const pc = document.createElement('link');
+    pc.rel = 'preconnect';
+    pc.href = SCRIPT_URL;
+    document.head.appendChild(pc);
+} catch (e) {}
+
+const urlParams = new URLSearchParams(window.location.search);
+let products = [];
+let deliveryType = urlParams.get('delivery') || "Standard";
+let totalPayable = parseInt(urlParams.get('total')) || 0;
+let subtotalVal = parseInt(urlParams.get('subtotal')) || 0;
+let stockBlocked = false;
+
+let shipping = 0;
+if (deliveryType.toLowerCase().includes("express")) {
+    if (totalPayable > 0 && subtotalVal > 0) {
+        shipping = totalPayable - subtotalVal;
+    }
+    if (shipping <= 0) {
+        shipping = parseInt(urlParams.get('shipping')) || 250;
+    }
+} else {
+    shipping = 0;
+}
+
+// Format: name|color|qty|price||name|color|qty|price ...
+// optional 5th/6th part: |p2|p3 = 2 items / 3 items ki offer qeemat (total)
+if (urlParams.has('data')) {
+    let rawData = urlParams.get('data') || "";
+    try { rawData = decodeURIComponent(rawData); } catch (e) {}
+    const blocks = rawData.split('||');
+    blocks.forEach(block => {
+        const parts = block.split('|');
+        if (parts.length >= 3) {
+            let pName = parts[0] ? parts[0].trim() : "Premium Item";
+            let pColor = parts[1] ? parts[1].trim() : "Default";
+            let pQty = (parts[2] && !isNaN(parts[2]) && parseInt(parts[2]) > 0) ? parseInt(parts[2]) : 1;
+
+            let pPrice = 2699;
+            if (parts[3] && !isNaN(parts[3])) {
+                pPrice = parseInt(parts[3]);
+            } else {
+                pPrice = (subtotalVal % 2799 === 0 && subtotalVal > 0) ? 2799 : 2699;
+            }
+
+            let pOffer2 = (parts[4] && !isNaN(parts[4])) ? parseInt(parts[4]) : 0;
+            let pOffer3 = (parts[5] && !isNaN(parts[5])) ? parseInt(parts[5]) : 0;
+
+            products.push({ name: pName, color: pColor, qty: pQty, price: pPrice, offer2: pOffer2, offer3: pOffer3 });
+        }
+    });
+} else if (urlParams.has('item')) {
+    const rawColor = urlParams.get('color') || "Default";
+    let itemPrice = 2699;
+    if (subtotalVal > 0) {
+        itemPrice = subtotalVal;
+    } else if (totalPayable > 0) {
+        itemPrice = totalPayable - shipping;
+    }
+    products.push({ name: urlParams.get('item'), color: rawColor, qty: 1, price: itemPrice, offer2: 0, offer3: 0 });
+}
+
+function calcBundleDiscount(list) {
+    const groups = {};
+    list.forEach(p => {
+        if (!groups[p.name]) groups[p.name] = { qty: 0, price: p.price, offer2: p.offer2, offer3: p.offer3 };
+        groups[p.name].qty += p.qty;
+    });
+    let discount = 0;
+    Object.keys(groups).forEach(k => {
+        const g = groups[k];
+        const full = g.qty * g.price;
+        let offered = full;
+        if (g.qty >= 3 && g.offer3 > 0) {
+            offered = g.offer3 + (g.qty - 3) * g.price;
+        } else if (g.qty === 2 && g.offer2 > 0) {
+            offered = g.offer2;
+        }
+        if (offered < full) discount += (full - offered);
+    });
+    return discount;
+}
+
+function escHtml(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function nrm(s) { return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, " ").trim(); }
+
+const entryEls = [];
+
+if (products.length > 0) {
+    document.getElementById('orderSummary').style.display = 'block';
+    const wrapper = document.getElementById('itemListWrapper');
+    let totalQty = 0;
+    let calculatedSubtotal = 0;
+
+    products.forEach(p => {
+        totalQty += p.qty;
+        let itemRowPrice = p.qty * p.price;
+        calculatedSubtotal += itemRowPrice;
+
+        const calcDisplay = p.qty > 1 ? `<span class="m-prod-calc-text">AED ${p.price.toLocaleString()} × ${p.qty}</span>` : '';
+
+        const entry = document.createElement('div');
+        entry.className = 'm-product-entry';
+        entry.innerHTML = `
+            <div class="m-prod-name">
+                ${escHtml(p.name)}
+                <span class="m-prod-detail"><span class="m-prod-label">Color:</span> <span class="m-prod-value">${escHtml(p.color)}</span></span>
+                <span class="m-prod-detail"><span class="m-prod-label">Qty:</span> <span class="m-prod-value">${p.qty}</span></span>
+                ${calcDisplay}
+            </div>
+            <div class="m-prod-price-block">
+                <div class="m-prod-item-price">AED ${Math.round(itemRowPrice).toLocaleString()}</div>
+            </div>
+        `;
+        wrapper.appendChild(entry);
+        entryEls.push({ el: entry, key: nrm(p.name) + "||" + nrm(p.color) });
+    });
+
+    const offerDiscount = calcBundleDiscount(products);
+
+    if (totalPayable === 0 || urlParams.has('data')) {
+        totalPayable = calculatedSubtotal - offerDiscount + shipping;
+    }
+    subtotalVal = calculatedSubtotal;
+
+    document.getElementById('displayQty').innerText = totalQty;
+    document.getElementById('displayTotal').innerText = totalPayable.toLocaleString();
+    document.getElementById('displayDeliveryType').innerText = deliveryType.toUpperCase();
+    document.getElementById('displayDeliveryCharges').innerText = shipping > 0 ? "AED " + shipping.toLocaleString() : "FREE";
+    document.getElementById('displaySubtotal').innerText = subtotalVal.toLocaleString();
+
+    if (offerDiscount > 0) {
+        document.getElementById('displayDiscountRow').style.display = 'flex';
+        document.getElementById('displayDiscount').innerText = offerDiscount.toLocaleString();
+        const oldTot = document.getElementById('displayOldTotal');
+        oldTot.innerText = "AED " + (totalPayable + offerDiscount).toLocaleString();
+        oldTot.style.display = 'inline';
+    }
+    window.__offerDiscount = offerDiscount;
+}
+
+// ---------- Need help? -> SupportChat kholo ----------
+document.getElementById('needHelpBtn').addEventListener('click', function () {
+    if (typeof window.openSupportChat === 'function') {
+        window.openSupportChat();
+    } else {
+        showEliteAlert("Support chat is loading, please try again.", 3000);
+    }
+});
+
+// ---------- Toast ----------
+let alertTimer = null;
+function showEliteAlert(msg, ms) {
+    const toast = document.getElementById('mCustomAlert');
+    document.getElementById('mAlertMessage').innerText = msg;
+    toast.classList.add('is-visible');
+    clearTimeout(alertTimer);
+    alertTimer = setTimeout(() => { toast.classList.remove('is-visible'); }, ms || 3500);
+}
+
+function generateUniqueOrderId() {
+    const prefix = "MS-";
+    const date = new Date();
+    const dateStr = date.getFullYear().toString().slice(-2) +
+                    ("0" + (date.getMonth() + 1)).slice(-2) +
+                    ("0" + date.getDate()).slice(-2);
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return prefix + dateStr + "-" + randomNum;
+}
+
+// =====================================================================
+//  LIVE STOCK CHECK
+// =====================================================================
+function goBackToBag() {
+    if (document.referrer && history.length > 1) { history.back(); }
+    else { window.location.href = SHOP_URL; }
+}
+
+function showStockIssues(issues) {
+    if (!issues || !issues.length) return;
+    stockBlocked = true;
+    const warn = document.getElementById('mStockWarn');
+    const lines = issues.map(i =>
+        '<b>' + escHtml(i.name) + '</b> (' + escHtml(i.color) + '): ' + (i.left > 0 ? 'only ' + i.left + ' left' : 'sold out')
+    ).join('<br>');
+    if (warn) {
+        warn.innerHTML = 'Sorry, stock has just changed:<br>' + lines + '<br>Please go back to your bag and update it.<br>' +
+                         '<button type="button" onclick="goBackToBag()">&larr; BACK TO BAG</button>';
+        warn.style.display = 'block';
+    }
+    issues.forEach(i => {
+        const key = nrm(i.name) + "||" + nrm(i.color);
+        entryEls.forEach(e => {
+            if (e.key !== key || e.el.querySelector('.m-prod-soldout')) return;
+            const nameBox = e.el.querySelector('.m-prod-name');
+            if (nameBox) {
+                const tag = document.createElement('span');
+                tag.className = 'm-prod-soldout';
+                tag.textContent = i.left > 0 ? 'Only ' + i.left + ' left' : 'SOLD OUT';
+                nameBox.appendChild(tag);
+            }
+        });
+    });
+    const btn = document.getElementById('orderBtn');
+    if (btn) { btn.classList.add('is-blocked'); btn.innerHTML = 'UPDATE YOUR BAG'; }
+}
+
+async function checkLiveStock() {
+    try {
+        if (!products.length) return null;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 7000);
+        const r = await fetch(SCRIPT_URL + "?action=publicStock", { cache: 'no-store', signal: ctrl.signal });
+        clearTimeout(timer);
+        const d = await r.json();
+        if (!d || d.status !== "success" || !d.items || typeof d.items !== 'object') return null;
+
+        const lk = {};
+        Object.keys(d.items).forEach(p => {
+            const cols = {};
+            const src = d.items[p] || {};
+            Object.keys(src).forEach(c => { cols[nrm(c)] = parseInt(src[c], 10) || 0; });
+            lk[nrm(p)] = cols;
+        });
+
+        const want = {};
+        products.forEach(p => {
+            const k = nrm(p.name) + "||" + nrm(p.color);
+            if (!want[k]) want[k] = { name: p.name, color: p.color, qty: 0 };
+            want[k].qty += p.qty;
+        });
+
+        const issues = [];
+        Object.keys(want).forEach(k => {
+            const w = want[k];
+            const pc = lk[nrm(w.name)];
+            if (!pc) return;
+            const ck = nrm(w.color);
+            if (!Object.prototype.hasOwnProperty.call(pc, ck)) return;
+            const left = Math.max(0, pc[ck]);
+            if (left < w.qty) issues.push({ name: w.name, color: w.color, left: left });
+        });
+        return issues;
+    } catch (e) {
+        return null;
+    }
+}
+
+if (products.length > 0) {
+    checkLiveStock().then(issues => { if (issues && issues.length) showStockIssues(issues); });
+}
+
+// =====================================================================
+//  ORDER BHEJNA
+// =====================================================================
+function postOrder(payload, timeoutMs) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    return fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        cache: 'no-store',
+        keepalive: true,
+        signal: ctrl.signal
+    }).then(r => r.text().then(t => ({ status: r.status, text: String(t).trim() })))
+      .finally(() => clearTimeout(timer));
+}
+
+function classifyReply(res) {
+    const t = res.text;
+    if (t === "Success") return "ok";
+    if (t.indexOf("Error: stock") === 0) return "stock";
+    if (t.indexOf("Error: invalid") === 0) return "invalid";
+    if (t.indexOf("Error: limit") === 0) return "limit";
+    if (t.indexOf("Access Denied") > -1) return "denied";
+    return "retry";
+}
+
+function parseStockReply(t) {
+    try {
+        const list = JSON.parse(String(t).replace(/^Error: stock\s*/, ""));
+        if (Array.isArray(list)) return list.map(x => ({ name: x.product, color: x.color, left: parseInt(x.left, 10) || 0 }));
+    } catch (e) {}
+    return [];
+}
+
+async function sendWithRetry(payload) {
+    let why = "";
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+            const res = await postOrder(payload, attempt === 1 ? 12000 : 15000);
+            const kind = classifyReply(res);
+            if (kind === "ok") return { ok: true };
+            if (kind === "stock") {
+                const items = parseStockReply(res.text);
+                return { ok: false, stock: true, items: items, msg: "Sorry, some items are no longer available. Please update your bag." };
+            }
+            if (kind === "invalid") return { ok: false, msg: "Please check your name, phone number and address, then try again." };
+            if (kind === "limit") return { ok: false, msg: "Too many orders from this number. Please try again later." };
+            if (kind === "denied") return { ok: false, msg: "Order service is updating. Please try again in a minute. (E-KEY)" };
+            why = "S" + res.status;
+        } catch (e) {
+            why = (e && e.name === "AbortError") ? "TIMEOUT" : "NETWORK";
+        }
+        if (attempt < 3) await new Promise(r => setTimeout(r, 600 * attempt));
+    }
+    return { ok: false, msg: "Order could not be placed (" + why + "). Please check your internet and press Confirm again." };
+}
+
+let lastSig = "";
+let lastOrderId = "";
+
+async function sendOrder() {
+    const btn = document.getElementById('orderBtn');
+    if (btn.classList.contains('is-loading')) return;
+
+    if (products.length === 0) { showEliteAlert("Your cart is empty. Please add items first.", 5000); return; }
+    if (stockBlocked) { showEliteAlert("Some items are no longer available. Please go back to your bag.", 6000); return; }
+
+    const name = document.getElementById('custName').value.trim();
+    let phone = document.getElementById('custPhone').value.replace(/[\s\-()]/g, "");
+    const address = document.getElementById('custAddress').value.trim();
+    const city = document.getElementById('custCity').value.trim();
+    const email = document.getElementById('custEmail').value.trim();
+    const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+    if (!name || !phone || !address || !city) { showEliteAlert("Please fill all details! ✨"); return; }
+    if (!/^0?\d{9}$/.test(phone)) { showEliteAlert("Enter a valid phone number! 📞"); return; }
+
+    // Email optional: khali ho to theek, likha ho to sahi hona chahiye
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        showEliteAlert("Please enter a valid email, or leave it empty. ✉️");
+        return;
+    }
+
+    phone = "+971" + phone.replace(/^0/, "");
+
+    btn.innerHTML = "PLACING ORDER... ✨";
+    btn.classList.add('is-loading');
+
+    const sTotal = document.getElementById('displaySubtotal').innerText;
+    const tQty = document.getElementById('displayQty').innerText;
+    const tPayable = document.getElementById('displayTotal').innerText;
+    let orderDetails = products.map(p => `${p.name} [${p.color}] x${p.qty}`).join(" | ");
+
+    const sig = [name, phone, address, city, email, orderDetails, tQty, tPayable, deliveryType, method].join("~");
+    const generatedOrderId = (sig === lastSig && lastOrderId) ? lastOrderId : generateUniqueOrderId();
+    lastSig = sig;
+    lastOrderId = generatedOrderId;
+
+    const offerText = (window.__offerDiscount && window.__offerDiscount > 0) ? ` | Bundle Offer: -AED ${window.__offerDiscount.toLocaleString()}` : "";
+    const emailText = email ? ` | Email: ${email}` : "";
+
+    const finalDetails = `OrderID: ${generatedOrderId} | Items: ${orderDetails} | Total Qty: ${tQty} | Subtotal: AED ${sTotal}${offerText} | Shipping: ${deliveryType} | Payment: ${method} | Grand Total: AED ${tPayable}${emailText}`;
+
+    const hp = (document.getElementById('company_site') || {}).value || "";
+
+    const payload = {
+        order_key: ORDER_KEY,
+        hp: hp,
+        name: name,
+        phone: phone,
+        address: address,
+        city: city,
+        email: email,          // naya optional field (Worker ignore kare to bhi details mein likha hota hai)
+        details: finalDetails
+    };
+
+    const result = await sendWithRetry(payload);
+
+    if (result.ok) {
+        window.location.href = THANK_YOU_URL + "?order_id=" + encodeURIComponent(generatedOrderId);
+        return;
+    }
+
+    try { console.error("Order failed:", result.msg); } catch (e) {}
+    btn.classList.remove('is-loading');
+    btn.innerHTML = "CONFIRM ORDER →";
+    showEliteAlert(result.msg, 7000);
+
+    if (result.stock) {
+        let issues = result.items;
+        if (!issues || !issues.length) issues = await checkLiveStock();
+        if (issues && issues.length) showStockIssues(issues);
+    }
+}
+
+document.getElementById('orderBtn').addEventListener('click', sendOrder);
+
+// =====================================================================
+//  MOBILE KEYBOARD
+// =====================================================================
+(function setupKeyboardUX() {
+    const fields = ['custName', 'custPhone', 'custAddress', 'custCity', 'custEmail']
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+
+    fields.forEach((el, i) => {
+        el.addEventListener('keydown', function (e) {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            if (i < fields.length - 1) {
+                fields[i + 1].focus();
+            } else {
+                el.blur();
+                sendOrder();
+            }
+        });
+    });
+
+    const btn = document.getElementById('orderBtn');
+    const vv = window.visualViewport;
+    if (!btn || !vv) return;
+
+    let raf = 0;
+    function adjust() {
+        raf = 0;
+        const kb = Math.max(0, Math.round(window.innerHeight - vv.height));
+        const open = kb > 120;
+        document.documentElement.style.setProperty('--kb', (open ? kb : 0) + 'px');
+        if (!open) return;
+        const a = document.activeElement;
+        if (!a || (a.id !== 'custAddress' && a.id !== 'custCity' && a.id !== 'custEmail')) return;
+        const r = btn.getBoundingClientRect();
+        const visibleBottom = vv.offsetTop + vv.height;
+        if (r.bottom > visibleBottom - 12) {
+            window.scrollBy({ top: r.bottom - visibleBottom + 18, behavior: 'smooth' });
+        }
+    }
+    function schedule() { if (!raf) raf = requestAnimationFrame(adjust); }
+
+    vv.addEventListener('resize', schedule);
+    vv.addEventListener('scroll', schedule);
+    fields.forEach(el => {
+        el.addEventListener('focus', () => setTimeout(schedule, 350));
+        el.addEventListener('blur', () => setTimeout(schedule, 250));
+    });
+})();
+</script>
+
+</body>
+</html>

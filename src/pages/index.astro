@@ -4,10 +4,21 @@ import HeroBanner from '../components/HeroBanner.astro';
 import EliteDivider from '../components/EliteDivider.astro';
 import CategoryBanner from '../components/CategoryBanner.astro';
 import MusfirasChoice from '../components/MusfirasChoice.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { productsFor } from '../data/products.js';
+
+// Sirf wo products jin ke placements me 'home' likha ho (products.js se control hota hai)
+const homeProducts = productsFor('home');
 ---
 <Layout title="Musfira's">
   <HeroBanner />
   <EliteDivider />
   <CategoryBanner />
   <MusfirasChoice />
+
+  {homeProducts.length > 0 && (
+    <div class="m-super-grid">
+      {homeProducts.map((p) => <ProductCard product={p} />)}
+    </div>
+  )}
 </Layout>

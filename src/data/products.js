@@ -21,11 +21,18 @@ Classic Black
 
 Warm Beige`;
 
+// ============================================================================
+//  PLACEMENTS (jahan dikhana ho wahan ka tag likho)
+//  Har product par jitne chaho tags: ['shop-all', 'home', 'bags', 'fashion', 'choice']
+//  Naya tag banana ho to bas koi bhi naam likh do, aur us page par productsFor('naam') use karo.
+// ============================================================================
+
 // Asli dummy product (PROD_30)
 const base = {
   id: 'PROD_30',
   slug: 'celeste-crossbody-sling',
   name: 'Celeste Crossbody Sling',
+  placements: ['shop-all', 'home'],
   price: 50,
   oldPrice: 100,
   offer2: 95,
@@ -35,12 +42,22 @@ const base = {
   descriptionHtml: desc('Celeste Crossbody Sling'),
 };
 
-// Baqi dummy copies: sirf id, naam, slug alag
-const copyOf = (id, slug, name) => ({ ...base, id, slug, name, descriptionHtml: desc(name) });
+// Baqi dummy copies: id, slug, naam aur placements alag
+const copyOf = (id, slug, name, placements) => ({
+  ...base,
+  id,
+  slug,
+  name,
+  placements,
+  descriptionHtml: desc(name),
+});
 
 export const products = [
   base,
-  copyOf('PROD_31', 'sample-product-2', 'Sample Product 2'),
-  copyOf('PROD_32', 'sample-product-3', 'Sample Product 3'),
-  copyOf('PROD_33', 'sample-product-4', 'Sample Product 4'),
+  copyOf('PROD_31', 'sample-product-2', 'Sample Product 2', ['shop-all', 'bags']),
+  copyOf('PROD_32', 'sample-product-3', 'Sample Product 3', ['shop-all', 'home', 'bags']),
+  copyOf('PROD_33', 'sample-product-4', 'Sample Product 4', ['shop-all', 'fashion']),
 ];
+
+// Kisi bhi page ke liye: productsFor('home'), productsFor('bags'), productsFor('shop-all') waghera
+export const productsFor = (place) => products.filter((p) => p.placements?.includes(place));

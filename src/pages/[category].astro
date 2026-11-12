@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { productsFor, CHECKOUT_URL } from '../data/products.js';
+import { categories } from '../data/categories.js';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { category: c.slug }, props: { c } }));
+}
+
+const { c } = Astro.props;
+const list = productsFor(c.tag);
+---
+<Layout shop={true} title={`${c.title} | Musfira's`} description={c.text}>
+  <section class="cat-head">
+    <h1>{c.title}</h1>
+    <p class="cat-tag">{c.tagline}</p>
+    <p class="cat-text">{c.text}</p>
+  </section>
+
+  {list.length > 0 ? (
+    <div class="m-super-grid">
+      {list.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
+    </div>
+  ) : (
+    <p class="cat-empty">New arrivals are coming soon. Please check back shortly.</p>
+  )}
+</Layout>
+
+<style>
+  .cat-head { text-align: center; padding: 34px 16px 4px; max-width: 760px; margin: 0 auto; }
+  .cat-head h1 { margin: 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 34px; font-weight: 700; color: #a8124f; line-height: 1.15; }
+  .cat-tag { margin: 10px 0 0; font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: #e6007e; }
+  .cat-text { margin: 10px 0 0; font-family: 'Montserrat', sans-serif; font-size: 14px; line-height: 1.6; color: #555; }
+  .cat-empty { text-align: center; padding: 50px 16px; font-family: 'Montserrat', sans-serif; color: #800000; font-weight: 600; }
+  @media (max-width: 480px) {
+    .cat-head { padding: 24px 14px 0; }
+    .cat-head h1 { font-size: 26px; }
+    .cat-tag { font-size: 10.5px; letter-spacing: 1px; }
+    .cat-text { font-size: 12.5px; }
+  }
+</style>

@@ -1,0 +1,35 @@
+// ============================================================================
+//  CATEGORIES  —  naya category page banana ho to yahan sirf ek { ... } add karo
+//
+//  slug     : page ka address.   'bags_carrying'  ->  musfiras.com/bags_carrying
+//             (src/config/site.js ke collections ke href se bilkul same hona chahiye)
+//  tag      : products.js me placements ka wo tag jo is page par dikhana hai
+//  title    : page ka bara heading
+//  tagline  : heading ke neeche pink line
+//  text     : chhoti description
+//
+//  "Shop All" ka page /store/ pehle se hai (store.astro), use yahan nahi likhna.
+// ============================================================================
+export const categories = [
+  {
+    slug: 'bags_carrying',
+    tag: 'bags',
+    title: 'Bags & Carrying',
+    tagline: 'Carry everything. Compromise nothing.',
+    text: 'Spacious, durable carry bags made for women who do it all, in style.',
+  },
+  {
+    slug: 'fashion_accessories',
+    tag: 'fashion',
+    title: 'Fashion & Accessories',
+    tagline: 'The finishing touch to every look.',
+    text: 'Jewellery, wallets, watches and more, hand-selected to complete your style.',
+  },
+  {
+    slug: 'musfiras_choice',
+    tag: 'choice',
+    title: "Musfira's Choice",
+    tagline: 'Handpicked favourites, chosen to elevate your style.',
+    text: "Our top picks across every category, picked by us for you.",
+  },
+];

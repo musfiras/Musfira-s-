@@ -1,7 +1,5 @@
 export const CHECKOUT_URL = 'https://www.musfiras.com/check_out';
-
-const EXT = 'jpeg'; // pics ka extension: jpeg / jpg / png (chhote letters)
-const IMAGES = [1, 2, 3, 4, 5, 6].map((i) => `/products/celeste-${i}.${EXT}`);
+const IMAGES = Array(6).fill('/handbag.jpeg');
 
 const desc = (name) => `<div class="m-el-title">✨ ${name}✨</div>
 <b class="m-el-sub">Product Overview:</b>

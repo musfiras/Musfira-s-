@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductDetail from '../../components/ProductDetail.astro';
+import { products, CHECKOUT_URL } from '../../data/products.js';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+
+const { p } = Astro.props;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: p.name,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'AED',
+    price: p.price,
+    availability: 'https://schema.org/InStock',
+  },
+};
+---
+<Layout
+  shop={true}
+  pageType="product"
+  title={`${p.name} | Musfira's`}
+  description={`Buy ${p.name} for AED ${p.price}. Free delivery all over UAE.`}
+>
+  <script slot="head" is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <div class="m-product-page-wrap m-page-mode">
+    <a class="m-back-link" href="/store">← Back to store</a>
+    <ProductDetail p={p} checkoutUrl={CHECKOUT_URL} />
+  </div>
+</Layout>

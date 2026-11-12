@@ -1,0 +1,65 @@
+---
+const { p, checkoutUrl } = Astro.props;
+---
+<div
+  class="m-master-box"
+  id={p.id}
+  data-pname={p.name}
+  data-base={p.price}
+  data-offer2={p.offer2}
+  data-offer3={p.offer3}
+  data-stock={JSON.stringify(p.stock)}
+  data-checkout={checkoutUrl}
+>
+  <div class="m-pop-overlay">
+    <div class="m-pop-box">
+      <div class="m-maroon-top-bar"></div>
+      <div class="m-close-x">&times;</div>
+
+      <div class="m-pop-layout">
+        <div class="m-pop-left">
+          <h3 class="m-pop-heading">PRODUCT DETAILS</h3>
+
+          <div class="m-slider-container">
+            <div class="m-track" onscroll="syncDots(this)">
+              {p.images.map((src, i) => (
+                <img src={src} alt={`${p.name} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+              ))}
+            </div>
+            <div class="m-arrow-next" onclick="goNext(this)">&#10230;</div>
+            <div class="m-dots-wrapper"></div>
+          </div>
+        </div>
+
+        <div class="m-pop-right">
+          <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin-top: 50px; margin-bottom: 15px; border-left: 3px solid #e6007e; padding-left: 8px;">Select Color & QTY</div>
+          <div class="m-config-rows"></div>
+
+          <button class="m-add-row-btn" onclick={`addDynamicRow('${p.id}')`}>+ ADD ANOTHER COLOR</button>
+
+          <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin: 20px 0 10px 0; border-left: 3px solid #e6007e; padding-left: 8px;">MADE TO REACH YOU</div>
+          <div class="m-delivery-note">
+            <span class="m-dn-main">Estimated delivery: <b>1 to 3 working days</b></span>
+            <span class="m-dn-sub">Carefully packed, beautifully delivered to your door.</span>
+          </div>
+
+          <div class="m-final-bill">Total: AED <span>{p.price}</span></div>
+
+          <button class="m-buy-now-btn" onclick={`goCheckout('${p.id}')`}>BUY IT NOW →</button>
+
+          <button
+            class="m-cart-add-trigger"
+            onclick={`addToCartTrigger('${p.id}')`}
+            style="width: 100%; background: #fff; border: 2px solid #800000; color: #800000; padding: 18px; border-radius: 50px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; display: block;"
+          >ADD TO BAG +</button>
+
+          <div id={`cart-alert-${p.id}`} style="display:none; color: #e6007e; font-size: 11px; font-weight: 700; margin-top: 10px; text-align: center; font-family: sans-serif;">
+            ⚠️ Please select color & quantity first!
+          </div>
+
+          <div class="m-pop-description" set:html={p.descriptionHtml}></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

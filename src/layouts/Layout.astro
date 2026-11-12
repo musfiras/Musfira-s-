@@ -5,18 +5,29 @@ import ProductCardScripts from '../components/ProductCardScripts.astro';
 import ReviewTab from '../components/ReviewTab.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 import SupportChat from '../components/SupportChat.astro';
+import storeStyles from '../raw/store-styles.html?raw';
+import storeExtra from '../raw/store-extra.html?raw';
+import storeScripts from '../raw/store-scripts.html?raw';
+import storeBoot from '../raw/store-boot.html?raw';
 const {
   title = "Musfira's Store - Luxury Bags & Backpacks",
   description = "Musfira's: hand-selected ladies' bags, jewellery, wallets, watches and accessories, delivered across the UAE.",
+  shop = false,
+  pageType = 'store',
+  image = '',
 } = Astro.props;
+const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" class={pageClass}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {image && <meta property="og:image" content={image} />}
 
     <!-- BROWSER BAR COLOR (dark pink): mobile Chrome, Safari aur installed app par upar ki bar ka rang.
          Dark rang hone par domain / URL ka text browser khud white kar deta hai.
@@ -45,8 +56,12 @@ const {
       body { margin: 0; width: 100%; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
       body > footer { margin-top: auto; }
     </style>
+
+    {shop && <Fragment set:html={storeStyles} />}
+    {shop && <Fragment set:html={storeExtra} />}
+    <slot name="head" />
   </head>
-  <body>
+  <body class={pageClass}>
     <Header />
     <slot />
     <!-- Footer mein ab WhatsApp button nahi hai (WhatsApp sirf Contact page aur SupportChat ke live agent button mein) -->
@@ -65,5 +80,9 @@ const {
     <script is:inline>
       if (typeof window.openDrawer !== 'function') { window.openDrawer = function () {}; }
     </script>
+
+    <!-- Shop scripts: sirf store / product pages par -->
+    {shop && <Fragment set:html={storeScripts} />}
+    {shop && <Fragment set:html={storeBoot} />}
   </body>
 </html>

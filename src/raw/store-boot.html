@@ -1,0 +1,61 @@
+<script>
+(function () {
+  var isPage = document.body.classList.contains('m-product-page');
+  var orig = window.openElitePop;
+
+  /* Alert ka box agar pehle se page par nahi hai to khud bana do */
+  if (!document.getElementById('m-alert-overlay')) {
+    var o = document.createElement('div');
+    o.id = 'm-alert-overlay';
+    o.setAttribute('onclick', 'closeEliteAlert()');
+    o.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;';
+    document.body.appendChild(o);
+  }
+  if (!document.getElementById('m-elite-alert')) {
+    var a = document.createElement('div');
+    a.id = 'm-elite-alert';
+    a.style.display = 'none';
+    a.innerHTML = '<p></p><button onclick="closeEliteAlert()">OK</button>';
+    document.body.appendChild(a);
+  }
+
+  /* Listing par card / offer pill click = product ke page par jao */
+  window.openElitePop = function (id) {
+    if (isPage) { if (orig) orig(id); return; }
+    var r = document.getElementById(id);
+    var h = r ? r.getAttribute('data-href') : '';
+    if (h) window.location.href = h;
+  };
+
+  /* Product page par purana popup-logic page ke andar chalao */
+  function startPage() {
+    var root = document.querySelector('.m-product-page-wrap .m-master-box[id]');
+    if (!root || !orig) return;
+    orig(root.id);
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    root.querySelectorAll('.m-pop-overlay, .m-pop-box').forEach(function (el) {
+      if (el.getAnimations) el.getAnimations().forEach(function (x) { x.cancel(); });
+    });
+  }
+  if (isPage) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startPage);
+    else startPage();
+  }
+
+  /* Agar cart drawer ka addToCartTrigger na ho to crash na ho */
+  window.addEventListener('load', function () {
+    if (typeof window.addToCartTrigger === 'function') return;
+    window.addToCartTrigger = function (id) {
+      var root = document.getElementById(id), q = 0;
+      if (root) root.querySelectorAll('.m-row-item input').forEach(function (i) { q += parseInt(i.value) || 0; });
+      var al = document.getElementById('cart-alert-' + id);
+      if (q <= 0) {
+        if (al) { al.style.display = 'block'; setTimeout(function () { al.style.display = 'none'; }, 2500); }
+        return;
+      }
+      if (window.showEliteAlert) showEliteAlert("<span class='m-al-title'>CART</span><span class='m-al-text'>Cart is being set up.</span>");
+    };
+  });
+})();
+</script>

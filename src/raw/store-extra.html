@@ -1,0 +1,54 @@
+<style>
+/* PRODUCTS GRID: desktop 4, mobile 2 */
+.m-super-grid {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 20px; width: 100%; max-width: 1280px; margin: 0 auto;
+    padding: 0 20px; box-sizing: border-box;
+}
+@media (max-width: 767px) {
+    .m-super-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; padding: 0 10px; }
+}
+.m-item-wrapper, .m-item { min-width: 0; }
+
+/* Card ki purani inline style yahan */
+.m-save-float { position: absolute !important; top: 10px !important; left: 10px !important; font-size: 12px !important; padding: 6px 15px !important; z-index: 10; }
+@media (max-width: 480px) {
+    .m-save-float { top: 5px !important; left: 5px !important; font-size: 8px !important; padding: 4px 8px !important; }
+}
+.m-txt-L { font-size: 11px; }
+.m-badge-L { font-size: 9px; transform: scale(1); }
+@media (max-width: 480px) {
+    .m-txt-L { font-size: 6px !important; }
+    .m-badge-L { font-size: 8px !important; transform: scale(0.85) !important; }
+}
+a.m-details-trigger { text-decoration: none; }
+
+.m-back-link { display: inline-block; margin: 6px 0 14px; color: #800000; font-weight: 800; font-size: 13px; text-decoration: none; font-family: 'Segoe UI', sans-serif; }
+.m-back-link:hover { color: #e6007e; }
+.m-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* PRODUCT PAGE MODE (popup ki jagah page) */
+.m-product-page-wrap { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px 40px; box-sizing: border-box; }
+@media (max-width: 480px) { .m-product-page-wrap { padding: 0 8px 30px; } }
+
+.m-page-mode .m-pop-overlay {
+    display: block !important; position: static !important; width: auto !important; height: auto !important;
+    background: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    z-index: auto !important; animation: none !important;
+}
+.m-page-mode .m-pop-box {
+    position: relative !important; top: auto !important; left: auto !important;
+    width: 100% !important; height: auto !important; max-height: none !important;
+    overflow: hidden !important; border-radius: 16px !important; z-index: auto !important;
+    box-shadow: 0 10px 40px rgba(128, 0, 0, 0.08), 0 0 0 1px rgba(254, 204, 230, 0.7) !important;
+    animation: none !important;
+}
+.m-page-mode .m-close-x { display: none !important; }
+.m-page-mode .m-pop-layout { height: auto !important; max-height: none !important; overflow: visible !important; }
+
+html.m-product-page, body.m-product-page,
+html.m-product-page:has(.m-pop-overlay[style]),
+body.m-product-page:has(.m-pop-overlay[style]) {
+    overflow: visible !important; overscroll-behavior: auto !important;
+}
+</style>

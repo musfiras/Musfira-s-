@@ -1,0 +1,44 @@
+---
+const { p, checkoutUrl } = Astro.props;
+const href = `/product/${p.slug}`;
+const save = p.oldPrice - p.price;
+const n = Object.keys(p.stock).length;
+---
+<div class="m-item-wrapper">
+  <div class="m-item">
+    <div
+      class="m-master-box"
+      id={p.id}
+      data-pname={p.name}
+      data-base={p.price}
+      data-offer2={p.offer2}
+      data-offer3={p.offer3}
+      data-stock={JSON.stringify(p.stock)}
+      data-checkout={checkoutUrl}
+      data-href={href}
+    >
+      <div class="m-main-card">
+        <div class="m-save-float">SAVE AED {save}</div>
+
+        <div class="m-img-container">
+          <img src={p.images[0]} alt={p.name} class="m-hero-img" loading="lazy" />
+        </div>
+
+        <div class="m-product-info">
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px; gap: 4px;">
+            <div class="m-txt-L m-colors-count" style="font-weight: 800; color: #e6007e; text-transform: uppercase; white-space: nowrap;">{n} {n === 1 ? 'Color' : 'Colors'}</div>
+            <div class="m-stock-badge m-badge-L" style="margin: 0; padding: 2px 6px; white-space: nowrap;">
+              <span class="m-dot-anim"></span> in stock
+            </div>
+          </div>
+          <h2 class="m-pname-line">{p.name}</h2>
+          <div class="m-price-row">
+            <span class="m-new-p">AED {p.price}</span>
+            <span class="m-old-p">AED {p.oldPrice}</span>
+          </div>
+          <a class="m-details-trigger" href={href}>view details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

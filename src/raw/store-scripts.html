@@ -1,0 +1,1374 @@
+
+<!-- Full "SCRIPT" Of PRODUCT Listing Compelte Process A_Z -->
+
+<!-- ======================================================================
+     FULL SCRIPT (sab scripts ek jaga) - purani sab scripts hata kar sirf ye rakho
+     Order: 0 (helper) -> A (card/gap/delivery/info fixes) -> B (main popup logic) -> C (card offer)
+            -> D (info bubbles + auto scroll) -> E (card auto stock) -> F (desktop left column)
+            -> G (LIVE STOCK Account B se) -> H (SOLD BAG ICON, real sale ke baad)
+
+     [UPDATED v2]
+     1) A aur B ke delivery fix mein "change" event ab sirf tab chalta hai jab recalcTotal ban chuki ho
+        (pehle console mein "recalcTotal is not defined" error aata tha).
+     2) G mein diagnostics: console mein  __mLiveStockInfo  likh kar dekhein ke kitne products match hue.
+
+     [UPDATED v3]
+     3) G mein asli (HTML wali) qty data-stock-orig mein yaad rakhi jati hai.
+     4) H (naya): har color box ke neeche chota bag icon + sold qty, sirf real sale ke baad.
+        Sold = data-stock-orig minus data-stock (B ki live qty). Fresh product par kuch nahi aata.
+     ====================================================================== -->
+
+<!-- ========================= 0 (HELPER - sab se pehle) ========================= -->
+<script>
+/* Popup khulte waqt baqi scripts ke observers thori der ruk jate hain (0.6 sec), taake popup ki
+   slide animation ke dauran page par bhaari kaam na ho aur animation jhatke ke bagair chale.
+   Phir wo ruka hua kaam ek baar chal jata hai. */
+(function () {
+  if (window.__mObs) return;
+  var busy = false, timer = 0, pending = [];
+  window.__mBusyFor = function (ms) {
+    busy = true;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      busy = false;
+      var list = pending; pending = [];
+      for (var i = 0; i < list.length; i++) { try { list[i](); } catch (e) {} }
+    }, ms || 600);
+  };
+  window.__mObs = function (cb) {
+    return new MutationObserver(function () {
+      if (!busy) { cb(); return; }
+      if (pending.indexOf(cb) < 0) pending.push(cb);
+    });
+  };
+})();
+</script>
+
+<!-- ========================= A ========================= -->
+<script>
+/* Pic ya product name par click = View Details wala popup khule (same button ko trigger karta hai) */
+(function () {
+  if (window.__mCardClickBound) return;
+  window.__mCardClickBound = true;
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('.m-hero-img, .m-pname-line') : null;
+    if (!t) return;
+    if (t.closest('.m-pop-overlay')) return; /* popup ke andar dobara trigger na ho */
+    var scope = t.closest('.m-main-card') || t.closest('.m-master-box');
+    var btn = scope ? scope.querySelector('.m-details-trigger') : null;
+    if (btn) { e.preventDefault(); btn.click(); }
+  });
+})();
+/* Add to Cart button ka corner Buy Now jaisa (14px) */
+(function () {
+  if (window.__mCartRadiusBound) return;
+  window.__mCartRadiusBound = true;
+  var SEL = '.m-add-to-bag-btn, .m-add-to-cart-btn, [class*="add-to-bag"], [class*="add-to-cart"]';
+  function fixRadius() {
+    var list = document.querySelectorAll(SEL);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].style.borderRadius !== '14px' || list[i].style.getPropertyPriority('border-radius') !== 'important') {
+        list[i].style.setProperty('border-radius', '14px', 'important');
+      }
+    }
+  }
+  fixRadius();
+  document.addEventListener('DOMContentLoaded', fixRadius);
+  __mObs(fixRadius).observe(document.documentElement, { childList: true, subtree: true });
+})();
+/* Description box aur Add to Cart button ke beech gap: seedha inline !important.
+   Desktop par jo description left column (.m-left-col) mein hai, us par bara gap NAHI lagta. */
+(function () {
+  if (window.__mDescBtnGapBound) return;
+  window.__mDescBtnGapBound = true;
+  var BTN = '.m-pop-overlay .m-add-to-bag-btn, .m-pop-overlay .m-add-to-cart-btn, .m-pop-box .m-add-to-bag-btn, .m-pop-box .m-add-to-cart-btn';
+  function gap() { return window.innerWidth <= 480 ? 26 : 32; }
+
+  /* button (ya us ke wrapper) ko upar ki taraf us level tak le jao jahan uska koi sibling ho */
+  function topLevel(el) {
+    var hops = 0;
+    while (el && el.parentNode && hops < 4 &&
+           !el.parentNode.classList.contains('m-pop-right') &&
+           !el.parentNode.classList.contains('m-pop-layout') &&
+           !el.previousElementSibling && !el.nextElementSibling) {
+      el = el.parentNode; hops++;
+    }
+    return el;
+  }
+  function isDesc(n) { return n && n.classList && n.classList.contains('m-pop-description'); }
+
+  function applyGap() {
+    var g = gap() + 'px';
+    var btns = document.querySelectorAll(BTN);
+    for (var i = 0; i < btns.length; i++) {
+      var el = topLevel(btns[i]);
+      if (!el || !el.style) continue;
+      el.style.setProperty('margin-top', g, 'important');
+      el.style.setProperty('margin-bottom', g, 'important');
+      /* description button ke neeche ho to us par bhi upar ka gap */
+      if (isDesc(el.nextElementSibling) && !el.nextElementSibling.closest('.m-left-col')) {
+        el.nextElementSibling.style.setProperty('margin-top', g, 'important');
+      }
+    }
+    var d = document.querySelectorAll('.m-pop-description');
+    for (var j = 0; j < d.length; j++) {
+      /* desktop left column: chhota gap */
+      if (d[j].closest('.m-left-col')) {
+        d[j].style.setProperty('margin-top', '0px', 'important');
+        d[j].style.setProperty('margin-bottom', '18px', 'important');
+        continue;
+      }
+      d[j].style.setProperty('margin-bottom', g, 'important');
+      d[j].style.setProperty('margin-top', g, 'important');
+      var prev = d[j].previousElementSibling;
+      if (prev && prev.style) { prev.style.setProperty('margin-bottom', g, 'important'); }
+    }
+  }
+  applyGap();
+  document.addEventListener('DOMContentLoaded', applyGap);
+  window.addEventListener('resize', applyGap);
+  __mObs(applyGap).observe(document.documentElement, { childList: true, subtree: true });
+})();
+/* Delivery: dropdown hide, "Delivery Method" heading hide, Standard default selected,
+   aur uski jagah elite soft text (+ "Free delivery all over UAE").
+   [UPDATED] change event sirf tab jab recalcTotal (script B) ban chuki ho. */
+(function () {
+  if (window.__mDeliveryFixBound) return;
+  window.__mDeliveryFixBound = true;
+  var SEL = 'select.m-delivery-select, .m-ship-dropdown select, select[id*="deliver" i], select[id*="ship" i]';
+
+  function hideHeading(sel) {
+    var scope = sel.closest('.m-ship-dropdown') || sel.parentNode;
+    var hops = 0;
+    while (scope && hops < 3) {
+      var els = scope.querySelectorAll('label,h1,h2,h3,h4,h5,h6,p,div,span,b,strong');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.closest('select') || el.classList.contains('m-delivery-note') || el.closest('.m-delivery-note')) continue;
+        var txt = (el.textContent || '').trim();
+        if (txt.length > 0 && txt.length < 40 && /delivery\s*method|shipping\s*method|select\s*delivery/i.test(txt)) {
+          el.classList.add('m-hide-delivery-heading');
+        }
+      }
+      scope = scope.parentNode; hops++;
+      if (scope && (scope.classList.contains('m-pop-right') || scope.classList.contains('m-pop-layout'))) { break; }
+    }
+  }
+
+  function fix() {
+    var list = document.querySelectorAll(SEL);
+    for (var i = 0; i < list.length; i++) {
+      var sel = list[i], changed = false, std = -1;
+      for (var j = sel.options.length - 1; j >= 0; j--) {
+        var o = sel.options[j];
+        if (/express/i.test(o.text + ' ' + o.value)) { sel.remove(j); changed = true; }
+      }
+      for (var k = 0; k < sel.options.length; k++) {
+        if (/standard/i.test(sel.options[k].text + ' ' + sel.options[k].value)) { std = k; break; }
+      }
+      if (std > -1 && (sel.selectedIndex !== std || changed)) {
+        sel.selectedIndex = std;
+        /* [UPDATED] B abhi load nahi hui to event na bhejo (khud popup khulte waqt total ban jata hai) */
+        if (typeof window.recalcTotal === 'function') {
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      } else if (std === -1 && sel.options.length > 0 && sel.selectedIndex < 0) {
+        sel.selectedIndex = 0;
+      }
+      sel.style.setProperty('display', 'none', 'important');
+      hideHeading(sel);
+      if (!sel.getAttribute('data-note-added')) {
+        sel.setAttribute('data-note-added', '1');
+        var note = document.createElement('div');
+        note.className = 'm-delivery-note';
+        note.innerHTML = '<span class="m-dn-main">Estimated delivery: <b>1 to 3 working days</b></span>'
+                       + '<span class="m-dn-free">Free delivery all over UAE</span>'
+                       + '<span class="m-dn-sub">Carefully packed, beautifully delivered to your door.</span>';
+        if (sel.parentNode) { sel.parentNode.insertBefore(note, sel.nextSibling); }
+      }
+    }
+  }
+  fix();
+  document.addEventListener('DOMContentLoaded', fix);
+  __mObs(fix).observe(document.documentElement, { childList: true, subtree: true });
+})();
+/* 3 INFO BUBBLES: Return / Replacement ab 30 din (7 / 15 din ki jagah),
+   aur delivery wale info card mein "Free delivery all over UAE" pill. */
+(function () {
+  if (window.__mInfoFixBound) return;
+  window.__mInfoFixBound = true;
+  var SCOPE = '.m-info-wrap, .m-info-card, .m-ib';
+  var RULES = [
+    [/\b(?:7|15)\s*(?:or|\/|-|to|&|and)\s*(?:7|15)[\s-]*(?:days?|din)\b/gi, '30 days'],
+    [/\b(?:7|15)-day\b/gi, '30-day'],
+    [/\b(?:7|15)\s*days?\b/gi, '30 days'],
+    [/\b(?:7|15)\s*din\b/gi, '30 din']
+  ];
+  function fixNode(node) {
+    var v = node.nodeValue, o = v;
+    for (var i = 0; i < RULES.length; i++) { v = v.replace(RULES[i][0], RULES[i][1]); }
+    if (v !== o) { node.nodeValue = v; }
+  }
+  function walk(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false), n;
+    while ((n = w.nextNode())) { fixNode(n); }
+  }
+  function freeChip() {
+    var cards = document.querySelectorAll('.m-info-card');
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var chip = card.querySelector('.m-info-free');
+      var t = card.querySelector('.m-info-title');
+      var isDel = /deliver/i.test(t ? t.textContent : (card.textContent || '').replace(chip ? chip.textContent : '', ''));
+      if (isDel && !chip) {
+        var c = document.createElement('div');
+        c.className = 'm-info-free';
+        c.textContent = 'Free delivery all over UAE';
+        card.appendChild(c);
+      } else if (!isDel && chip) {
+        chip.parentNode.removeChild(chip);
+      }
+    }
+  }
+  var pending = false;
+  function run() {
+    pending = false;
+    var list = document.querySelectorAll(SCOPE);
+    for (var i = 0; i < list.length; i++) { walk(list[i]); }
+    freeChip();
+  }
+  function queue() {
+    if (pending) return;
+    pending = true;
+    (window.requestAnimationFrame || window.setTimeout)(run, 16);
+  }
+  run();
+  document.addEventListener('DOMContentLoaded', run);
+  __mObs(queue).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+})();
+</script>
+
+<!-- ========================= B ========================= -->
+<script>
+(function() {
+    // 1. Popup Open Logic
+    window.openElitePop = function(id) {
+        const root = document.getElementById(id);
+        const overlay = root.querySelector('.m-pop-overlay');
+        if (window.__mBusyFor) window.__mBusyFor(650);   // baqi scripts animation ke dauran ruk jayen
+
+        // sari tayyari popup chhupa hone par (jhatke ke bagair)
+        setupDots(id);
+        if(root.querySelector('.m-config-rows').children.length === 0) addDynamicRow(id);
+        refreshSwatches(root); // popup khulte hi stock labels taaza
+        if (window.__mFixDelivery) window.__mFixDelivery();
+        if (window.recalcTotal) window.recalcTotal(id);   // offer box / total pehle hi tayyar, khulte waqt hilta nahi
+
+        // ab popup dikhao
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+
+        // smooth khulna: parda halka sa fade-in, popup neeche se slide-up (mobile) / fade (laptop)
+        try {
+            const box = overlay.querySelector('.m-pop-box');
+            const mobile = window.innerWidth < 1024;
+            if (overlay.animate) overlay.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
+            if (box && box.animate) {
+                box.animate(
+                    mobile ? [{ transform: 'translateY(40px)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }]
+                           : [{ opacity: 0 }, { opacity: 1 }],
+                    { duration: mobile ? 400 : 350, easing: mobile ? 'cubic-bezier(0.22, 1, 0.36, 1)' : 'ease' }
+                );
+            }
+        } catch (e) {}
+    };
+
+    window.closeElitePop = function(id) { 
+        document.getElementById(id).querySelector('.m-pop-overlay').style.display = 'none'; 
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        if (window.__mCloseInfo) window.__mCloseInfo(document.getElementById(id));
+    };
+
+    // 2. Dynamic Row with Duplicate Color Blocking
+    window.addDynamicRow = function(id) {
+        const root = document.getElementById(id);
+        const stock = JSON.parse(root.getAttribute('data-stock'));
+        const container = root.querySelector('.m-config-rows');
+        const availableColors = Object.keys(stock);
+        
+        const usedColors = Array.from(container.querySelectorAll('.m-color-select')).map(s => s.value);
+        const trulyAvailable = availableColors.filter(c => !usedColors.includes(c));
+
+        // chota, soft alert (title + ek line)
+        if(container.children.length >= availableColors.length || trulyAvailable.length === 0) {
+            showEliteAlert("<span class='m-al-title'>ALL COLORS ADDED</span><span class='m-al-text'>Every available shade is already in your selection.</span>");
+            return;
+        }
+
+        // baqi bache colors sab sold out hon to naya row na banao
+        const inStockLeft = trulyAvailable.filter(c => (Number(stock[c]) || 0) > 0);
+        if (container.children.length > 0 && inStockLeft.length === 0) {
+            showEliteAlert("<span class='m-al-title'>NO MORE COLORS</span><span class='m-al-text'>The remaining colors are currently sold out.</span>");
+            return;
+        }
+
+        const row = document.createElement('div');
+        row.className = 'm-row-item';
+        let opts = ''; 
+        availableColors.forEach(c => {
+            const isSold = stock[c] <= 0 ? ' (SOLD OUT)' : '';
+            opts += `<option value="${c}">${c}${isSold}</option>`;
+        });
+
+        // pehle wo color jo stock mein ho
+        const nextColor = inStockLeft.length ? inStockLeft[0] : trulyAvailable[0];
+        const initialQty = stock[nextColor] <= 0 ? 0 : 1;
+
+        row.innerHTML = `
+            <div class="m-pink-popup" style="display:none;">⚠️ COLOR ALREADY SELECTED!</div>
+            <select class="m-color-select" onchange="checkDuplicateAndStock(this, '${id}')">${opts}</select>
+            <div class="m-qty-box">
+                <button onclick="qtyStep(this,-1,'${id}')">-</button>
+                <input value="${initialQty}" readonly>
+                <button onclick="qtyStep(this,1,'${id}')">+</button>
+            </div>
+            ${container.children.length > 0 ? `<span class="m-remove-btn" onclick="this.parentElement.remove();recalcTotal('${id}')">REMOVE</span>` : ''}
+            <div class="m-alert-anchor"></div>
+        `;
+        
+        container.appendChild(row);
+        row.querySelector('.m-color-select').value = nextColor;
+        refreshSwatches(root);
+        setTimeout(() => { recalcTotal(id); }, 10);
+    };
+
+    window.checkDuplicateAndStock = function(select, id) {
+        const root = document.getElementById(id);
+        const stock = JSON.parse(root.getAttribute('data-stock'));
+        const container = root.querySelector('.m-config-rows');
+        const selectedColor = select.value;
+        const currentId = select.parentElement;
+        const pinkPopup = currentId.querySelector('.m-pink-popup');
+
+        let isDuplicate = false;
+        container.querySelectorAll('.m-color-select').forEach(s => {
+            if (s !== select && s.value === selectedColor) isDuplicate = true;
+        });
+
+        if (isDuplicate) {
+            if(pinkPopup) {
+                pinkPopup.innerText = "⚠️ COLOR ALREADY SELECTED!";
+                pinkPopup.style.display = "block";
+                setTimeout(() => { pinkPopup.style.display = "none"; }, 2500);
+            }
+            const used = Array.from(container.querySelectorAll('.m-color-select')).filter(s => s !== select).map(s => s.value);
+            // free colors mein se stock wala pehle
+            const free = Object.keys(stock).filter(c => !used.includes(c));
+            const available = free.find(c => (Number(stock[c]) || 0) > 0) || free[0];
+            if (available) select.value = available;
+        }
+
+        const finalColor = select.value;
+        const inp = currentId.querySelector('input');
+        inp.value = (stock[finalColor] <= 0) ? 0 : 1;
+        recalcTotal(id);
+    };
+
+    window.qtyStep = function(btn, d, id) {
+        const row = btn.closest('.m-row-item');
+        const inp = row.querySelector('input');
+        const color = row.querySelector('.m-color-select').value;
+        const max = JSON.parse(document.getElementById(id).getAttribute('data-stock'))[color];
+        const pinkPopup = row.querySelector('.m-pink-popup');
+
+        if (max <= 0) { showEliteAlert("This product/color/piece is currently out of stock!"); return; }
+        
+        let val = parseInt(inp.value) + d;
+        if(val >= 1 && val <= max) { 
+            inp.value = val; 
+            recalcTotal(id); 
+        } else if(val > max) {
+            if(pinkPopup) {
+                pinkPopup.innerText = "⚠️ STOCK LIMIT REACHED!";
+                pinkPopup.style.display = "block";
+                setTimeout(() => { pinkPopup.style.display = "none"; }, 2000);
+            }
+        }
+    };
+
+    // ==========================================================
+    // COLOR BOXES (dropdown ki jagah) - Amazon / Daraz jaisa
+    // Asli <select> hidden rehta hai, sab purani logic usi se chalti hai
+    // (duplicate block, stock limit, qty, total, cart, checkout).
+    // Box par click = select ki value badal kar wohi purana change event.
+    // Color ka dot naam se khud banta hai. Kisi color ka rang badalna ho to
+    // product ke root par optional: data-colors='{"Warm Beige":"#d9c3a0"}'
+    //
+    // Har box ke oper (border par) soft grey placeholder: "5 in stock",
+    // stock kam ho to "4 in stock", khatam to "sold out" - sab data-stock se AUTO.
+    // Sold out box dhundhla ho jata hai aur click par alert aata hai.
+    // ==========================================================
+    var COLOR_MAP = [
+        ['burgundy','#6d0f2b'],['maroon','#800000'],['wine','#6d0f2b'],['fuchsia','#e6007e'],['hot pink','#ff69b4'],
+        ['blush','#f3c4cf'],['rose','#e07a9b'],['pink','#f4a6c0'],['red','#c0182b'],['orange','#ff8c3a'],['peach','#ffcba4'],
+        ['mustard','#d6a419'],['yellow','#f5c518'],['gold','#c9a24b'],['olive','#6b7a3a'],['mint','#a8dcc0'],['green','#2e7d4f'],
+        ['teal','#1f8a8a'],['navy','#1b2a49'],['sky','#87ceeb'],['blue','#2f6fb5'],['lavender','#b9a3dd'],['lilac','#c8a2c8'],
+        ['purple','#7b4fa3'],['charcoal','#444444'],['silver','#c0c0c0'],['grey','#9a9a9a'],['gray','#9a9a9a'],
+        ['chocolate','#4b2e1e'],['coffee','#4b3621'],['brown','#6f4e37'],['camel','#c19a6b'],['tan','#c19a6b'],['khaki','#c3b091'],
+        ['nude','#e8c9b0'],['beige','#d9c3a0'],['cream','#f5efd6'],['ivory','#fffff0'],['white','#ffffff'],['black','#1a1a1a']
+    ].sort(function (a, b) { return b[0].length - a[0].length; });
+
+    function colorHex(root, name) {
+        try {
+            var o = JSON.parse(root.getAttribute('data-colors') || '{}');
+            if (o && o[name]) return o[name];
+        } catch (e) {}
+        var n = String(name).toLowerCase();
+        for (var i = 0; i < COLOR_MAP.length; i++) { if (n.indexOf(COLOR_MAP[i][0]) > -1) return COLOR_MAP[i][1]; }
+        return '#e3d4da';
+    }
+
+    function flashPop(row, msg) {
+        var pp = row.querySelector('.m-pink-popup');
+        if (!pp) return;
+        pp.innerText = msg; pp.style.display = 'block';
+        setTimeout(function () { pp.style.display = 'none'; }, 2200);
+    }
+
+    function pickColor(root, row, c) {
+        var sel = row.querySelector('.m-color-select');
+        var stock = JSON.parse(root.getAttribute('data-stock'));
+        if (!sel || sel.value === c) {
+            // jo color pehle se selected hai wo bhi sold out ho to alert
+            if (sel && (Number(stock[c]) || 0) <= 0) {
+                showEliteAlert("<span class='m-al-title'>COLOR UNAVAILABLE</span><span class='m-al-text'>" + c + " is currently sold out.</span>");
+            }
+            return;
+        }
+        // sold out color: select hi nahi hota, soft alert aata hai
+        if ((Number(stock[c]) || 0) <= 0) {
+            if (typeof showEliteAlert === 'function' && document.getElementById('m-elite-alert')) {
+                showEliteAlert("<span class='m-al-title'>COLOR UNAVAILABLE</span><span class='m-al-text'>" + c + " is currently sold out. Please choose another color.</span>");
+            } else {
+                flashPop(row, '\u26A0\uFE0F SOLD OUT!');
+            }
+            return;
+        }
+        var usedElsewhere = false;
+        root.querySelectorAll('.m-row-item .m-color-select').forEach(function (s) { if (s !== sel && s.value === c) usedElsewhere = true; });
+        if (usedElsewhere) { flashPop(row, '\u26A0\uFE0F COLOR ALREADY SELECTED!'); return; }
+        sel.value = c;
+        sel.dispatchEvent(new Event('change', { bubbles: true })); // purana checkDuplicateAndStock chalega
+    }
+
+    function refreshSwatches(root) {
+        var stock;
+        try { stock = JSON.parse(root.getAttribute('data-stock')); } catch (e) { return; }
+        var names = Object.keys(stock);
+        var rows = root.querySelectorAll('.m-row-item');
+        var chosen = [];
+        rows.forEach(function (r) { var s = r.querySelector('.m-color-select'); chosen.push(s ? s.value : ''); });
+
+        rows.forEach(function (row, idx) {
+            var sel = row.querySelector('.m-color-select');
+            if (!sel) return;
+            var wrap = row.querySelector('.m-swatches');
+            if (!wrap) {
+                wrap = document.createElement('div');
+                wrap.className = 'm-swatches';
+                names.forEach(function (c) {
+                    var ch = document.createElement('div');
+                    ch.className = 'm-swatch';
+                    ch.setAttribute('data-c', c);
+                    ch.setAttribute('role', 'button');
+                    ch.tabIndex = 0;
+                    // pehla span = oper wala soft stock placeholder
+                    ch.innerHTML = '<span class="m-sw-stock"></span><span class="m-sw-dot" style="background:' + colorHex(root, c) + '"></span><span class="m-sw-name"></span>';
+                    ch.querySelector('.m-sw-name').textContent = c;
+                    ch.addEventListener('click', function () { pickColor(root, row, c); });
+                    ch.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickColor(root, row, c); }
+                    });
+                    wrap.appendChild(ch);
+                });
+                row.insertBefore(wrap, sel);
+                row.classList.add('m-has-swatches');
+            }
+            wrap.querySelectorAll('.m-swatch').forEach(function (ch) {
+                var c = ch.getAttribute('data-c');
+                var st = Number(stock[c]) || 0;
+                var usedElsewhere = chosen.some(function (v, k) { return k !== idx && v === c; });
+                ch.classList.toggle('is-sel', sel.value === c);
+                ch.classList.toggle('is-used', usedElsewhere);
+                ch.classList.toggle('is-sold', st <= 0);
+                ch.setAttribute('aria-pressed', sel.value === c ? 'true' : 'false');
+                ch.setAttribute('aria-disabled', st <= 0 ? 'true' : 'false');
+                // stock placeholder: "5 in stock" ... "sold out"
+                var lab = ch.querySelector('.m-sw-stock');
+                var txt = st > 0 ? (st + ' in stock') : 'sold out';
+                if (lab && lab.textContent !== txt) lab.textContent = txt;
+            });
+        });
+    }
+    window.__mRefreshSwatches = refreshSwatches;
+
+    // ==========================================================
+    // BUNDLE OFFER (har product ki apni qeemat, manual)
+    // Product ke root element par ye attributes likho (dono optional):
+    //   data-offer2="55"   -> is product ke 2 items ki total qeemat
+    //   data-offer3="75"   -> is product ke 3 items ki total qeemat
+    // Attributes na hon to is product par koi offer nahi, sab pehle jaisa.
+    // Rule: 2 items = offer2 | 3 items = offer3 | 3 se zyada = offer3 + baqi normal
+    //       (offer3 na ho to 2+ items = offer2 + baqi normal)
+    // Offer qeemat normal total se sasti honi chahiye, warna ignore.
+    // ==========================================================
+    function offerInfo(root, q, price) {
+        var o2 = parseInt(root.getAttribute('data-offer2')) || 0;
+        var o3 = parseInt(root.getAttribute('data-offer3')) || 0;
+        if (!(o2 > 0 && o2 < price * 2)) o2 = 0;
+        if (!(o3 > 0 && o3 < price * 3)) o3 = 0;
+        var full = price * q, offered = full;
+        if (q >= 3 && o3) offered = o3 + (q - 3) * price;
+        else if (q >= 2 && o2) offered = o2 + (q - 2) * price;
+        return { o2: o2, o3: o3, discount: Math.max(0, full - offered) };
+    }
+    window.__mOfferInfo = offerInfo;
+
+    function tierHTML(n, offer, full) {
+        return '<div class="m-offer-tier" data-n="' + n + '">'
+             + '<span class="m-ot-n">' + n + ' items</span>'
+             + '<span class="m-ot-new">AED ' + offer + '</span>'
+             + '<s class="m-ot-old">AED ' + full + '</s></div>';
+    }
+
+    function updateOfferUI(root, q, price, ship, info) {
+        var rows = root.querySelector('.m-config-rows');
+        var box = root.querySelector('.m-offer-box');
+        var hint = root.querySelector('.m-offer-hint');
+        var bill = root.querySelector('.m-final-bill');
+        var has = !!(info.o2 || info.o3);
+
+        // Is product par offer nahi: sab saaf
+        if (!has || !rows) {
+            if (box) box.remove();
+            if (hint) hint.remove();
+            if (bill) {
+                var o0 = bill.querySelector('.m-final-old'), s0 = bill.querySelector('.m-final-save');
+                if (o0) o0.remove(); if (s0) s0.remove();
+            }
+            return;
+        }
+
+        // Elite box: "Add Color & Qty" heading ke upar (heading na mile to rows ke upar)
+        if (!box) {
+            box = document.createElement('div');
+            box.className = 'm-offer-box';
+            var tiers = '';
+            if (info.o2) tiers += tierHTML(2, info.o2, price * 2);
+            if (info.o3) tiers += tierHTML(3, info.o3, price * 3);
+            box.innerHTML = '<div class="m-offer-title">✦ BUNDLE OFFER ✦</div><div class="m-offer-tiers">' + tiers + '</div>';
+            var prev = rows.previousElementSibling;
+            if (prev && prev.textContent && prev.textContent.length < 60 && /colou?r|qty|quantity/i.test(prev.textContent)) {
+                prev.parentNode.insertBefore(box, prev);
+            } else {
+                rows.parentNode.insertBefore(box, rows);
+            }
+        }
+
+        // Live line: "Add Another Color" button ke neeche
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.className = 'm-offer-hint';
+            var addBtn = root.querySelector('.m-add-row-btn');
+            if (addBtn) { addBtn.insertAdjacentElement('afterend', hint); }
+            else { rows.insertAdjacentElement('afterend', hint); }
+        }
+
+        // Konsa tier abhi lag raha hai
+        var bestN = (q >= 3 && info.o3) ? 3 : ((q >= 2 && info.o2) ? 2 : 0);
+        box.querySelectorAll('.m-offer-tier').forEach(function (t) {
+            t.classList.toggle('is-on', parseInt(t.getAttribute('data-n')) === bestN);
+        });
+
+        // Live text
+        var next = null;
+        if (q < 2 && info.o2) next = { n: 2, p: info.o2, full: price * 2 };
+        else if (q < 3 && info.o3) next = { n: 3, p: info.o3, full: price * 3 };
+
+        hint.classList.remove('is-done');
+        if (q <= 0) {
+            hint.innerHTML = '';
+        } else if (next) {
+            var need = next.n - q;
+            hint.innerHTML = 'Add <b>' + need + ' more</b> to get ' + next.n + ' for <b>AED ' + next.p + '</b> <s>AED ' + next.full + '</s>';
+        } else if (info.discount > 0) {
+            hint.classList.add('is-done');
+            hint.innerHTML = '✓ Best price unlocked &mdash; you save <b>AED ' + info.discount + '</b>';
+        } else {
+            hint.innerHTML = '';
+        }
+
+        // Total par purani qeemat (cut) + "You save"
+        if (bill) {
+            var old = bill.querySelector('.m-final-old'), save = bill.querySelector('.m-final-save');
+            if (info.discount > 0) {
+                if (!old) { old = document.createElement('s'); old.className = 'm-final-old'; bill.insertBefore(old, bill.firstChild); }
+                if (!save) { save = document.createElement('small'); save.className = 'm-final-save'; bill.appendChild(save); }
+                old.textContent = 'AED ' + ((price * q) + ship);
+                save.textContent = 'You save AED ' + info.discount;
+            } else {
+                if (old) old.remove();
+                if (save) save.remove();
+            }
+        }
+    }
+
+    window.recalcTotal = function(id) {
+        const root = document.getElementById(id);
+        if (!root) return;
+        let qTotal = 0;
+        root.querySelectorAll('.m-row-item input').forEach(i => { qTotal += (parseInt(i.value) || 0); });
+        const price = parseInt(root.getAttribute('data-base')) || 0;
+        const shipSelect = root.querySelector('.m-delivery-select');
+        let ship = (shipSelect && shipSelect.value) ? parseInt(shipSelect.value) || 0 : 0;
+        const info = offerInfo(root, qTotal, price);
+        const finalValue = (price * qTotal) - info.discount + ship;
+        const display = root.querySelector('.m-final-bill span');
+        if (display) display.innerText = finalValue;
+        refreshSwatches(root);
+        updateOfferUI(root, qTotal, price, ship, info);
+    };
+
+    // goCheckout: delivery select karna zaroori nahi
+    window.goCheckout = function(id) {
+        const root = document.getElementById(id);
+        const shipSelect = root.querySelector('.m-delivery-select');
+        const shipValue = (shipSelect && shipSelect.value) ? (parseInt(shipSelect.value) || 0) : 0;
+        const shipText = (shipSelect && shipSelect.selectedIndex >= 0 && shipSelect.options[shipSelect.selectedIndex])
+            ? shipSelect.options[shipSelect.selectedIndex].text.split(' ')[0]
+            : 'Standard';
+
+        const itemName = root.getAttribute('data-pname');
+        const basePrice = parseInt(root.getAttribute('data-base'));
+        const checkoutURL = root.getAttribute('data-checkout');
+        const rows = root.querySelectorAll('.m-row-item');
+        let orderData = []; let totalQty = 0;
+        const info = offerInfo(root, 0, basePrice);
+        const offerPart = (info.o2 || info.o3) ? `|${info.o2}|${info.o3}` : '';
+        rows.forEach(row => {
+            const color = row.querySelector('.m-color-select').value;
+            const qty = parseInt(row.querySelector('input').value) || 0;
+            if (qty > 0) { totalQty += qty; orderData.push(`${itemName}|${color}|${qty}|${basePrice}${offerPart}`); }
+        });
+        if (totalQty === 0) { showEliteAlert("Please select at least one available color!"); return; }
+
+        const discount = offerInfo(root, totalQty, basePrice).discount;
+        const discSubtotal = (basePrice * totalQty) - discount;
+        
+        window.location.href = `${checkoutURL}?data=${encodeURIComponent(orderData.join('||'))}&delivery=${encodeURIComponent(shipText)}&subtotal=${discSubtotal}&total=${discSubtotal + shipValue}`;
+    };
+
+    window.showEliteAlert = function(msg) {
+        const alertBox = document.getElementById('m-elite-alert');
+        const alertOverlay = document.getElementById('m-alert-overlay');
+        if(alertBox) {
+            alertBox.querySelector('p').innerHTML = msg; 
+            alertBox.style.display = 'block';
+            alertOverlay.style.display = 'block';
+            alertBox.style.zIndex = "2147483647"; 
+            alertOverlay.style.zIndex = "2147483646";
+        }
+    };
+
+    window.closeEliteAlert = function() {
+        document.getElementById('m-elite-alert').style.display = 'none';
+        document.getElementById('m-alert-overlay').style.display = 'none';
+    };
+
+    function setupDots(id) {
+        const root = document.getElementById(id);
+        const imgs = root.querySelectorAll('.m-track img');
+        const wrapper = root.querySelector('.m-dots-wrapper');
+        wrapper.innerHTML = '';
+        imgs.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = i === 0 ? 'm-dot active' : 'm-dot';
+            wrapper.appendChild(d);
+        });
+    }
+
+    window.goNext = function(btn) {
+        const t = btn.parentElement.querySelector('.m-track');
+        if (t.scrollLeft + t.clientWidth >= t.scrollWidth - 15) t.scrollTo({left: 0, behavior: 'smooth'});
+        else t.scrollBy({left: t.clientWidth, behavior: 'smooth'});
+    };
+
+    window.syncDots = function(t) {
+        const ds = t.parentElement.querySelectorAll('.m-dot');
+        const i = Math.round(t.scrollLeft / t.offsetWidth);
+        ds.forEach((d, idx) => d.className = idx === i ? 'm-dot active' : 'm-dot');
+    };
+
+    // 3. DELIVERY: dropdown + heading chupao, uski jagah elite text
+    (function () {
+        var SEL = 'select.m-delivery-select, .m-ship-dropdown select, select[id*="deliver" i], select[id*="ship" i]';
+
+        function hideHeading(sel) {
+            var scope = sel.closest('.m-ship-dropdown') || sel.parentNode;
+            var hops = 0;
+            while (scope && hops < 3) {
+                var els = scope.querySelectorAll('label,h1,h2,h3,h4,h5,h6,p,div,span,b,strong');
+                for (var i = 0; i < els.length; i++) {
+                    var el = els[i];
+                    if (el.closest('select') || el.closest('.m-delivery-note')) continue;
+                    var txt = (el.textContent || '').trim();
+                    if (txt.length > 0 && txt.length < 40 && /delivery\s*method|shipping\s*method|select\s*delivery/i.test(txt)) {
+                        el.style.setProperty('display', 'none', 'important');
+                    }
+                }
+                scope = scope.parentNode; hops++;
+                if (scope && (scope.classList.contains('m-pop-right') || scope.classList.contains('m-pop-layout'))) { break; }
+            }
+        }
+
+        function fix() {
+            var list = document.querySelectorAll(SEL);
+            for (var i = 0; i < list.length; i++) {
+                var sel = list[i], changed = false, std = -1;
+                for (var j = sel.options.length - 1; j >= 0; j--) {
+                    var o = sel.options[j];
+                    if (/express/i.test(o.text + ' ' + o.value)) { sel.remove(j); changed = true; }
+                }
+                for (var k = 0; k < sel.options.length; k++) {
+                    if (/standard/i.test(sel.options[k].text + ' ' + sel.options[k].value)) { std = k; break; }
+                }
+                if (std > -1 && (sel.selectedIndex !== std || changed)) {
+                    sel.selectedIndex = std;
+                    if (typeof window.recalcTotal === 'function') {   // [UPDATED]
+                        sel.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                } else if (std === -1 && sel.options.length > 0 && sel.selectedIndex < 0) {
+                    sel.selectedIndex = 0;
+                }
+                sel.style.setProperty('display', 'none', 'important');
+                hideHeading(sel);
+                if (!sel.getAttribute('data-note-added')) {
+                    sel.setAttribute('data-note-added', '1');
+                    var note = document.createElement('div');
+                    note.className = 'm-delivery-note';
+                    note.innerHTML = '<span class="m-dn-main">Estimated delivery: <b>1 to 3 working days</b></span>'
+                                   + '<span class="m-dn-sub">Carefully packed, beautifully delivered to your door.</span>';
+                    if (sel.parentNode) { sel.parentNode.insertBefore(note, sel.nextSibling); }
+                }
+            }
+        }
+        window.__mFixDelivery = fix;
+        fix();
+        document.addEventListener('DOMContentLoaded', fix);
+        __mObs(fix).observe(document.documentElement, { childList: true, subtree: true });
+    })();
+})();
+</script>
+
+<!-- ========================= C ========================= -->
+<script>
+/* CARD PAR OFFER LINE - AUTO (card ki height nahi badalti)
+   Jis product ke root par data-offer2 / data-offer3 ho usi par "Buy 2 · Save AED X" pill khud lagti hai,
+   "VIEW DETAILS" button ke neeche, card ki khali jagah mein (position:absolute).
+   Jis par offer na ho (ya offer galat ho) wahan khud gayab. Kuch manual nahi likhna.
+   Pill par click = popup khulta hai. */
+(function () {
+  if (window.__mCardOfferBound) return;
+  window.__mCardOfferBound = true;
+  var GAP = 6; /* button aur pill ke beech ka gap (px) */
+
+  function offerText(root) {
+    var price = parseInt(root.getAttribute('data-base')) || 0;
+    var o2 = parseInt(root.getAttribute('data-offer2')) || 0;
+    var o3 = parseInt(root.getAttribute('data-offer3')) || 0;
+    if (!(o2 > 0 && o2 < price * 2)) o2 = 0;
+    if (!(o3 > 0 && o3 < price * 3)) o3 = 0;
+    if (o2) return 'Buy 2 \u00b7 Save AED ' + (price * 2 - o2);
+    if (o3) return 'Buy 3 \u00b7 Save AED ' + (price * 3 - o3);
+    return '';
+  }
+
+  /* pill ko button ke theek neeche rakho (button ki asli jagah naap kar) */
+  function place(root, pill) {
+    var trig = root.querySelector('.m-main-card .m-details-trigger');
+    var main = root.querySelector('.m-main-card');
+    var base = root.getBoundingClientRect().top;
+    var y;
+    if (trig) { y = trig.getBoundingClientRect().bottom - base + GAP; }
+    else if (main) { y = main.getBoundingClientRect().bottom - base + GAP; }
+    else { return; }
+    pill.style.top = Math.round(y) + 'px';
+    pill.style.visibility = 'visible';
+  }
+
+  function placeAll() {
+    var pills = document.querySelectorAll('.m-master-box > .m-card-offer');
+    for (var i = 0; i < pills.length; i++) place(pills[i].parentNode, pills[i]);
+  }
+
+  var ro = (typeof ResizeObserver !== 'undefined') ? new ResizeObserver(placeAll) : null;
+
+  function sync() {
+    var roots = document.querySelectorAll('.m-master-box[data-base]');
+    for (var i = 0; i < roots.length; i++) {
+      var root = roots[i];
+      var text = offerText(root);
+      var pill = root.querySelector(':scope > .m-card-offer');
+      if (!text) { if (pill) pill.remove(); continue; }
+      if (!pill) {
+        var main = root.querySelector('.m-main-card');
+        if (!main) continue;
+        pill = document.createElement('div');
+        pill.className = 'm-card-offer';
+        pill.style.visibility = 'hidden';
+        (function (r) {
+          pill.addEventListener('click', function () {
+            if (typeof openElitePop === 'function' && r.id) openElitePop(r.id);
+          });
+        })(root);
+        main.insertAdjacentElement('afterend', pill);
+        if (ro) ro.observe(main);
+      }
+      if (pill.textContent !== text) pill.textContent = text;
+      place(root, pill);
+    }
+  }
+  sync();
+  document.addEventListener('DOMContentLoaded', sync);
+  window.addEventListener('load', function () { sync(); placeAll(); });
+  window.addEventListener('resize', placeAll);
+  __mObs(sync).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-offer2', 'data-offer3', 'data-base'] });
+})();
+</script>
+
+<!-- ========================= D ========================= -->
+<script>
+/* 1) "IN STOCK" badge har card mein right par (card ke andar jo bhi wrapper ho, sab poori chaurai par)
+   2) "+ ADD ANOTHER COLOR" click ke baad focus hata do (pink atke nahi)
+   3) Description ke neeche 3 info bubbles: Fast Delivery / Easy Returns / Support
+   Icon par click = popup card khud scroll hoke poora nazar aata hai */
+(function () {
+  if (window.__mInfoBubblesBound) return;
+  window.__mInfoBubblesBound = true;
+
+  /* ---- 1) IN STOCK ROW ---- */
+  function fixStockRows() {
+    var badges = document.querySelectorAll('.m-main-card .m-stock-badge');
+    for (var i = 0; i < badges.length; i++) {
+      var b = badges[i], info = b.closest('.m-product-info');
+      if (!info) continue;
+      info.style.setProperty('width', '100%', 'important');
+      info.style.setProperty('box-sizing', 'border-box', 'important');
+      var el = b;
+      while (el.parentElement && el.parentElement !== info) {
+        el = el.parentElement;
+        el.style.setProperty('width', '100%', 'important');
+        el.style.setProperty('align-self', 'stretch', 'important');
+        el.style.setProperty('box-sizing', 'border-box', 'important');
+        el.style.setProperty('display', 'flex', 'important');
+        el.style.setProperty('justify-content', 'space-between', 'important');
+      }
+      b.style.setProperty('margin-left', 'auto', 'important');
+    }
+  }
+
+  /* ---- 2) ADD ANOTHER COLOR: click ke baad blur ---- */
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.m-add-row-btn') : null;
+    if (btn) setTimeout(function () { btn.blur(); }, 0);
+  });
+
+  /* ---- 3) INFO BUBBLES ---- */
+  /* TEXT YAHAN SE BADLO (chhota rakho). Return ke din (7 / 15) apni policy ke hisaab se likho. */
+  var INFO = {
+    delivery: {
+      label: 'Fast Delivery', title: 'Fast Delivery',
+      text: 'Estimated delivery: 1 to 3 working days. It may take a little longer during public holidays, bad weather or courier delays.',
+      icon: '<svg viewBox="0 0 24 24"><path d="M3 6.5h11v9H3z"/><path d="M14 9.5h4l3 3v3h-7"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>'
+    },
+    returns: {
+      label: 'Easy Returns', title: 'Return & Replacement',
+      text: 'Return or replacement within 7 days of delivery if your item arrives damaged, defective or incorrect. Just contact us and we will help.',
+      icon: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.5"/><path d="M4 20v-4.5h4.5"/></svg>'
+    },
+    support: {
+      label: 'Support', title: 'We Are Here To Help',
+      text: 'Tap the WhatsApp button on this page to chat with us anytime. After you place your order, our team will also stay in touch with you.',
+      icon: '<svg viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 10h8M8 13h5"/></svg>'
+    }
+  };
+  var KEYS = ['delivery', 'returns', 'support'];
+
+  function closeInfo(wrap) {
+    var card = wrap.querySelector('.m-info-card');
+    if (card) card.classList.remove('is-open');
+    wrap.querySelectorAll('.m-ib').forEach(function (b) { b.classList.remove('is-open'); });
+  }
+  window.__mCloseInfo = function (root) {
+    if (!root) return;
+    root.querySelectorAll('.m-info-wrap').forEach(closeInfo);
+  };
+
+  /* popup card ko scroll wale parent mein poora nazar lao (laptop, tablet, iPhone, sab) */
+  function scrollParent(el) {
+    var p = el.parentElement;
+    while (p && p !== document.body) {
+      var oy = getComputedStyle(p).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && p.scrollHeight > p.clientHeight + 1) return p;
+      p = p.parentElement;
+    }
+    return null;
+  }
+  function showFully(card) {
+    if (!card.classList.contains('is-open')) return;
+    var sp = scrollParent(card);
+    if (!sp) return;
+    var pad = 18;
+    var cr = card.getBoundingClientRect(), pr = sp.getBoundingClientRect();
+    var top = Math.max(pr.top, 0), bottom = Math.min(pr.bottom, window.innerHeight);
+    var d = 0;
+    if (cr.height > (bottom - top) - 2 * pad) { d = cr.top - (top + pad); }       /* bohat lamba ho to upar se dikhao */
+    else if (cr.bottom > bottom - pad)        { d = cr.bottom - (bottom - pad); }
+    else if (cr.top < top + pad)              { d = cr.top - (top + pad); }
+    if (Math.abs(d) > 1) sp.scrollBy({ top: d, behavior: 'smooth' });
+  }
+
+  function openInfo(wrap, key) {
+    var card = wrap.querySelector('.m-info-card');
+    var bubble = wrap.querySelector('.m-ib[data-k="' + key + '"]');
+    if (!card || !bubble) return;
+    if (bubble.classList.contains('is-open')) { closeInfo(wrap); return; }   /* dobara click = band */
+    wrap.querySelectorAll('.m-ib').forEach(function (b) { b.classList.toggle('is-open', b === bubble); });
+    card.querySelector('.m-info-title').textContent = INFO[key].title;
+    card.querySelector('.m-info-text').textContent = INFO[key].text;
+    card.classList.add('is-open');
+    var cr = card.getBoundingClientRect(), br = bubble.getBoundingClientRect();
+    card.style.setProperty('--ax', Math.round(br.left + br.width / 2 - cr.left) + 'px');   /* teer bubble ke neeche */
+    requestAnimationFrame(function () { showFully(card); });
+    setTimeout(function () { showFully(card); }, 350);   /* animation ke baad dobara check */
+  }
+
+  function buildInfo() {
+    var descs = document.querySelectorAll('.m-pop-description');
+    for (var i = 0; i < descs.length; i++) {
+      var d = descs[i];
+      if (d.nextElementSibling && d.nextElementSibling.classList.contains('m-info-wrap')) continue;
+      var wrap = document.createElement('div');
+      wrap.className = 'm-info-wrap';
+      var html = '<div class="m-info-bubbles">';
+      KEYS.forEach(function (k) {
+        html += '<div class="m-ib" role="button" tabindex="0" data-k="' + k + '"><span class="m-ib-circle">' + INFO[k].icon + '</span><span class="m-ib-label">' + INFO[k].label + '</span></div>';
+      });
+      html += '</div><div class="m-info-card"><span class="m-info-x" role="button" tabindex="0" aria-label="Close">&times;</span><div class="m-info-title"></div><div class="m-info-text"></div></div>';
+      wrap.innerHTML = html;
+      wrap.addEventListener('click', function (e) {
+        var w = e.currentTarget;
+        if (e.target.closest('.m-info-x')) { closeInfo(w); return; }
+        var b = e.target.closest('.m-ib');
+        if (b) openInfo(w, b.getAttribute('data-k'));
+      });
+      wrap.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var w = e.currentTarget;
+        if (e.target.closest('.m-info-x')) { e.preventDefault(); closeInfo(w); return; }
+        var b = e.target.closest('.m-ib');
+        if (b) { e.preventDefault(); openInfo(w, b.getAttribute('data-k')); }
+      });
+      d.insertAdjacentElement('afterend', wrap);
+    }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.m-info-wrap').forEach(closeInfo);
+  });
+
+  function run() { fixStockRows(); buildInfo(); }
+  run();
+  document.addEventListener('DOMContentLoaded', run);
+  window.addEventListener('load', run);
+  __mObs(run).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+<!-- ========================= E ========================= -->
+<script>
+/* CARD AUTO: "N Colors" + "in stock / out of stock" badge
+   Sab kuch product ke data-stock se khud aata hai. Html mein colors ginne ya badge badalne ki zaroorat nahi.
+   - data-stock mein jitne colors, utna "N Colors" (1 ho to "1 Color")
+   - kam az kam ek color mein stock > 0 : "in stock" (hara, dot chalta hai)
+   - sab colors 0 : "out of stock" (soft red, dot ruk jata hai) - khud, manual nahi
+   - data-stock badalte hi (ya naya product aate hi) card khud update ho jata hai */
+(function () {
+  if (window.__mAutoCardBound) return;
+  window.__mAutoCardBound = true;
+
+  function readStock(root) {
+    try {
+      var o = JSON.parse(root.getAttribute('data-stock') || '{}');
+      return (o && typeof o === 'object') ? o : null;
+    } catch (e) { return null; }
+  }
+
+  function syncCard(root) {
+    var stock = readStock(root);
+    if (!stock) return;
+    var names = Object.keys(stock), n = names.length;
+    if (n === 0) return;
+    var card = root.querySelector('.m-main-card');
+    if (!card) return;
+    var badge = card.querySelector('.m-stock-badge');
+    if (!badge) return;
+
+    var anyLeft = names.some(function (c) { return (Number(stock[c]) || 0) > 0; });
+
+    /* "N Colors" wala div: class se, warna badge ke saath wala dusra div */
+    var cnt = card.querySelector('.m-colors-count');
+    if (!cnt && badge.parentElement) {
+      var kids = badge.parentElement.children;
+      for (var i = 0; i < kids.length; i++) {
+        if (kids[i] !== badge) { cnt = kids[i]; cnt.classList.add('m-colors-count'); break; }
+      }
+    }
+    if (cnt) {
+      var t = n + (n === 1 ? ' Color' : ' Colors');
+      if (cnt.textContent.trim() !== t) cnt.textContent = t;
+    }
+
+    var state = anyLeft ? 'in' : 'out';
+    if (badge.getAttribute('data-state') !== state) {
+      badge.setAttribute('data-state', state);
+      badge.classList.toggle('is-out', !anyLeft);
+      badge.innerHTML = '<span class="m-dot-anim"></span> ' + (anyLeft ? 'in stock' : 'out of stock');
+    }
+    root.classList.toggle('m-all-sold', !anyLeft);
+  }
+
+  function syncAll() {
+    var roots = document.querySelectorAll('.m-master-box[data-stock]');
+    for (var i = 0; i < roots.length; i++) syncCard(roots[i]);
+  }
+  window.__mSyncCards = syncAll;
+
+  syncAll();
+  document.addEventListener('DOMContentLoaded', syncAll);
+  window.addEventListener('load', syncAll);
+  __mObs(syncAll).observe(document.documentElement, {
+    childList: true, subtree: true, attributes: true, attributeFilter: ['data-stock']
+  });
+})();
+</script>
+
+<!-- ========================= F ========================= -->
+<script>
+/* DESKTOP (1024px+): description + 3 info icons left column mein (pic ke neeche).
+   Mobile / tablet par wapis apni asli jagah par, is liye wahan kuch nahi badalta. */
+(function () {
+  if (window.__mLeftColBound) return;
+  window.__mLeftColBound = true;
+  var SEL = ['.m-pop-description', '.m-info-wrap'];
+
+  function sync() {
+    var desktop = window.innerWidth >= 1024;
+    /* mobile / tablet: jab tak desktop se wapis aane ka kaam na ho, kuch nahi karna */
+    if (!desktop && !document.querySelector('.m-left-col')) return;
+    var layouts = document.querySelectorAll('.m-pop-layout');
+    for (var i = 0; i < layouts.length; i++) {
+      var layout = layouts[i];
+      var left = layout.querySelector(':scope > .m-left-col');
+
+      for (var s = 0; s < SEL.length; s++) {
+        var el = layout.querySelector(SEL[s]);
+        if (!el) continue;
+
+        if (desktop) {
+          if (!left) {
+            left = document.createElement('div');
+            left.className = 'm-left-col';
+            layout.appendChild(left);
+          }
+          if (el.parentNode !== left) {
+            if (!el.__mPh) {
+              el.__mPh = document.createComment('m-ph');
+              el.parentNode.insertBefore(el.__mPh, el);
+            }
+            if (s === 0) { left.insertBefore(el, left.firstChild); }
+            else { left.appendChild(el); }
+          }
+        } else if (left && el.parentNode === left) {
+          /* mobile / tablet: wapis asli jagah */
+          if (el.__mPh && el.__mPh.parentNode) {
+            el.__mPh.parentNode.insertBefore(el, el.__mPh);
+          } else if (s === 1) {
+            var dsc = layout.querySelector('.m-pop-description');
+            if (dsc) { dsc.insertAdjacentElement('afterend', el); }
+          }
+        }
+      }
+      if (!desktop && left && !left.children.length) { left.parentNode.removeChild(left); }
+    }
+  }
+  sync();
+  document.addEventListener('DOMContentLoaded', sync);
+  /* ek frame mein sirf ek baar chale (popup khulte waqt bohat saari DOM changes aati hain) */
+  var raf = 0;
+  function queue() {
+    if (raf) return;
+    raf = (window.requestAnimationFrame || window.setTimeout)(function () { raf = 0; sync(); }, 16);
+  }
+  window.addEventListener('load', queue);
+  window.addEventListener('resize', queue);
+  __mObs(queue).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+<!-- ========================= G ========================= -->
+<script>
+/* LIVE STOCK + SOLD (Account B se): har product ke data-stock mein qty, data-sold mein asli sold.
+   - Har visitor B ko 15 second mein sirf ek dafa bulata hai (sessionStorage cache)
+   - Popup khula ho to har 20 second mein taaza qty/sold (sale usi waqt nazar aaye)
+   - B band ya error ho to HTML wali qty (safety net) chalti rahti hai, page nahi tootta, store out of stock nahi hota
+   - B theek ho to sirf B ki qty aur B ka sold chalta hai, HTML ki qty ka koi hisaab nahi
+   - B ka jawab kabhi innerHTML mein nahi jata (sirf numbers, XSS ka khatra nahi)
+   - Sirf wahi colors update hote hain jo HTML ke data-stock mein pehle se hain
+
+   DIAGNOSTICS: console (F12) mein  __mLiveStockInfo  likhein:
+     fetched / matched / unmatched / error / at / from
+
+   [v5] Sold sirf B se aata hai (data-sold). Dashboard se 0 karte hi data-sold hat jata hai. */
+(function () {
+  if (window.__mLiveStockBound) return;
+  window.__mLiveStockBound = true;
+
+  var STOCK_URL = "https://script.google.com/macros/s/AKfycbzsFwi5YqOUaKw079jH4QXpQgMt3PRuHGKqFQM5WS98XSwXAICS4_gijRkDT_QpG_Hi/exec";
+  var FRESH_MS = 15000, TIMEOUT_MS = 8000, POLL_MS = 20000, CK = "m_live_stock_v2";
+  var inflight = false;
+  var info = window.__mLiveStockInfo = { fetched: 0, matched: [], unmatched: [], error: "", at: "", from: "" };
+
+  function norm(s) { return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, " ").trim(); }
+  function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+
+  /* B ke jawab ko saaf karo: {normProduct: {normColor: int}} (qty ke liye) */
+  function cleanItems(items) {
+    var lk = {}, count = 0;
+    if (!items || typeof items !== 'object') return null;
+    Object.keys(items).forEach(function (p) {
+      var cols = items[p];
+      if (!cols || typeof cols !== 'object') return;
+      var np = norm(p), o = {};
+      Object.keys(cols).forEach(function (c) {
+        var q = parseInt(cols[c], 10);
+        if (isNaN(q) || q < 0) q = 0;
+        o[norm(c)] = q; count++;
+      });
+      if (np) lk[np] = o;
+    });
+    return count ? lk : null;
+  }
+
+  /* sold: {normProduct: {normColor: int > 0}} (khali ho sakta hai) */
+  function cleanSold(sold) {
+    var lk = {};
+    if (!sold || typeof sold !== 'object') return lk;
+    Object.keys(sold).forEach(function (p) {
+      var cols = sold[p];
+      if (!cols || typeof cols !== 'object') return;
+      var np = norm(p), o = {}, any = false;
+      Object.keys(cols).forEach(function (c) {
+        var q = parseInt(cols[c], 10);
+        if (!isNaN(q) && q > 0) { o[norm(c)] = q; any = true; }
+      });
+      if (np && any) lk[np] = o;
+    });
+    return lk;
+  }
+
+  function readCache() {
+    try {
+      var r = sessionStorage.getItem(CK);
+      if (!r) return null;
+      var o = JSON.parse(r);
+      if (o && o.items && typeof o.t === 'number') return o;
+    } catch (e) {}
+    return null;
+  }
+  function writeCache(lk, sk) {
+    try { sessionStorage.setItem(CK, JSON.stringify({ t: Date.now(), items: lk, sold: sk || {} })); } catch (e) {}
+  }
+
+  /* popup mein jo qty pehle se chuni hai wo nayi stock se zyada na ho */
+  function clampRows(root, next) {
+    var rows = root.querySelectorAll('.m-row-item');
+    for (var i = 0; i < rows.length; i++) {
+      var sel = rows[i].querySelector('.m-color-select');
+      var inp = rows[i].querySelector('input');
+      if (!sel || !inp) continue;
+      var max = Number(next[sel.value]);
+      if (isNaN(max)) continue;
+      var v = parseInt(inp.value, 10) || 0;
+      if (max <= 0) { if (v !== 0) inp.value = 0; }
+      else if (v > max) { inp.value = max; }
+    }
+  }
+
+  function apply(lk, from, sk) {
+    if (!lk) return;
+    sk = sk || {};
+    var matched = [], unmatched = [];
+    var roots = document.querySelectorAll('.m-master-box[data-stock]');
+    for (var i = 0; i < roots.length; i++) {
+      var root = roots[i], cur;
+      var pname = root.getAttribute('data-pname') || '';
+      try { cur = JSON.parse(root.getAttribute('data-stock') || '{}'); } catch (e) { continue; }
+      if (!cur || typeof cur !== 'object') continue;
+      var key = norm(pname);
+      var prod = lk[key];
+      if (!prod) { unmatched.push(pname); continue; }   // B mein ye product nahi: HTML wali qty rahe
+      matched.push(pname);
+
+      /* B ka asli sold: data-sold mein (HTML ke asli color naam ke saath).
+         B mein sold 0 ho to data-sold hat jata hai (icon gayab) */
+      var soldProd = sk[key] || {}, soldOut = {}, soldAny = false;
+      Object.keys(cur).forEach(function (c) {
+        var s = soldProd[norm(c)];
+        if (s > 0) { soldOut[c] = s; soldAny = true; }
+      });
+      var soldStr = soldAny ? JSON.stringify(soldOut) : '';
+      if (soldStr) { if (root.getAttribute('data-sold') !== soldStr) root.setAttribute('data-sold', soldStr); }
+      else if (root.hasAttribute('data-sold')) { root.removeAttribute('data-sold'); }
+
+      /* B ki live qty */
+      var next = {}, changed = false;
+      Object.keys(cur).forEach(function (c) {
+        var nc = norm(c);
+        var q = has(prod, nc) ? prod[nc] : Number(cur[c]);
+        if (Number(cur[c]) !== q) changed = true;
+        next[c] = q;
+      });
+      if (!changed) continue;
+      root.setAttribute('data-stock', JSON.stringify(next));   // card ka N Colors / in stock badge khud update (script E)
+      var cfg = root.querySelector('.m-config-rows');
+      if (cfg && cfg.children.length) {
+        clampRows(root, next);
+        if (root.id && typeof window.recalcTotal === 'function') { try { window.recalcTotal(root.id); } catch (e2) {} }
+      }
+    }
+    info.fetched = Object.keys(lk).length;
+    info.matched = matched;
+    info.unmatched = unmatched;
+    info.at = new Date().toLocaleTimeString();
+    info.from = from || "";
+  }
+
+  function fetchLive(force) {
+    var c = readCache();
+    if (c) apply(c.items, "cache", c.sold);                      // cache se foran
+    if (!force && c && Date.now() - c.t < FRESH_MS) return;      // 15 second ke andar dobara nahi
+    if (inflight || typeof fetch !== 'function') return;
+    inflight = true;
+    var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); inflight = false; }, TIMEOUT_MS);
+    fetch(STOCK_URL + '?action=publicStock', { method: 'GET', cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        clearTimeout(timer); inflight = false;
+        if (!d || d.status !== 'success') { info.error = "B ne success nahi diya"; return; }
+        var lk = cleanItems(d.items);
+        if (!lk) { info.error = "B ka items khali hai"; return; }
+        var sk = cleanSold(d.sold);
+        info.error = "";
+        writeCache(lk, sk);
+        apply(lk, "B", sk);
+      })
+      .catch(function (err) {                                   // error: HTML wali qty chalti rahe
+        clearTimeout(timer); inflight = false;
+        info.error = String(err && err.message ? err.message : err);
+      });
+  }
+
+  function popupOpen() {
+    return !!document.querySelector('.m-pop-overlay[style*="flex"], .m-pop-overlay[style*="block"]');
+  }
+
+  fetchLive(false);
+  document.addEventListener('DOMContentLoaded', function () { fetchLive(false); });
+  window.addEventListener('load', function () { fetchLive(false); setTimeout(function () { var c = readCache(); if (c) apply(c.items, "cache", c.sold); }, 1500); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) fetchLive(false); });
+  /* popup kholne se pehle (click) bhi taaza qty, lekin 15 second ke gate ke andar */
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('.m-details-trigger, .m-hero-img, .m-pname-line, .m-card-offer') : null;
+    if (t) fetchLive(false);
+  }, true);
+  /* popup khula ho aur customer dekh raha ho to har 20 second mein taaza (sale foran nazar aaye) */
+  setInterval(function () { if (!document.hidden && popupOpen()) fetchLive(true); }, POLL_MS);
+})();
+</script>
+<!-- ========================= H ========================= -->
+<script>
+/* SOLD TEXT: har color box ke neeche chota "N sold" (auto).
+   Sold = sirf B ka asli sold (data-sold), har order par barhta hai.
+   HTML ki qty ya qty ke upar niche hone se is par koi asar nahi.
+   Dashboard se sold 0 karein to data-sold hat jata hai aur ye text agle fetch mein gayab.
+   Styling CSS ke "SOLD TEXT" block mein hai. */
+(function () {
+  if (window.__mSoldBound) return;
+  window.__mSoldBound = true;
+
+  var BAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8h13l1 12.5h-15z"/><path d="M9 10.5V7a3 3 0 0 1 6 0v3.5"/></svg>';
+
+  function parse(s) {
+    try { var o = JSON.parse(s || '{}'); return (o && typeof o === 'object') ? o : null; }
+    catch (e) { return null; }
+  }
+
+  function sync() {
+    var roots = document.querySelectorAll('.m-master-box[data-stock]');
+    for (var i = 0; i < roots.length; i++) {
+      var root = roots[i];
+      var bsold = parse(root.getAttribute('data-sold')) || {};
+
+      var chips = root.querySelectorAll('.m-swatch');
+      for (var j = 0; j < chips.length; j++) {
+        var ch = chips[j];
+        var c = ch.getAttribute('data-c');
+        var sold = Number(bsold[c]) || 0;
+        var tag = ch.querySelector('.m-sw-sold');
+
+        if (sold > 0) {
+          if (!tag) {
+            tag = document.createElement('span');
+            tag.className = 'm-sw-sold';
+            tag.innerHTML = BAG + '<b></b>';
+            ch.appendChild(tag);
+          }
+          var n = tag.querySelector('b');
+          if (n.textContent !== String(sold)) n.textContent = sold;
+          tag.setAttribute('title', sold + ' sold');
+        } else if (tag) {
+          tag.remove();
+        }
+      }
+    }
+  }
+
+  var raf = 0;
+  function queue() {
+    if (raf) return;
+    raf = (window.requestAnimationFrame || window.setTimeout)(function () { raf = 0; sync(); }, 16);
+  }
+
+  sync();
+  document.addEventListener('DOMContentLoaded', sync);
+  window.addEventListener('load', queue);
+  __mObs(queue).observe(document.documentElement, {
+    childList: true, subtree: true, attributes: true, attributeFilter: ['data-stock', 'data-sold']
+  });
+})();
+</script>
+

@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { products, CHECKOUT_URL } from '../data/products.js';
+---
+<Layout shop={true} title="Store | Musfira's" description="Shop Musfira's: ladies bags, accessories and more. Free delivery all over UAE.">
+  <h1 class="m-sr-only">Musfira's Store</h1>
+  <div class="m-super-grid">
+    {products.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
+  </div>
+</Layout>

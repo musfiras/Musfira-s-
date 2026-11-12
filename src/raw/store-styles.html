@@ -1,0 +1,1295 @@
+
+<!-- Full CSS Of PRODUCT Listing Compelte Process A_Z -->
+
+<style>
+    /* Full Width Main Card */
+    .m-master-box { width: 100%; font-family: 'Segoe UI', sans-serif; margin-bottom: 30px; }
+        .m-main-card { background: #fff; position: relative; width: 100%; border-radius: 15px; overflow: hidden; text-align: center; }
+
+    /* iPhone/Safari: font auto-bara na ho */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+    :root {
+        /* [1. LAPTOP / DESKTOP] */
+        --d-save-f: 14px;
+        --d-save-top: 12px;
+        --d-save-left: 12px;
+        /* [2. TABLET] */
+        --t-save-f: 11px;
+        --t-save-top: 10px;
+        /* [3. MOBILE] */
+        --m-save-f: 14px;
+        --m-save-top: 8px;
+        --m-save-left: 8px;
+    }
+
+    .m-save-float {
+        position: absolute;
+        font-weight: 900;
+        color: #800000;
+        z-index: 10;
+        animation: floatAnim 1.5s infinite alternate;
+        top: var(--d-save-top) !important;
+        left: var(--d-save-left) !important;
+        font-size: var(--d-save-f) !important;
+    }
+    @media (max-width: 991px) {
+        .m-save-float { top: var(--t-save-top) !important; font-size: var(--t-save-f) !important; }
+    }
+    @media (max-width: 480px) {
+        .m-save-float { top: var(--m-save-top) !important; left: var(--m-save-left) !important; font-size: var(--m-save-f) !important; }
+    }
+    @keyframes floatAnim {
+        from { transform: translateY(0); }
+        to { transform: translateY(-6px); color: #e6007e; }
+    }
+
+    /* PRODUCT PAGE: pic aur product name clickable (popup khulta hai) */
+    .m-hero-img { width: 100%; display: block; cursor: pointer !important; pointer-events: auto !important; -webkit-tap-highlight-color: transparent; }
+
+    /* [UPDATED] PIC HOVER / TOUCH: pic halki si ubharti hai (zoom) aur ruki rehti hai.
+       Mouse lagne ya touch hone par .is-active lagta hai (script se), aur jab tak page par
+       kahin aur touch/click na ho, pic isi tarah ubhri rehti hai. Card ya saya nahi hilta.
+       Laptop, PC, iPhone, tablet, har screen par same. */
+    .m-hero-img {
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+        transform-origin: center center;
+        touch-action: manipulation;
+    }
+    .m-hero-img.is-active { transform: scale(1.025); }
+    @media (prefers-reduced-motion: reduce) {
+        .m-hero-img { transition: none; }
+        .m-hero-img.is-active { transform: none; }
+    }
+
+    .m-dot-anim { width: 6px; height: 6px; background: #2ecc71; border-radius: 50%; display: inline-block; animation: pulseDot 1.2s infinite; vertical-align: middle; margin-right: 4px; }
+    @keyframes pulseDot { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } 100% { opacity: 1; transform: scale(1); } }
+    .m-stock-badge { font-size: 9px; color: #2ecc71; font-weight: 800; text-transform: uppercase; margin-top: 8px; }
+
+    /* [NEW] Sab colors sold out ho to badge khud "out of stock": soft red, dot ruk jata hai */
+    .m-stock-badge.is-out { color: #d6455d; }
+    .m-stock-badge.is-out .m-dot-anim { background: #d6455d; animation: none; opacity: 0.9; }
+
+    /* --- MAIN PAGE PRODUCT NAME CONTROL --- */
+    :root {
+        --d-pname-size: 18px;
+        --d-pname-color: #000000;
+        --d-pname-weight: 700;
+        --m-pname-size: 14px;
+        --m-pname-color: #333333;
+    }
+
+    .m-pname-line {
+        margin: 6px 0 !important;
+        padding: 0 5px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: left !important;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        -webkit-tap-highlight-color: transparent;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        height: 2.4em;
+        white-space: normal;
+        word-break: break-word;
+    }
+    @media (max-width: 480px) {
+        .m-pname-line {
+            font-size: 9px !important;
+            line-height: 1.1 !important;
+            height: 2.2em;
+            white-space: normal !important;
+        }
+    }
+
+    :root {
+        --d-new-p: 19px; --d-old-p: 15px; --d-p-color: #e6007e;
+        --t-new-p: 15px; --t-old-p: 11px;
+        --m-new-p: 18px; --m-old-p: 9px;
+    }
+    .m-new-p { color: var(--d-p-color) !important; font-weight: 950; font-size: var(--d-new-p) !important; }
+    .m-old-p { color: black; text-decoration: line-through; font-size: var(--d-old-p) !important; margin-left: 5px; }
+    @media (max-width: 991px) {
+        .m-new-p { font-size: var(--t-new-p) !important; }
+        .m-old-p { font-size: var(--t-old-p) !important; }
+    }
+    @media (max-width: 480px) {
+        .m-new-p { font-size: var(--m-new-p) !important; }
+        .m-old-p { font-size: var(--m-old-p) !important; }
+    }
+
+    /* ==========================================
+       VIEW DETAILS - SOFT PINK CONTROL
+       ========================================== */
+    :root {
+        --det-brd-width: 1px;
+        --det-brd-color: #fecce6;
+        --det-radius: 6px;
+        --det-txt-main: #800000;
+        --det-txt-shine: #ffb6c1;
+        --det-txt-hover: #e6007e;
+        --det-f-desk: 11px;
+        --det-f-tab: 10.5px;
+        --det-f-mob: 10px;
+        --det-shine-dur: 4.5s;
+        --det-pulse-dur: 2.5s;
+        --det-shine-delay: 1s;
+    }
+
+    .m-details-trigger {
+        display: inline-block;
+        position: relative;
+        padding: 8px 18px !important;
+        font-size: var(--det-f-desk) !important;
+        color: var(--det-txt-main) !important;
+        -webkit-text-fill-color: var(--det-txt-main);
+        font-weight: 800 !important;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: var(--det-brd-width) solid var(--det-brd-color) !important;
+        border-radius: var(--det-radius) !important;
+        background: transparent;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin: 15px 0;
+        overflow: hidden;
+        z-index: 1;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .m-details-trigger:hover {
+        transform: translateY(-1.5px);
+        border-color: var(--det-txt-hover) !important;
+        background: rgba(230, 0, 126, 0.03) !important;
+        color: var(--det-txt-hover) !important;
+        -webkit-text-fill-color: var(--det-txt-hover) !important;
+        transition: 0.3s;
+    }
+    @media (max-width: 768px) { .m-details-trigger { font-size: var(--det-f-tab) !important; padding: 7px 16px !important; } }
+    @media (max-width: 480px) { .m-details-trigger { font-size: var(--det-f-mob) !important; padding: 6px 14px !important; } }
+
+    .m-soft-line { display: none !important; }
+    .m-soft-line { height: 1px; background: #fecce6; width: 100%; margin-top: 2px; }
+
+    /* Elite Popup Layout */
+    .m-maroon-top-bar { height: 2px; background: linear-gradient(90deg, #800000 0%, #c11c84 35%, #e6007e 50%, #c11c84 65%, #800000 100%); box-shadow: 0 1px 6px rgba(230, 0, 126, 0.22); }
+
+    .m-close-x { position: fixed; top: 7px; right: 13px; font-size: 20px; font-weight: 500; line-height: 1; padding: 0; color: #800000; cursor: pointer; z-index: 100; background: #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(128,0,0,0.10); border: 1px solid #fecce6; box-sizing: border-box; transition: all 0.3s ease; -webkit-tap-highlight-color: transparent; }
+    .m-close-x:hover { background: #e6007e; color: #fff; border-color: #e6007e; transform: rotate(90deg); }
+    @media (max-width: 1023px) { .m-close-x { top: calc(1vh + 5px); right: 9px; width: 30px; height: 30px; font-size: 19px; } }
+
+    .m-pop-layout {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        max-height: 90vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    /* Slider with Pink Border */
+    .m-slider-container {
+        position: relative !important;
+        border: 1px solid #fecce6 !important;
+        border-radius: 15px !important;
+        overflow: visible !important;
+        margin: -4px -10px 12px -10px !important;
+        padding: 5px !important;
+    }
+    @media (max-width: 480px) {
+        .m-slider-container { margin: -3px -8px 4px -8px !important; }
+    }
+    .m-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .m-track img { min-width: 100%; aspect-ratio: 1/1; object-fit: contain; }
+
+    /* PIC ARROW: chota, card ki border ke pass, card ke andar hi, andar ki taraf halki hilat */
+    .m-arrow-next {
+        position: absolute; top: 50%; right: 5px; transform: translateY(-50%);
+        font-size: clamp(16px, 4.6vw, 20px); font-weight: 900;
+        -webkit-text-stroke: 0.5px #800000; color: #800000; cursor: pointer; z-index: 10; line-height: 1;
+        text-shadow: 0 1px 4px rgba(255,255,255,0.9);
+        animation: arrowFwd 2.8s ease-in-out infinite;
+        -webkit-tap-highlight-color: transparent;
+    }
+    @keyframes arrowFwd {
+        0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.65; }
+        50%      { transform: translateY(-50%) translateX(-2px); opacity: 1; }
+    }
+
+    .m-dots-wrapper { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+    .m-dot { width: 7px; height: 7px; background: #fecce6; border-radius: 50%; transition: 0.4s; }
+    .m-dot.active { width: 20px; border-radius: 10px; background: #e6007e; }
+
+    .m-pop-right { text-align: center; }
+    .m-pop-heading { color: #800000; font-weight: 900; font-size: 15px; margin-bottom: 5px; }
+
+    :root {
+        --desk-title: 26px; --desk-body: 18px;
+        --mob-title: 19px; --mob-body: 14px;
+    }
+    :root {
+        --d-title: 26px; --d-sub: 20px; --d-body: 17px;
+        --t-title: 22px; --t-sub: 18px; --t-body: 16px;
+        --m-title: 19px; --m-sub: 16px; --m-body: 14px;
+    }
+
+    /* ==========================================
+       MANUAL CONTROL CENTER
+       ========================================== */
+    :root {
+        --d-title-size: 24px;
+        --d-sub-size: 19px;
+        --d-body-size: 16px;
+        --d-line-height: 1.4;
+        --d-top-gap: 2px;
+        --d-para-gap: 5px;
+
+        --t-title-size: 21px;
+        --t-sub-size: 18px;
+        --t-body-size: 15px;
+        --t-line-height: 1.35;
+
+        --m-title-size: 12px;
+        --m-sub-size: 16px;
+        --m-body-size: 14px;
+        --m-line-height: 1.3;
+        --m-top-gap: 0px;
+        --m-para-gap: 4px;
+
+        /* DESCRIPTION aur ADD TO CART ke beech gap (yahan se badal sakte ho) */
+        --m-desc-btn-gap: 32px;
+    }
+
+    .m-pop-description {
+        color: #333 !important;
+        background: #ffffff !important;
+        border: 1px solid #fecce6 !important;
+        border-radius: 12px;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        font-family: 'Segoe UI', sans-serif !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+        font-size: var(--d-body-size) !important;
+        line-height: var(--d-line-height) !important;
+        padding: var(--d-top-gap) 20px 20px 20px !important;
+    }
+
+    .m-el-title {
+        color: #800000 !important;
+        font-weight: 950 !important;
+        font-size: var(--d-title-size) !important;
+        margin: 0 0 var(--d-para-gap) 0 !important;
+        display: block;
+        line-height: 1.1 !important;
+    }
+
+    .m-el-sub {
+        color: #800000 !important;
+        font-weight: 800 !important;
+        font-size: var(--d-sub-size) !important;
+        display: inline-block;
+        margin-top: var(--d-para-gap) !important;
+        margin-bottom: 2px !important;
+    }
+
+    /* PERMANENT PINK SCROLLBAR */
+    .m-pop-layout::-webkit-scrollbar { width: 8px !important; display: block !important; }
+    .m-pop-layout::-webkit-scrollbar-track { background: #fff5f8 !important; border-radius: 10px !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.05) !important; }
+    .m-pop-layout::-webkit-scrollbar-thumb { background: #e6007e !important; border-radius: 10px !important; border: 2px solid #fff5f8 !important; min-height: 40px !important; }
+    .m-pop-layout { scrollbar-width: thin !important; scrollbar-color: #e6007e #fff5f8 !important; }
+
+    @media (max-width: 480px) {
+        .m-stock-in-badge {
+            position: absolute !important;
+            top: 428px !important;
+            right: 25px !important;
+            padding: 2px 7px !important;
+            font-size: 7px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            background: #f0fff4 !important;
+            color: #2ecc71 !important;
+            border: 0.5px solid #2ecc71 !important;
+            border-radius: 50px !important;
+            z-index: 10 !important;
+            pointer-events: none !important;
+        }
+        .m-pop-layout { position: relative !important; display: flex !important; flex-direction: column !important; }
+        .m-slider-container { position: relative !important; overflow: visible !important; }
+    }
+
+    /* --- OVERLAY & BOX BASE --- */
+    .m-pop-overlay {
+        display: none; position: fixed; top: 0 !important; left: 0 !important;
+        width: 100vw !important; height: 100vh !important;
+        background: rgba(48, 0, 24, 0.5) !important; z-index: 2147483000 !important;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        overscroll-behavior: contain;
+    }
+
+    .m-pop-box {
+        position: relative; width: 100%; height: 100%; background: #fff !important;
+        border: none !important; outline: none !important;
+        z-index: 2147483001;
+        box-shadow: 0 30px 80px rgba(128, 0, 0, 0.25), 0 0 0 1px rgba(254, 204, 230, 0.7);
+        overscroll-behavior: contain;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- DUPLICATE COLOR ALERT --- */
+    .m-pink-popup {
+        background: linear-gradient(135deg, #e6007e, #c11c84) !important;
+        color: #ffffff !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.3px !important;
+        padding: 8px 16px !important;
+        border-radius: 50px !important;
+        position: absolute !important;
+        top: -18px !important;
+        right: 15px !important;
+        z-index: 9999 !important;
+        box-shadow: 0 6px 16px rgba(230, 0, 126, 0.25) !important;
+        border: 1px solid rgba(255, 255, 255, 0.85) !important;
+        display: none;
+        animation: mBounce 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes mBounce { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+    /* --- LAPTOP / DESKTOP BASE --- */
+    @media (min-width: 1024px) {
+        .m-pop-box { animation: mPopDesk 0.35s ease; }
+        .m-add-to-bag-btn { margin-bottom: 40px !important; display: block !important; width: 100% !important; }
+        .m-buy-now-btn { margin-top: 15px !important; display: block !important; width: 100% !important; }
+    }
+    @keyframes mPopDesk { from { opacity: 0; } to { opacity: 1; } }
+
+    /* --- MOBILE --- */
+    @media (max-width: 1023px) {
+        .m-pop-overlay { display: none; align-items: flex-end; }
+        .m-pop-box {
+            position: fixed !important;
+            top: 1vh !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 99vh !important;
+            border-radius: 25px 25px 0 0 !important;
+            max-height: 99vh !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            z-index: 2147483001 !important;
+            box-shadow: 0 -20px 60px rgba(128,0,0,0.28) !important;
+            animation: mPopSheet 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .m-add-to-bag-btn { margin-bottom: 25px !important; }
+        .m-buy-now-btn { margin-top: 15px !important; }
+    }
+    @keyframes mPopSheet { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* iPhone / Safari: asli screen height (URL bar) aur safe area */
+    @supports (height: 100dvh) {
+        @media (max-width: 1023px) {
+            .m-pop-box { height: 99dvh !important; max-height: 99dvh !important; }
+        }
+    }
+    @media (max-width: 1023px) {
+        .m-pop-layout { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; }
+    }
+
+    /* --- ELITE ALERT STYLING ---
+       [UPDATED] Ab bohat chota, patla aur soft (har device par, screen ke beech mein).
+       Isi box mein sab alerts aate hain (colors khatam, sold out, stock limit waghera).
+       Chota/bara karna ho to neeche width aur padding badlo. */
+    #m-elite-alert {
+        position: fixed !important;
+        top: 50% !important; left: 50% !important; right: auto !important; bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        background: #fffdfe !important;
+        border: 1px solid #fbe3ee !important;
+        border-radius: 12px !important;
+        padding: 13px 14px 12px !important;
+        width: min(232px, 72vw) !important;
+        max-width: 232px !important;
+        min-width: 0 !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+        box-shadow: 0 8px 22px -12px rgba(128, 0, 0, 0.18) !important;
+        animation: mSoftFade 0.3s ease;
+    }
+    #m-elite-alert p { color: #7a5868; font-family: 'Segoe UI', sans-serif; line-height: 1.45; font-size: 12px; font-weight: 500; margin: 0 0 10px !important; }
+    #m-elite-alert .m-al-title { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: 1px; color: #800000; margin: 0 0 5px; text-transform: uppercase; }
+    #m-elite-alert .m-al-text { display: block; font-size: 11.5px; font-weight: 400; line-height: 1.45; color: #8a6a78; }
+    #m-elite-alert button {
+        background: #800000 !important; color: #fff !important; padding: 5px 18px !important;
+        border-radius: 50px !important; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; border: none !important; cursor: pointer;
+        box-shadow: 0 3px 8px -4px rgba(128, 0, 0, 0.30);
+        transition: background 0.3s ease, transform 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    #m-elite-alert button:hover { background: #e6007e !important; transform: translateY(-1px); }
+    /* peeche ka parda halka (pehle gehra tha) */
+    #m-alert-overlay { background: rgba(48, 0, 24, 0.20) !important; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+    @keyframes mSoftFade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* --- MOBILE RESPONSIVE --- */
+    @media (max-width: 480px) {
+        .m-pop-description {
+            font-size: var(--m-body-size) !important;
+            line-height: var(--m-line-height) !important;
+            padding: var(--m-top-gap) 15px 15px 15px !important;
+            margin-top: 0 !important;
+        }
+        .m-config-rows { margin-top: 12px !important; }
+        .m-ship-dropdown { margin-top: 10px !important; }
+        .m-el-title { font-size: var(--m-title-size) !important; margin-bottom: var(--m-para-gap) !important; }
+        .m-el-sub { font-size: var(--m-sub-size) !important; margin-top: var(--m-para-gap) !important; }
+    }
+
+    /* Rows Management  [SOFT: thori zyada saans lene wali jagah] */
+    .m-row-item { display: flex; gap: 10px; align-items: center; background: #fffafc; padding: 14px 12px; border-radius: 12px; border: 1px solid #fecce6; margin-bottom: 14px; position: relative; }
+    .m-color-select { flex: 1; min-width: 0; border: none; background: none; font-size: 13px; font-weight: 800; color: #800000; outline: none; }
+    .m-color-select option { font-weight: 700; }
+
+    /* [UPDATED] QTY BOX: landscape (lamba), height patli, right side par */
+    .m-qty-box { display: flex; align-items: stretch; flex-shrink: 0; box-sizing: border-box; overflow: hidden; border: 1px solid #fecce6; border-radius: 50px; background: #fff; height: 38px; width: 158px; margin-left: auto; box-shadow: 0 2px 8px rgba(128, 0, 0, 0.05); }
+    .m-qty-box button { flex: 1; min-width: 46px; height: 100%; padding: 0; display: flex; align-items: center; justify-content: center; border: none; background: none; color: #e6007e; font-weight: 950; cursor: pointer; font-size: 22px; line-height: 1; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: background 0.2s ease, transform 0.15s ease; }
+    .m-qty-box button:hover { background: rgba(230, 0, 126, 0.08); }
+    .m-qty-box button:active { background: rgba(230, 0, 126, 0.16); transform: scale(0.92); }
+    .m-qty-box input { width: 58px; padding: 0; border: none; background: transparent; text-align: center; font-weight: 900; font-size: 15px; pointer-events: none; }
+
+    .m-remove-btn { color: #e6007e; font-size: 10px; font-weight: 900; cursor: pointer; padding: 5px 12px; border: 1px solid #fecce6; border-radius: 50px; margin-left: 10px; }
+
+    /* ROW ORDER: color pehle (left), Remove beech mein, QTY sab se right par */
+    .m-row-item .m-color-select,
+    .m-row-item .m-swatches { order: 1; }
+    .m-row-item .m-remove-btn { order: 2; margin-left: 0; }
+    .m-row-item .m-qty-box { order: 3; margin-left: auto; }
+
+    @media (max-width: 480px) {
+        .m-qty-box { width: 144px; height: 36px; }
+        .m-qty-box button { min-width: 42px; font-size: 21px; }
+        .m-qty-box input { width: 54px; }
+        .m-row-item { gap: 8px; }
+        .m-remove-btn { margin-left: 0; padding: 6px 10px; }
+    }
+    @media (max-width: 360px) {
+        .m-qty-box { width: 130px !important; }
+        .m-qty-box input { width: 46px !important; }
+    }
+
+    .m-stock-end-bubble { position: absolute; top: -15px; left: 10px; background: linear-gradient(135deg, #e6007e, #c11c84); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.3px; padding: 4px 11px; border-radius: 8px; z-index: 10; box-shadow: 0 4px 12px rgba(230,0,126,0.22); border: 1px solid rgba(255,255,255,0.8); }
+
+    .m-add-row-btn { width: 100%; background: none; border: 1.5px dashed #e6007e; color: #800000; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 11px; cursor: pointer; margin: 15px 0; }
+    .m-delivery-select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #fecce6; color: #800000; font-weight: 700; font-size: 13px; outline: none; background: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+
+    /* DELIVERY: DROPDOWN HIDDEN + ELITE SOFT TEXT */
+    .m-delivery-select,
+    .m-ship-dropdown select { display: none !important; }
+    .m-hide-delivery-heading { display: none !important; }
+
+    .m-delivery-note {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 14px 0;
+        padding: 13px 16px;
+        text-align: center;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(180deg, #fffafc, #fff5f9);
+        border: 1px solid #fecce6;
+        border-radius: 14px;
+    }
+    .m-dn-main { display: block; font-size: 13.5px; font-weight: 700; letter-spacing: 0.3px; color: #800000; }
+    .m-dn-main b { color: #e6007e; font-weight: 800; }
+    .m-dn-sub { display: block; margin-top: 4px; font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 12px; font-weight: 500; letter-spacing: 0.3px; color: #9c2954; }
+    @media (max-width: 480px) {
+        .m-delivery-note { padding: 11px 12px; margin: 10px 0; }
+        .m-dn-main { font-size: 12.5px; }
+        .m-dn-sub { font-size: 11px; }
+    }
+
+    .m-final-bill { text-align: center; font-size: 28px; font-weight: 950; color: #e6007e; margin: 24px 0; letter-spacing: -1px; }
+
+    .m-add-to-bag-btn,
+    .m-add-to-cart-btn,
+    [class*="add-to-bag"],
+    [class*="add-to-cart"] { border-radius: 14px !important; position: relative !important; z-index: 2 !important; }
+
+    .m-buy-now-btn {
+        width: 100%; background: #a3301f; color: #fff; border: none;
+        padding: 20px; border-radius: 14px;
+        font-size: 16px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
+        cursor: pointer; position: relative; z-index: 1; overflow: hidden;
+        box-shadow: 0 5px 10px -4px rgba(163,48,31,0.38), inset 0 1px 0 rgba(255,255,255,0.16);
+        transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .m-buy-now-btn:hover { background: #e6007e; transform: translateY(-3px); box-shadow: 0 7px 14px -6px rgba(230,0,126,0.42), inset 0 1px 0 rgba(255,255,255,0.2); }
+    .m-buy-now-btn:active { transform: translateY(0) scale(0.985); box-shadow: 0 2px 6px -3px rgba(163,48,31,0.4); }
+    .m-buy-now-btn:focus-visible { outline: 3px solid #fecce6; outline-offset: 3px; }
+    .m-btn-shimmer { display: none !important; }
+
+    /* --- UNIVERSAL RESPONSIVE NOTE BOX --- */
+    .m-note-box { background: #fff5f8; padding: 20px; border-radius: 12px; color: #444; margin-top: 25px; border: 1px solid #fecce6; text-align: left; line-height: 1.6; font-size: 15px; }
+    .m-pink-note { color: #e6007e; font-weight: 900; font-size: 17px; display: block; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+    @media (max-width: 1024px) and (min-width: 768px) {
+        .m-note-box { padding: 18px; font-size: 14px; }
+        .m-pink-note { font-size: 16px; margin-bottom: 6px; }
+    }
+    @media (max-width: 767px) {
+        .m-note-box { padding: 15px; font-size: 13px; line-height: 1.5; margin-top: 15px; }
+        .m-pink-note { font-size: 15px; margin-bottom: 5px; letter-spacing: 0.3px; }
+    }
+
+    /* ==========================================
+       LAPTOP & DESKTOP: LAYOUT + PIC CARD
+       (pic card halka sa kam: 79vh)
+       ========================================== */
+    @media (min-width: 1024px) {
+        .m-pop-layout {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr) !important;
+            gap: 32px !important;
+            padding: 24px 36px 20px 48px !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            align-items: start !important;
+        }
+
+        .m-slider-container {
+            flex: none !important;
+            width: 100% !important;
+            max-width: min(100%, 79vh) !important;
+            margin: 0 auto 2px auto !important;
+            padding: 22px !important;
+            justify-self: center !important;
+        }
+        .m-track img { border-radius: 12px; max-height: 79vh !important; }
+        .m-slider-container .m-arrow-next { right: 8px !important; font-size: 22px !important; }
+
+        .m-pop-right { margin-left: 0 !important; flex: none !important; padding: 6px 20px !important; overflow-y: auto !important; }
+
+        .m-pop-description {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-top: 0 !important;
+            padding: 20px !important;
+            display: block !important;
+            background: #ffffff !important;
+            border: 1px solid #fecce6 !important;
+            border-radius: 12px;
+        }
+        .m-dots-wrapper { margin-top: 4px !important; }
+        .m-config-rows { margin-top: 2px !important; }
+        .m-ship-dropdown { margin-top: 2px !important; }
+
+        .m-stock-in-badge {
+            position: absolute !important;
+            top: 65px !important;
+            left: 40px !important;
+            right: auto !important;
+            display: inline-block !important;
+            width: fit-content !important;
+            white-space: nowrap !important;
+            background: #f0fff4 !important;
+            color: #2ecc71 !important;
+            padding: 5px 15px !important;
+            border-radius: 50px !important;
+            font-size: 10px !important;
+            font-weight: 950 !important;
+            z-index: 1000 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        }
+    }
+
+    /* ==========================================
+       MOBILE / TABLET: pic card ke neeche ka content upar
+       [SOFT: steps ke beech thora zyada gap, taake rush na lage]
+       ========================================== */
+    @media (max-width: 1023px) {
+        .m-slider-container { margin-bottom: 0 !important; }
+        .m-dots-wrapper     { margin-top: 1px !important; margin-bottom: 0 !important; }
+        .m-pop-right        { padding-top: 0 !important; margin-top: -9px !important; }
+        .m-pop-heading      { margin-top: 0 !important; margin-bottom: 5px !important; }
+        .m-pop-description  { margin-top: 0 !important; }
+        .m-config-rows      { margin-top: 0 !important; }
+        .m-ship-dropdown    { margin-top: 0 !important; }
+        .m-row-item         { margin-bottom: 10px !important; }
+        .m-add-row-btn      { margin: 10px 0 !important; }
+        .m-delivery-note    { margin: 10px 0 !important; }
+        .m-final-bill       { margin: 14px 0 !important; }
+        .m-pop-layout       { gap: 0 !important; }
+    }
+
+    /* Tablet (768 - 1023): pic card thora khula */
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .m-slider-container { margin-left: -4px !important; margin-right: -4px !important; }
+    }
+
+    /* Bohat choti screens (iPhone SE waghera) */
+    @media (max-width: 360px) {
+        .m-slider-container .m-arrow-next { font-size: 16px !important; right: 4px !important; }
+    }
+
+    /* ==========================================
+       HEADINGS THORI BOLD
+       ========================================== */
+    .m-pop-heading,
+    .m-pop-right label,
+    .m-pop-right h1, .m-pop-right h2, .m-pop-right h3,
+    .m-pop-right h4, .m-pop-right h5, .m-pop-right h6,
+    .m-config-rows label,
+    .m-config-rows h1, .m-config-rows h2, .m-config-rows h3,
+    .m-config-rows h4, .m-config-rows h5, .m-config-rows h6,
+    .m-ship-dropdown label {
+        font-weight: 900 !important;
+        letter-spacing: 0.2px;
+    }
+    .m-pop-heading { color: #800000 !important; }
+
+    /* ==========================================
+       ADD COLOR / QTY / ADD ANOTHER COLOR + NEECHE WALI HEADINGS: THORI BOLD
+       (sab se last mein hai, is liye pehle ke rules ko override karta hai)
+       [SOFT: bold wahi, bas outline halki, taake text bhaari na lage]
+       ========================================== */
+    .m-pop-heading,
+    .m-pop-right label,
+    .m-pop-right h1, .m-pop-right h2, .m-pop-right h3,
+    .m-pop-right h4, .m-pop-right h5, .m-pop-right h6,
+    .m-config-rows label,
+    .m-config-rows h1, .m-config-rows h2, .m-config-rows h3,
+    .m-config-rows h4, .m-config-rows h5, .m-config-rows h6,
+    .m-ship-dropdown label,
+    .m-el-sub,
+    .m-color-select,
+    .m-add-row-btn,
+    .m-remove-btn,
+    .m-qty-box input,
+    .m-dn-main {
+        font-weight: 900 !important;
+        -webkit-text-stroke: 0.12px currentColor;
+    }
+    .m-color-select option { font-weight: 800; -webkit-text-stroke: 0; }
+    .m-dn-main b { font-weight: 900 !important; }
+    .m-final-bill { font-weight: 950 !important; }
+
+    /* ==========================================
+       DESCRIPTION BOX aur ADD TO CART BTN: GAP (har device, dono taraf)
+       Description upar ho ya neeche, dono surat mein gap aayega.
+       Gap badalna ho to upar --m-desc-btn-gap change karo.
+       ========================================== */
+    .m-pop-description { margin-bottom: var(--m-desc-btn-gap) !important; }
+    .m-pop-description + * { margin-top: var(--m-desc-btn-gap) !important; }
+
+    .m-add-to-bag-btn,
+    .m-add-to-cart-btn,
+    [class*="add-to-bag"],
+    [class*="add-to-cart"] {
+        margin-top: var(--m-desc-btn-gap) !important;
+        margin-bottom: var(--m-desc-btn-gap) !important;
+    }
+
+    /* Agar button description se PEHLE ho (description button ke neeche) */
+    .m-add-to-bag-btn + .m-pop-description,
+    .m-add-to-cart-btn + .m-pop-description,
+    [class*="add-to-bag"] + .m-pop-description,
+    [class*="add-to-cart"] + .m-pop-description,
+    div:has(> .m-add-to-bag-btn) + .m-pop-description,
+    div:has(> .m-add-to-cart-btn) + .m-pop-description {
+        margin-top: var(--m-desc-btn-gap) !important;
+    }
+
+    /* Button ke wrapper ko bhi saans lene do */
+    div:has(> .m-add-to-bag-btn),
+    div:has(> .m-add-to-cart-btn) { padding-top: 10px !important; padding-bottom: 6px !important; }
+
+    @media (max-width: 480px) {
+        :root { --m-desc-btn-gap: 26px; }
+        div:has(> .m-add-to-bag-btn),
+        div:has(> .m-add-to-cart-btn) { padding-top: 6px !important; padding-bottom: 4px !important; }
+    }
+
+    /* ==========================================
+       [FIX] ADD TO BAG BUTTON aur DESCRIPTION BOX CHIPKE THE
+       Class-agnostic rules: button ki class kuch bhi ho, description se
+       pehle wala element (button ya uska wrapper) aur description khud
+       dono par gap lagta hai. Har device par.
+       ========================================== */
+    .m-pop-overlay .m-pop-box .m-pop-layout .m-pop-description,
+    .m-pop-overlay .m-pop-description,
+    .m-pop-box .m-pop-description {
+        margin-top: var(--m-desc-btn-gap) !important;
+    }
+    .m-pop-overlay *:has(+ .m-pop-description) {
+        margin-bottom: var(--m-desc-btn-gap) !important;
+    }
+
+    /* ==========================================
+       BUNDLE OFFER - POPUP KE ANDAR (patla, soft, lekin saaf nazar aane wala)
+       Box "Select Color & QTY" heading ke upar, live line "Add Another Color" ke neeche,
+       aur total par purani qeemat ki line. Sab kuch script se khud banta hai,
+       sirf us product mein data-offer2 / data-offer3 likha ho to.
+
+       PIC CARD SE GAP badalna ho: neeche .m-offer-box ka margin-top badlo
+       (laptop 24px, mobile/tablet 34px; mobile par popup ka right hissa -9px upar
+       khinchta hai, is liye asli gap = margin-top minus 9px).
+       ========================================== */
+    .m-offer-box {
+        box-sizing: border-box; width: 100%;
+        margin: 24px 0 2px; padding: 9px 10px; text-align: center;
+        font-family: 'Segoe UI', sans-serif;
+        background: #fffdfe;
+        border: 1px solid #fbd9e8; border-radius: 12px;
+    }
+    @media (max-width: 1023px) { .m-offer-box { margin-top: 34px; } }
+
+    /* box ke baad wali heading ka bara upar ka gap (50px) kam */
+    .m-offer-box + div { margin-top: 16px !important; }
+
+    /* Heading: thori bold, gehri maroon, saaf */
+    .m-offer-title { font-size: 11.5px; font-weight: 900; letter-spacing: 1.5px; color: #800000; text-transform: uppercase; margin-bottom: 7px; }
+    .m-offer-tiers { display: flex; gap: 6px; }
+    .m-offer-tier {
+        flex: 1; min-width: 0; box-sizing: border-box; padding: 6px 4px;
+        background: #fff; border: 1px dashed #f8cfe3; border-radius: 9px;
+        transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .m-offer-tier.is-on { background: #fff5f9; border: 1px solid #f3b3d1; }
+    .m-ot-n { display: block; font-size: 10.5px; font-weight: 800; color: #800000; letter-spacing: 0.4px; text-transform: uppercase; }
+    .m-ot-new { display: block; margin-top: 1px; font-size: 14.5px; font-weight: 800; color: #e6007e; }
+    .m-ot-old { display: block; font-size: 10.5px; font-weight: 600; color: #8f8f8f; text-decoration: line-through; }
+
+    .m-offer-hint {
+        display: block; box-sizing: border-box; width: 100%;
+        margin: 4px 0 8px; padding: 0 4px; text-align: center;
+        font-family: 'Segoe UI', sans-serif; font-size: 12px; font-weight: 700;
+        color: #800000; line-height: 1.4;
+    }
+    .m-offer-hint:empty { display: none; }
+    .m-offer-hint b { color: #e6007e; font-weight: 800; }
+    .m-offer-hint s { color: #8f8f8f; font-weight: 600; }
+    .m-offer-hint.is-done, .m-offer-hint.is-done b { color: #1e8e4e; }
+
+    /* Total par: purani qeemat (cut) + "You save" */
+    .m-final-old { display: block; font-size: 13px; font-weight: 700 !important; color: #8f8f8f; text-decoration: line-through; letter-spacing: 0; margin-bottom: 2px; }
+    .m-final-save { display: block; font-size: 12px; font-weight: 700 !important; color: #800000; letter-spacing: 0.3px; margin-top: 2px; }
+
+    @media (max-width: 480px) {
+        .m-offer-box { padding: 8px 8px; }
+        .m-offer-box + div { margin-top: 14px !important; }
+        .m-offer-title { font-size: 10.5px; margin-bottom: 6px; }
+        .m-offer-tiers { gap: 5px; }
+        .m-offer-tier { padding: 5px 3px; }
+        .m-ot-n { font-size: 10px; }
+        .m-ot-new { font-size: 14px; }
+        .m-ot-old { font-size: 10px; }
+        .m-offer-hint { font-size: 11.5px; }
+        .m-final-old { font-size: 12px; }
+        .m-final-save { font-size: 11.5px; }
+    }
+
+    /* ==========================================
+       ESTIMATED DELIVERY BOX: SOFT (zyada important nahi, lekin saaf nazar aaye)
+       Ye block bold wale rules ke baad hai, is liye unhe override karta hai.
+       ========================================== */
+    .m-delivery-note {
+        background: #fffdfe;
+        border: 1px solid #fdeaf3;
+        border-radius: 12px;
+        padding: 10px 14px;
+    }
+    .m-dn-main { font-size: 12.5px; font-weight: 600 !important; letter-spacing: 0.2px; color: #9c2954; -webkit-text-stroke: 0; }
+    .m-dn-main b { font-weight: 700 !important; color: #e6007e; }
+    .m-dn-sub { font-size: 11.5px; font-weight: 400; color: #b0788f; margin-top: 3px; }
+    /* FREE DELIVERY ALL OVER UAE: chhoti soft pill */
+    .m-dn-free {
+        display: inline-block; margin: 8px auto 0; padding: 3px 13px; box-sizing: border-box; max-width: 100%;
+        font-family: 'Segoe UI', sans-serif; font-size: 11.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.5;
+        color: #e6007e; background: #fff5f9; border: 1px solid #fbd9e8; border-radius: 50px;
+    }
+    @media (max-width: 480px) {
+        .m-delivery-note { padding: 9px 10px; }
+        .m-dn-main { font-size: 12px; }
+        .m-dn-sub { font-size: 11px; }
+        .m-dn-free { font-size: 10.5px; padding: 3px 11px; }
+    }
+
+    /* ==========================================
+       PRODUCT CARD PAR OFFER LINE (auto: sirf us product par jis par data-offer2/3 ho)
+       [CHANGED] Ab button/pill nahi, sirf soft elite green text (white page par).
+       "VIEW DETAILS" button ke NEECHE, card ki khali jagah mein.
+       Position:absolute hai, is liye card ki height bilkul nahi badalti
+       (offer wale aur bina offer wale cards barabar rehte hain). Script khud lagati/hatati hai.
+       ========================================== */
+    .m-master-box { position: relative; }
+    .m-card-offer {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        margin: 0; max-width: 96%; box-sizing: border-box; padding: 2px 0;
+        font-family: 'Segoe UI', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; line-height: 1.4;
+        color: #3a9a68; background: none; border: none; border-radius: 0; box-shadow: none;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        cursor: pointer; z-index: 3; -webkit-tap-highlight-color: transparent;
+        transition: color 0.25s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .m-card-offer:hover { color: #1e8e4e; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    }
+    .m-card-offer:active { color: #1e8e4e; }
+    @media (max-width: 480px) {
+        .m-card-offer { font-size: 9.5px; letter-spacing: 0.2px; padding: 2px 0; }
+    }
+
+    /* ==========================================
+       PRODUCT CARD: CHARON TARAF KI LINE KHATAM (card shape nahi, page par seedha)
+       + "3 COLORS / IN STOCK" wali upar ki line har card mein poori chaurai par (barabar)
+       ========================================== */
+    .m-super-grid, .m-item-wrapper, .m-item, .m-master-box, .m-main-card {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        border-radius: 0 !important;
+        background-color: transparent !important;
+    }
+    .m-main-card .m-product-info { width: 100% !important; max-width: 100% !important; box-sizing: border-box; }
+    .m-main-card .m-product-info > div:first-child {
+        display: flex !important; justify-content: space-between !important;
+        width: 100% !important; max-width: 100% !important; box-sizing: border-box;
+    }
+
+    /* ==========================================
+       "+ ADD ANOTHER COLOR" BUTTON: soft, lekin nazar mein rahe
+       (solid pink border, halka pink fill, bohat halka saans lene wala glow)
+       ========================================== */
+    .m-add-row-btn {
+        background: linear-gradient(135deg, #fff7fb, #ffe9f3) !important;
+        border: 1.5px solid #e6007e !important;
+        border-radius: 14px !important;
+        color: #800000 !important;
+        padding: 14px 12px !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        -webkit-text-stroke: 0.3px currentColor;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+        box-shadow: 0 0 0 0 rgba(230, 0, 126, 0);
+        animation: mAddGlow 4.2s ease-in-out infinite;
+        transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    /* click ke baad pink na atke: focus/active mein bhi wohi soft rang */
+    .m-add-row-btn:focus, .m-add-row-btn:active, .m-add-row-btn:focus-visible {
+        background: linear-gradient(135deg, #fff7fb, #ffe9f3) !important;
+        color: #800000 !important;
+        outline: none !important;
+    }
+    .m-add-row-btn:active { transform: scale(0.985); }
+    /* pink sirf hover par (mouse wali devices); mobile par hover atakta hai, is liye wahan nahi */
+    @media (hover: hover) and (pointer: fine) {
+        .m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; }
+    }
+    @keyframes mAddGlow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(230, 0, 126, 0); }
+        50%      { box-shadow: 0 0 0 5px rgba(230, 0, 126, 0.08); }
+    }
+    @media (prefers-reduced-motion: reduce) { .m-add-row-btn { animation: none; } }
+
+    /* ==========================================
+       COLOR BOXES (dropdown ki jagah) - Amazon / Daraz jaisa
+       [SOFT: thore bare tap-friendly boxes]
+       [NEW] Har box ke oper (border par baithi) chhoti soft grey placeholder: "5 in stock" / "sold out"
+       [NEW] Sold out box dhundhla (grey + halka), click par alert aata hai
+       ========================================== */
+    .m-row-item.m-has-swatches { flex-wrap: wrap; row-gap: 12px; }
+    .m-has-swatches .m-color-select { display: none !important; }
+    .m-has-swatches .m-remove-btn { margin-left: 0; }
+    .m-swatches { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 12px 9px; text-align: left; padding-top: 6px; }
+    .m-swatch {
+        position: relative;
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 8px 14px 8px 9px; box-sizing: border-box; min-height: 36px;
+        background: #fff; border: 1px solid #fecce6; border-radius: 10px;
+        font-family: 'Segoe UI', sans-serif; font-size: 12.5px; font-weight: 700; color: #800000; line-height: 1.2;
+        cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+    .m-swatch:hover { border-color: #e6007e; }
+    .m-sw-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.16); flex-shrink: 0; box-sizing: border-box; }
+
+    /* oper wala soft placeholder (box ki border par, input ke label jaisa) */
+    .m-sw-stock {
+        position: absolute; top: -7px; left: 9px; padding: 0 4px;
+        background: inherit; /* box ka apna rang, taake border ke upar saaf baithe */
+        font-family: 'Segoe UI', sans-serif; font-size: 9px; font-weight: 500; letter-spacing: 0.2px; line-height: 1.3;
+        color: #a9a0a5; text-transform: none; white-space: nowrap; pointer-events: none;
+        -webkit-text-stroke: 0;
+    }
+
+    .m-swatch.is-sel { border-color: #e6007e; background: #fff5f9; box-shadow: 0 0 0 1px #e6007e inset; font-weight: 900; }
+    .m-swatch.is-used { opacity: 0.45; }
+
+    /* SOLD OUT: dhundhla, grey, select nahi ho sakta */
+    .m-swatch.is-sold {
+        opacity: 0.5; cursor: not-allowed;
+        background: #f7f4f5; border-color: #e9dfe3; box-shadow: none;
+        filter: grayscale(0.85);
+    }
+    .m-swatch.is-sold:hover { border-color: #e9dfe3; }
+    .m-swatch.is-sold .m-sw-name { text-decoration: line-through; text-decoration-color: rgba(128, 0, 0, 0.35); }
+    .m-swatch.is-sold .m-sw-stock { color: #b79aa6; }
+    .m-swatch:focus-visible { outline: 2px solid #fecce6; outline-offset: 2px; }
+    @media (max-width: 480px) {
+        .m-swatches { gap: 12px 7px; }
+        .m-swatch { padding: 7px 11px 7px 8px; font-size: 12px; min-height: 34px; }
+        .m-sw-dot { width: 15px; height: 15px; }
+        .m-sw-stock { font-size: 8.5px; left: 8px; }
+    }
+
+    /* "3 COLORS / IN STOCK" wali line: jis bhi div mein stock badge ho wo poori chaurai par, badge right par */
+    .m-main-card .m-product-info div:has(> .m-stock-badge) {
+        display: flex !important; justify-content: space-between !important; align-items: center !important;
+        width: 100% !important; max-width: 100% !important; align-self: stretch !important; box-sizing: border-box !important;
+    }
+    .m-main-card .m-stock-badge { margin-left: auto !important; }
+
+    /* ==========================================
+       DESCRIPTION KE NEECHE 3 INFO BUBBLES (Fast Delivery / Easy Returns / Support)
+       Circle par click = chhota soft card (close x ke saath). Script khud banati hai.
+       Hover (laptop/PC) par soft pink; mobile par click karne par wohi pink look (is-open).
+       ========================================== */
+    .m-info-wrap { margin-bottom: 12px; text-align: center; }
+    .m-info-bubbles { display: flex; justify-content: center; gap: 26px; }
+    .m-ib { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+    .m-ib-circle {
+        width: 58px; height: 58px; border-radius: 50%; box-sizing: border-box;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(145deg, #ffffff, #fff5f9);
+        border: 1px solid #fecce6;
+        box-shadow: 0 4px 14px rgba(128, 0, 0, 0.07), inset 0 1px 0 #ffffff;
+        transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .m-ib-circle svg { width: 25px; height: 25px; stroke: #800000; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s ease, transform 0.3s ease; }
+    .m-ib-label {
+        font-family: 'Segoe UI', sans-serif; font-size: 10px; font-weight: 800; color: #800000;
+        letter-spacing: 0.7px; text-transform: uppercase; text-align: center; line-height: 1.3; max-width: 88px;
+        transition: color 0.3s ease;
+    }
+    .m-ib.is-open .m-ib-circle {
+        border-color: #e6007e; background: linear-gradient(145deg, #fff0f7, #ffe1ef);
+        box-shadow: 0 0 0 3px rgba(230, 0, 126, 0.10), 0 8px 18px -8px rgba(230, 0, 126, 0.35);
+    }
+    .m-ib.is-open .m-ib-circle svg { stroke: #e6007e; }
+    .m-ib.is-open .m-ib-label { color: #e6007e; }
+    .m-ib:active .m-ib-circle { transform: scale(0.94); }
+    .m-ib:focus-visible .m-ib-circle { outline: 2px solid #fecce6; outline-offset: 3px; }
+    @media (hover: hover) and (pointer: fine) {
+        .m-ib:hover .m-ib-circle {
+            border-color: #e6007e; background: linear-gradient(145deg, #fff0f7, #ffe1ef);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 22px -10px rgba(230, 0, 126, 0.42), 0 0 0 3px rgba(230, 0, 126, 0.08);
+        }
+        .m-ib:hover .m-ib-circle svg { stroke: #e6007e; transform: scale(1.08); }
+        .m-ib:hover .m-ib-label { color: #e6007e; }
+    }
+
+    .m-info-card {
+        position: relative; display: none; box-sizing: border-box;
+        margin: 18px 2px 0; padding: 14px 38px 14px 16px;
+        background: linear-gradient(180deg, #fffdfe, #fff8fb);
+        border: 1px solid #fecce6; border-radius: 14px; text-align: left;
+        box-shadow: 0 10px 24px -14px rgba(128, 0, 0, 0.22);
+        font-family: 'Segoe UI', sans-serif; font-size: 12.5px; line-height: 1.6; color: #4a3a40;
+    }
+    .m-info-card.is-open { display: block; animation: mInfoIn 0.3s ease; }
+    .m-info-card::before {
+        content: ''; position: absolute; top: -7px; left: var(--ax, 50%); width: 12px; height: 12px;
+        background: #fffdfe; border-left: 1px solid #fecce6; border-top: 1px solid #fecce6;
+        transform: translateX(-50%) rotate(45deg);
+    }
+    .m-info-title { font-weight: 900; color: #800000; font-size: 13px; margin-bottom: 4px; letter-spacing: 0.3px; }
+    .m-info-x {
+        position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; box-sizing: border-box;
+        display: flex; align-items: center; justify-content: center; border-radius: 50%;
+        background: #fff; border: 1px solid #fecce6; color: #800000; font-size: 15px; line-height: 1;
+        cursor: pointer; -webkit-tap-highlight-color: transparent;
+        transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .m-info-x:hover { background: #e6007e; color: #fff; border-color: #e6007e; }
+    }
+    /* "Free delivery all over UAE" pill (delivery wale info card mein script khud lagati hai) */
+    .m-info-free {
+        display: inline-block; margin-top: 8px; padding: 3px 12px; box-sizing: border-box;
+        font-size: 11.5px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.5;
+        color: #e6007e; background: #fff5f9; border: 1px solid #fbd9e8; border-radius: 50px;
+    }
+    @keyframes mInfoIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 480px) {
+        .m-info-bubbles { gap: 16px; }
+        .m-ib-circle { width: 52px; height: 52px; }
+        .m-ib-circle svg { width: 23px; height: 23px; }
+        .m-ib-label { font-size: 9.5px; letter-spacing: 0.5px; max-width: 80px; }
+        .m-info-card { font-size: 12px; padding: 12px 36px 12px 13px; }
+    }
+
+    /* Layout Container Fix */
+    .m-pop-layout { position: relative !important; }
+    .m-pop-right { position: static !important; }
+
+    /* --- PREMIUM CART ICON ALIGNMENT --- */
+    .m-header-cart-wrapper {
+        cursor: pointer;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        position: relative;
+        transition: all 0.3s ease-in-out;
+    }
+    .m-cart-icon-container {
+        position: relative !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+    }
+    .m-cart-icon-container svg {
+        width: 34px;
+        height: 34px;
+        stroke: #800000;
+        stroke-width: 1.5;
+        fill: none;
+        filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15));
+    }
+    #m-global-count {
+        position: absolute !important;
+        top: 0px !important;
+        right: -2px !important;
+        background: #e6007e !important;
+        color: #ffffff !important;
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 2px solid #ffffff !important;
+        box-shadow: 0 4px 8px rgba(230, 0, 126, 0.3);
+        z-index: 999999 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    @media (max-width: 1024px) and (min-width: 768px) {
+        .m-cart-icon-container { width: 38px; height: 38px; }
+        .m-cart-icon-container svg { width: 30px; height: 30px; }
+        #m-global-count { min-width: 20px !important; height: 20px !important; font-size: 10px !important; }
+    }
+
+    @media (max-width: 767px) {
+        .m-cart-icon-container { width: 35px; height: 35px; }
+        .m-cart-icon-container svg { width: 28px; height: 28px; }
+        #m-global-count {
+            top: -2px !important;
+            right: -4px !important;
+            min-width: 18px !important;
+            height: 18px !important;
+            font-size: 9px !important;
+            border-width: 1.5px !important;
+        }
+
+        body.m-popup-active {
+            overflow: hidden !important;
+            height: 100vh !important;
+            width: 100vw !important;
+            position: fixed !important;
+            background: #ffffff !important;
+        }
+    }
+
+    /* POPUP KHULE TO PEECHE PAGE SCROLL BAND (har device) */
+    html.m-popup-active,
+    body.m-popup-active,
+    html:has(.m-pop-overlay[style*="block"]),
+    html:has(.m-pop-overlay[style*="flex"]),
+    body:has(.m-pop-overlay[style*="block"]),
+    body:has(.m-pop-overlay[style*="flex"]) {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        scrollbar-gutter: stable;
+    }
+
+    /* POPUP: DESCRIPTION K BAAD WALA REQUEST NOTE HATA DIYA */
+    .m-pop-overlay .m-note-box,
+    .m-pop-box .m-note-box,
+    .m-pop-layout .m-note-box { display: none !important; }
+
+    /* ==========================================================================
+       [NEW] LAPTOP / DESKTOP (1024px+): DESCRIPTION + 3 INFO ICONS = LEFT SIDE, PIC KE NEECHE
+       Right side (offer, colors, delivery, total, Buy Now, Add to Bag) bilkul same.
+       Description/icons ko script (.m-left-col) left column mein le aati hai.
+       Mobile / tablet par ye block lagta hi nahi, wahan sab pehle jaisa.
+       ========================================================================== */
+    @media (min-width: 1024px) {
+        .m-pop-layout { grid-template-rows: auto 1fr !important; }
+        .m-pop-layout > .m-slider-container { grid-column: 1 !important; grid-row: 1 !important; }
+        .m-pop-layout > .m-pop-right { grid-column: 2 !important; grid-row: 1 / span 2 !important; }
+
+        .m-left-col {
+            grid-column: 1; grid-row: 2;
+            width: 100%; max-width: 100%;              /* [UPDATED] poori left chaurai (landscape), pic card ke barabar nahi */
+            justify-self: stretch;
+            box-sizing: border-box;
+            padding-bottom: 28px;                      /* neeche info popup card ke liye jagah */
+        }
+        /* purane gap rules yahan na lagein (description ke upar/neeche bara gap nahi chahiye) */
+        .m-pop-overlay .m-pop-box .m-pop-layout .m-left-col .m-pop-description {
+            margin-top: 0 !important;
+            margin-bottom: 18px !important;
+            /* [UPDATED] landscape: jagah ho to text 2 columns mein (left | right), height aadhi */
+            column-count: 1;                           /* [UPDATED] newspaper columns khatam: line left se right poore box par */
+            column-width: auto;
+        }
+        .m-pop-overlay .m-pop-box .m-pop-layout .m-left-col .m-info-wrap {
+            margin-top: 0 !important;
+            margin-bottom: 12px !important;
+        }
+    }
+
+    /* ==========================================================================
+       [NEW] "REMOVE" BUTTON (Add Another Color wali row): text orangy maroon, hover par pink
+       ========================================================================== */
+    .m-remove-btn {
+        color: #a3301f;
+        background: #fff;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .m-remove-btn:hover { background: #e6007e; color: #ffffff; border-color: #e6007e; }
+    }
+    /* mobile par hover atakta hai, is liye wahan sirf dabate waqt pink */
+    .m-remove-btn:active { background: #e6007e; color: #ffffff; border-color: #e6007e; transform: scale(0.96); }
+
+    /* ==========================================
+       SOLD TEXT: har color box ke NEECHE, sirf real sale ke baad (script khud lagati hai)
+       Sirf chhota pink text: "6 sold" (koi icon, circle ya bubble nahi)
+       ========================================== */
+    .m-master-box .m-swatches:has(.m-sw-sold) { row-gap: 30px !important; padding-bottom: 22px !important; }
+
+    .m-master-box .m-swatch .m-sw-sold {
+        position: absolute !important; left: 50% !important; top: calc(100% + 5px) !important; bottom: auto !important;
+        transform: translateX(-50%) !important;
+        width: auto !important; height: auto !important; padding: 0 !important;
+        display: block !important;
+        background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important;
+        pointer-events: none !important; z-index: 2 !important;
+        white-space: nowrap;
+        animation: mSoldFade 0.35s ease;
+    }
+    .m-master-box .m-swatch .m-sw-sold svg { display: none !important; }
+
+    .m-master-box .m-swatch .m-sw-sold b {
+        position: static !important; transform: none !important;
+        display: inline !important; min-width: 0 !important; height: auto !important; padding: 0 !important;
+        background: transparent !important; border: none !important; border-radius: 0 !important;
+        color: #e6007e !important;
+        font-family: 'Montserrat', 'Segoe UI', sans-serif; font-size: 11px; font-weight: 800; line-height: 1;
+        -webkit-text-stroke: 0;
+    }
+    .m-master-box .m-swatch .m-sw-sold b::after {
+        content: " sold";
+        font-size: 10.5px; font-weight: 600; letter-spacing: 0.2px;
+        color: #b0788f;
+    }
+    @keyframes mSoldFade {
+        from { opacity: 0; transform: translateX(-50%) translateY(-3px); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Sold out / already used box dhundhla hota hai, lekin neeche ka text saaf rahe:
+       pure box ki opacity ki jagah sirf andar ke text/dot ko halka karte hain */
+    .m-master-box .m-swatch.is-sold,
+    .m-master-box .m-swatch.is-used { opacity: 1 !important; filter: none !important; }
+    .m-master-box .m-swatch.is-sold > .m-sw-dot,
+    .m-master-box .m-swatch.is-sold > .m-sw-name,
+    .m-master-box .m-swatch.is-sold > .m-sw-stock { opacity: 0.5; filter: grayscale(0.85); }
+    .m-master-box .m-swatch.is-used > .m-sw-dot,
+    .m-master-box .m-swatch.is-used > .m-sw-name,
+    .m-master-box .m-swatch.is-used > .m-sw-stock { opacity: 0.45; }
+
+    @media (max-width: 480px) {
+        .m-master-box .m-swatches:has(.m-sw-sold) { row-gap: 28px !important; padding-bottom: 20px !important; }
+        .m-master-box .m-swatch .m-sw-sold { top: calc(100% + 4px) !important; }
+        .m-master-box .m-swatch .m-sw-sold b { font-size: 10.5px; }
+        .m-master-box .m-swatch .m-sw-sold b::after { font-size: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .m-master-box .m-swatch .m-sw-sold { animation: none !important; } }
+</style>
+
+<!-- [NEW] PIC HOVER / TOUCH: zoom ruka rahe jab tak page par kahin aur touch/click na ho
+     (laptop, PC, iPhone, tablet, har screen par same) -->
+<script>
+(function () {
+    function init() {
+        var imgs = document.querySelectorAll('.m-hero-img');
+        if (!imgs.length) return;
+
+        function clearAll() {
+            document.querySelectorAll('.m-hero-img.is-active').forEach(function (el) {
+                el.classList.remove('is-active');
+            });
+        }
+
+        function activate(el) {
+            if (el.classList.contains('is-active')) return;
+            clearAll();
+            el.classList.add('is-active');
+        }
+
+        imgs.forEach(function (el) {
+            // mouse pic par aaye (laptop / PC): zoom, mouse hatane par bhi ruka rahe
+            el.addEventListener('pointerenter', function (e) {
+                if (e.pointerType === 'mouse') activate(el);
+            });
+            // touch / click / pen: zoom
+            el.addEventListener('pointerdown', function () { activate(el); });
+        });
+
+        // page par kahin aur touch/click ho to khtm
+        document.addEventListener('pointerdown', function (e) {
+            if (!e.target.closest('.m-hero-img')) clearAll();
+        }, true);
+
+        // Escape dabane par bhi khtm
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') clearAll();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>

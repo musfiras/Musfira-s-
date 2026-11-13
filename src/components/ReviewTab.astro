@@ -1,55 +1,61 @@
 ---
-// ReviewTab.astro : left edge par chhota REVIEWS tab (orangy maroon).
-// Layout.astro mein hai, is liye jis page mein Layout/InfoPage use ho wahan khud aa jata hai.
+// ReviewTab.astro : bottom-left par chhota soft "Reviews" pill (mobile par sirf star).
 // Label / link / delay / on-off src/config/site.js (reviews) se aata hai.
 import { site } from '../config/site.js';
 const r = site.reviews;
 ---
 {r.show && (
-  <a href={r.href} id="m-review-btn" class="m-sticky-btn" data-delay={r.delaySeconds} style="display:none;">
-    <span class="m-sticky-star" aria-hidden="true">&#9733;</span>{r.label}
+  <a href={r.href} id="m-review-btn" class="m-sticky-btn" data-delay={r.delaySeconds} style="display:none;" aria-label={r.label}>
+    <span class="m-sticky-star" aria-hidden="true">&#9733;</span><span class="m-sticky-label">{r.label}</span>
   </a>
 )}
 
 <style is:global>
 .m-sticky-btn{
   position:fixed;
-  left:0;right:auto;
-  top:45%;
-  transform:translateY(-50%) rotate(90deg);
-  transform-origin:left bottom;
-  z-index:9000; /* header aur cart drawer ke neeche, isliye popup khulne par khud dab jata hai */
+  left:14px;right:auto;
+  bottom:18px;top:auto;
+  z-index:9000; /* header aur cart drawer ke neeche */
 
-  /* ORANGY MAROON: poori site wala --orange-maroon (Layout.astro) */
-  background:linear-gradient(180deg,rgba(176,56,34,.96),rgba(138,38,22,.96));
-  color:#fff;text-decoration:none;
-
-  /* bohat patla length, thori si ziada motai (screen par width) */
-  padding:5px 9px;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 16px 9px 13px;
+  background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  color:var(--orange-maroon,#a3301f);
+  text-decoration:none;
   font-family:'Montserrat',sans-serif;
-  font-size:7.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;line-height:1.2;
+  font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:none;line-height:1;
   white-space:nowrap;
 
-  border-radius:7px 7px 0 0;
-  border:1px solid rgba(255,255,255,.28);border-bottom:none;
-  box-shadow:2px 0 10px rgba(120,30,15,.25);
+  border:1px solid rgba(230,0,126,.28);
+  border-radius:999px;
+  box-shadow:0 4px 16px rgba(156,41,84,.16);
   cursor:pointer;
-  transition:background .3s ease,color .3s ease,opacity .3s ease;
+  transition:background .3s ease,color .3s ease,box-shadow .3s ease,border-color .3s ease,opacity .3s ease;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
-.m-sticky-star{color:#ffd9b3;margin-right:4px;font-size:7px;}
-/* TAP AREA: nazar nahi aata, par dabana aasan karta hai */
-.m-sticky-btn::before{content:'';position:absolute;top:-8px;bottom:-4px;left:-8px;right:-8px;}
-@media (max-width:768px){.m-sticky-btn{top:40%;}}
+.m-sticky-star{color:var(--mfs-pink,#e6007e);font-size:13px;line-height:1;}
+
 @media (hover:hover){
-  .m-sticky-btn:hover{background:#fce4f0;color:var(--orange-maroon,#a3301f);}
-  .m-sticky-btn:hover .m-sticky-star{color:var(--mfs-pink,#e6007e);}
+  .m-sticky-btn:hover{
+    background:var(--mfs-pink,#e6007e);color:#fff;border-color:var(--mfs-pink,#e6007e);
+    box-shadow:0 6px 18px rgba(230,0,126,.32);
+  }
+  .m-sticky-btn:hover .m-sticky-star{color:#fff;}
 }
 .m-sticky-btn:focus-visible{outline:2px solid var(--mfs-pink,#e6007e);outline-offset:2px;}
+
+/* MOBILE: sirf gol star button, text nahi */
+@media (max-width:768px){
+  .m-sticky-btn{left:10px;bottom:14px;width:38px;height:38px;padding:0;justify-content:center;}
+  .m-sticky-label{display:none;}
+  .m-sticky-star{font-size:16px;}
+}
+
 /* popup khula ho to chhup jaye */
 .m-sticky-btn.m-hide{opacity:0;visibility:hidden;pointer-events:none;}
-@keyframes mReviewIn{from{opacity:0;left:-40px;}to{opacity:1;left:0;}}
-.m-sticky-btn.m-in{animation:mReviewIn .8s ease forwards;}
+@keyframes mReviewIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.m-sticky-btn.m-in{animation:mReviewIn .7s ease forwards;}
 @media (prefers-reduced-motion:reduce){.m-sticky-btn.m-in{animation:none;}}
 </style>
 
@@ -58,14 +64,12 @@ const r = site.reviews;
   var btn = document.getElementById('m-review-btn');
   if (!btn) return;
 
-  // site khulne ke kuch second baad tab nazar aaye
   var delay = (parseFloat(btn.getAttribute('data-delay')) || 3) * 1000;
   setTimeout(function () {
-    btn.style.display = 'block';
+    btn.style.display = 'inline-flex';
     btn.classList.add('m-in');
   }, delay);
 
-  // koi popup / drawer / modal khula ho to tab chhupa do
   function isPopupLayer(el) {
     while (el && el !== document.body && el !== document.documentElement) {
       var cs = getComputedStyle(el);

@@ -81,6 +81,8 @@ const offers = offerProducts.map((p) => {
   --msc-lpink:#fce4f0;
   --msc-line:#f4dde9;
   --msc-text:#5b4651;
+  --msc-sat:env(safe-area-inset-top,0px);
+  --msc-sab:env(safe-area-inset-bottom,0px);
   font-family:'Montserrat',system-ui,sans-serif;
 }
 
@@ -142,15 +144,14 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-launcher:hover .msc-launcher-tip{ opacity:1; transform:translateY(-50%) translateX(0); }
 }
 
-/* ───── Panel ───── */
+/* ───── Panel: height screen ke hisaab se khud set (har device mein fit) ───── */
 .msc-panel{
   position:fixed; z-index:2147483001;
   right:16px; right:max(16px, env(safe-area-inset-right,0px));
   bottom:70px; bottom:calc(70px + env(safe-area-inset-bottom,0px));
   width:380px; max-width:calc(100vw - 24px);
-  height:600px;
-  max-height:calc(100vh - 100px);
-  max-height:calc(100dvh - 100px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  height:min(600px, calc(100vh - 86px));
+  height:min(600px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
   display:flex; flex-direction:column; overflow:hidden;
   background:#fff; border:1px solid var(--msc-line); border-radius:22px;
   box-shadow:0 26px 70px rgba(120,20,60,.28), 0 4px 14px rgba(0,0,0,.08);
@@ -169,17 +170,17 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
 /* ───── Header ───── */
 .msc-head{
-  flex-shrink:0;
-  display:flex; align-items:center; gap:12px; padding:16px 14px 10px 16px;
+  flex:0 0 auto;
+  display:flex; align-items:center; gap:12px; padding:14px 14px 8px 16px;
   background:linear-gradient(180deg,#fff 0%,#fff6fa 100%);
 }
 .msc-avatar{
-  flex-shrink:0; width:40px; height:40px; border-radius:50%;
+  flex-shrink:0; width:38px; height:38px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:#fff; color:var(--msc-pink);
   border:1.5px solid #f6bcd8;
   box-shadow:0 4px 12px rgba(230,0,126,.18);
-  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:22px; font-weight:600; line-height:1;
+  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:21px; font-weight:600; line-height:1;
 }
 .msc-head-text{ flex:1; min-width:0; }
 .msc-title{ font-size:14px; font-weight:800; letter-spacing:.4px; color:var(--msc-maroon); }
@@ -197,9 +198,9 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
 /* ───── Tagline ───── */
 .msc-tag{
-  flex-shrink:0;
+  flex:0 0 auto;
   display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:0 16px 8px; background:#fff6fa; border-bottom:1px solid var(--msc-line);
+  padding:0 16px 7px; background:#fff6fa; border-bottom:1px solid var(--msc-line);
 }
 .msc-tag span{
   font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:12px;
@@ -217,9 +218,9 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-body::-webkit-scrollbar-thumb:hover, .msc-chips::-webkit-scrollbar-thumb:hover{ background:var(--msc-pink); }
 
-/* ───── Messages: jawab ko sab se zyada jagah ───── */
+/* ───── Messages: baqi bachi hui jagah le leta hai (kam az kam 96px) ───── */
 .msc-body{
-  flex:1 1 auto; min-height:200px; overflow-y:auto; padding:16px 14px 10px; -webkit-overflow-scrolling:touch;
+  flex:1 1 0; min-height:96px; overflow-y:auto; padding:14px 14px 8px; -webkit-overflow-scrolling:touch;
   background:linear-gradient(180deg,#fff6fa 0%,#fff 38%);
   display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth;
 }
@@ -273,14 +274,17 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-offer:hover{ background:#fff6fa; border-color:var(--msc-pink); transform:translateY(-1px); box-shadow:0 8px 18px rgba(230,0,126,.16); }
 }
 
-/* ───── Chips wrapper ───── */
-.msc-chipwrap{ position:relative; flex-shrink:0; }
-
-/* ───── Chips (PC / mouse): compact ───── */
+/* ───── Chips area: panel ki height ka 44% tak, us se zyada ho to apne andar scroll ───── */
+.msc-chipwrap{
+  position:relative; flex:0 0 auto; min-height:0;
+  max-height:44%;
+  display:flex; flex-direction:column;
+}
 .msc-chips{
-  display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px 10px;
+  flex:1 1 auto; min-height:0;
+  display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px; padding:8px 12px 10px;
   background:#fff6fa; border-top:1px solid var(--msc-line);
-  max-height:112px; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
 }
 .msc-chips:empty{ display:none; }
 .msc-chip{
@@ -294,27 +298,28 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 @media (hover:hover){
   .msc-chip:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; transform:translateY(-2px); box-shadow:0 8px 18px rgba(230,0,126,.24); }
 }
+/* Offers chip: halka pink tint, taake alag nazar aaye */
+.msc-chip.hot{ background:#fff0f7; border-color:var(--msc-pink); }
 
-/* Live agent: sab se upar, poori chaurai, saaf hara */
+/* Live agent: chhota, soft pale green, sab se upar */
 .msc-chip.agent{
   order:-1; flex:1 1 100%;
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:8px 14px; text-align:center; text-decoration:none;
-  color:#fff; border:none; font-size:11.5px; font-weight:800; letter-spacing:.4px;
-  background:linear-gradient(145deg,#52d98c,#27b867);
-  box-shadow:0 4px 12px rgba(39,184,103,.26);
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  min-height:32px; padding:6px 12px; text-align:center; text-decoration:none;
+  color:#15803d; background:#effaf3; border:1px solid #bfe8cf;
+  font-size:11.5px; font-weight:700; letter-spacing:.3px; box-shadow:none;
 }
-.msc-chip.agent svg{ width:15px; height:15px; fill:currentColor; flex-shrink:0; }
-.msc-chip.agent:active{ background:#16a34a; color:#fff; }
+.msc-chip.agent svg{ width:14px; height:14px; fill:currentColor; flex-shrink:0; }
+.msc-chip.agent:active{ background:#27b867; color:#fff; border-color:transparent; }
 @media (hover:hover){
-  .msc-chip.agent:hover{ background:linear-gradient(145deg,#52d98c,#27b867); color:#fff; box-shadow:0 8px 18px rgba(39,184,103,.34); }
+  .msc-chip.agent:hover{ background:#27b867; color:#fff; border-color:transparent; box-shadow:0 6px 14px rgba(39,184,103,.28); }
 }
 .msc-chips.is-busy .msc-chip{ opacity:.5; pointer-events:none; }
 
 /* ───── Chhota soft arrow: jab neeche aur buttons chhupe hon ───── */
 .msc-more{
-  position:absolute; left:0; right:6px; bottom:0; height:38px; z-index:3;
-  display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px;
+  position:absolute; left:0; right:6px; bottom:0; height:34px; z-index:3;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:4px;
   background:linear-gradient(180deg, rgba(255,246,250,0) 0%, rgba(255,246,250,.9) 60%, #fff6fa 100%);
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .25s ease, visibility 0s linear .25s;
@@ -322,28 +327,36 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-more.is-on{ opacity:1; visibility:visible; transition:opacity .25s ease, visibility 0s; }
 .msc-more-btn{
   position:relative; pointer-events:auto; cursor:pointer;
-  width:28px; height:28px; padding:0; border-radius:50%;
+  width:26px; height:26px; padding:0; border-radius:50%;
   display:inline-flex; align-items:center; justify-content:center;
   background:rgba(255,255,255,.94); color:var(--msc-pink);
   border:1px solid #f3c1da;
   box-shadow:0 2px 8px rgba(230,0,126,.16);
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
-.msc-more-btn::after{ content:""; position:absolute; inset:-6px; }   /* tap area bara, nazar nahi aata */
-.msc-more-btn svg{ width:14px; height:14px; animation:mscBounce 1.6s ease-in-out infinite; }
+.msc-more-btn::after{ content:""; position:absolute; inset:-7px; }
+.msc-more-btn svg{ width:13px; height:13px; animation:mscBounce 1.6s ease-in-out infinite; }
 .msc-more-btn:active{ background:var(--msc-pink); color:#fff; border-color:transparent; }
 @media (hover:hover){ .msc-more-btn:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; } }
 @keyframes mscBounce{ 0%,100%{ transform:translateY(-1px); } 50%{ transform:translateY(2px); } }
 
 /* ───── Bari screen (desktop / PC / bara laptop) ───── */
 @media (min-width:1280px) and (min-height:760px){
-  .msc-panel{ width:400px; height:640px; }
+  .msc-panel{
+    width:400px;
+    height:min(640px, calc(100vh - 86px));
+    height:min(640px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+  }
   .msc-msg{ font-size:14px; }
 }
 
 /* ───── Tablet / iPad ───── */
 @media (min-width:521px) and (max-width:1024px){
-  .msc-panel{ width:392px; height:620px; }
+  .msc-panel{
+    width:392px;
+    height:min(620px, calc(100vh - 86px));
+    height:min(620px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+  }
 }
 
 /* ───── Mobile / iPhone: panel ───── */
@@ -352,69 +365,61 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     left:10px; right:10px; width:auto; max-width:none;
     left:max(10px, env(safe-area-inset-left,0px)); right:max(10px, env(safe-area-inset-right,0px));
     bottom:64px; bottom:calc(64px + env(safe-area-inset-bottom,0px));
-    height:640px;
-    max-height:calc(100vh - 88px);
-    max-height:calc(100dvh - 88px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+    height:min(640px, calc(100vh - 80px));
+    height:min(640px, calc(100dvh - 80px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
     border-radius:20px;
   }
   .msc-launcher{ width:44px; height:44px; right:14px; right:max(14px, env(safe-area-inset-right,0px)); bottom:14px; bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
-  .msc-body{ padding:14px 12px 8px; }
+  .msc-body{ padding:12px 12px 8px; }
   .msc-msg{ max-width:92%; }
   .msc-offers{ width:96%; }
 }
 
-/* ───── TOUCH devices (phone, iPhone, iPad): bade, aasan tap buttons ───── */
+/* ───── TOUCH devices (phone, iPhone, iPad): aasan tap, magar jagah ka khayal ───── */
 @media (pointer:coarse), (max-width:520px){
-  .msc-body{ min-height:150px; }
   .msc-msg{ font-size:14px; }
-  .msc-chips{ gap:8px; padding:10px 12px 12px; max-height:168px; }
+  .msc-chips{ gap:7px; padding:9px 12px 11px; }
   .msc-chip{
-    min-height:42px; padding:10px 16px;
-    font-size:13px; font-weight:700; line-height:1.2; border-width:1.5px;
+    min-height:40px; padding:9px 15px;
+    font-size:12.5px; font-weight:700; line-height:1.2; border-width:1.5px;
     display:inline-flex; align-items:center;
   }
   .msc-chip.agent{
-    min-height:46px; padding:11px 16px; font-size:13.5px;
+    min-height:38px; padding:8px 14px; font-size:12.5px; border-width:1px;
     display:flex; justify-content:center;
   }
-  .msc-chip.agent svg{ width:18px; height:18px; }
-  .msc-close{ width:40px; height:40px; }
-  .msc-close svg{ width:16px; height:16px; }
+  .msc-chip.agent svg{ width:16px; height:16px; }
+  .msc-close{ width:38px; height:38px; }
+  .msc-close svg{ width:15px; height:15px; }
   .msc-chips::-webkit-scrollbar{ width:5px; }
-  .msc-more{ height:42px; }
-  .msc-more-btn{ width:32px; height:32px; }
-  .msc-more-btn svg{ width:15px; height:15px; }
+  .msc-more{ height:38px; }
+  .msc-more-btn{ width:30px; height:30px; }
+  .msc-more-btn svg{ width:14px; height:14px; }
 }
 
 /* ───── Chhoti height (chhota laptop window / phone landscape) ───── */
 @media (max-height:700px){
   .msc-tag{ display:none; }
-  .msc-body{ min-height:120px; }
 }
-@media (max-height:700px) and (pointer:fine){
-  .msc-chips{ max-height:84px; }
-}
-@media (max-height:620px) and (pointer:coarse){
-  .msc-chips{ max-height:132px; gap:6px; padding:8px 10px 10px; }
-  .msc-chip{ min-height:40px; padding:8px 14px; font-size:12.5px; }
-  .msc-chip.agent{ min-height:42px; }
-  .msc-body{ min-height:100px; }
-  .msc-head{ padding:12px 14px 8px 16px; }
-  .msc-avatar{ width:34px; height:34px; font-size:19px; }
+@media (max-height:620px){
+  .msc-head{ padding:10px 14px 6px 16px; }
+  .msc-avatar{ width:32px; height:32px; font-size:18px; }
+  .msc-body{ min-height:84px; }
+  .msc-chipwrap{ max-height:48%; }
 }
 
 /* ───── Launcher chhupa hua (order page) ───── */
 .msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
 .msc-root.msc-no-launcher .msc-panel{
   bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
-  max-height:calc(100vh - 40px);
-  max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  height:min(640px, calc(100vh - 32px));
+  height:min(640px, calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
 }
 @media (max-width:520px){
   .msc-root.msc-no-launcher .msc-panel{
     bottom:10px; bottom:calc(10px + env(safe-area-inset-bottom,0px));
-    max-height:calc(100vh - 30px);
-    max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+    height:min(660px, calc(100vh - 24px));
+    height:min(660px, calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
   }
 }
 
@@ -555,16 +560,14 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     var same = u.pathname.replace(/\/$/, '') === window.location.pathname.replace(/\/$/, '');
     closeChat();
     if (same) {
-      // Isi page par hain: reload nahi, seedha us card par scroll
+      // Isi page par hain: reload nahi, seedha us card par scroll aur nishani
       e.preventDefault();
       var id = decodeURIComponent(u.hash.slice(1));
       setTimeout(function () {
+        if (window.mHighlightCard && window.mHighlightCard(id)) return;
         var el = document.getElementById(id);
-        if (!el) return;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('m-flash');
-        setTimeout(function () { el.classList.remove('m-flash'); }, 2200);
-      }, 120);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
     }
   }
 
@@ -615,7 +618,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
       if (t.id === exceptId) return;
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'msc-chip';
+      b.className = 'msc-chip' + (t.offers ? ' hot' : '');
       b.textContent = t.label;
       b.style.animationDelay = (idx * 60) + 'ms';
       b.addEventListener('click', function () { choose(t); });

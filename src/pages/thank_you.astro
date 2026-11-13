@@ -1,20 +1,69 @@
 ---
 // Route: src/pages/thank_you.astro  ->  https://www.musfiras.com/thank_you
+//
+// Header/footer links build ke waqt live site (/store) se khud uthaye jate hain.
+// Jo page site par hai wo aayega, jo nahi hai wo nahi aayega. Naam badlein to
+// yahan kuch change nahi karna, bas agla deploy naya naam utha lega.
+
 const SITE = "https://www.musfiras.com";
 
-const nav = [
-  { label: "Store", href: `${SITE}/store` },
-  { label: "Bags & Carrying", href: `${SITE}/bags_carrying` },
-  { label: "Fashion & Accessories", href: `${SITE}/fashion_accessories` },
-  { label: "Apparel & Jewellery", href: `${SITE}/apparel_jewellery` },
-  { label: "Musfira's Choice", href: `${SITE}/musfiras_choice` },
-];
+// Ye pages collections nahi hain, inhein category links se alag rakha gaya hai
+const HELP_PATHS = ["/terms", "/faqs", "/privacy", "/contact", "/about", "/reviews"];
+const NOT_COLLECTION = new Set([
+  "", "/cart", "/checkout", "/order", "/orders", "/thank_you", "/search", "/account", "/login", "/product",
+  ...HELP_PATHS,
+]);
 
-// APNE PRODUCTS YAHAN BADLEIN (link + image)
-const picks = [
-  { name: "The Greek Luxe Bag", href: "APNA_PAGE_LINK_1", img: "APNI_IMAGE_URL_1" },
-  { name: "Premium Signature Wallet", href: "APNA_PAGE_LINK_2", img: "APNI_IMAGE_URL_2" },
-];
+type Link = { path: string; text: string };
+
+function tidy(s: string) {
+  // "-BAGS & CARRYING-" -> "Bags & Carrying", "★REVIEWS" -> "Reviews"
+  let t = s
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&#0?39;|&apos;|&rsquo;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^[-–—★◆\s]+|[-–—★◆\s]+$/g, "");
+  if (t && t === t.toUpperCase()) {
+    t = t.toLowerCase().replace(/(^|[\s&(])([a-z])/g, (_m, a, b) => a + b.toUpperCase());
+  }
+  return t;
+}
+
+function parseLinks(html: string): Link[] {
+  const out: Link[] = [];
+  const seen = new Set<string>();
+  const re = /<a\b[^>]*?href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    let u: URL;
+    try { u = new URL(m[1].trim(), SITE); } catch { continue; }
+    if (u.hostname.replace(/^www\./, "") !== "musfiras.com") continue;
+    const path = u.pathname.replace(/\/+$/, "");
+    const text = tidy(m[2]);
+    if (!text || text.length > 40 || seen.has(path)) continue;
+    seen.add(path);
+    out.push({ path, text });
+  }
+  return out;
+}
+
+let links: Link[] = [];
+try {
+  const res = await fetch(`${SITE}/store/`, { signal: AbortSignal.timeout(8000) });
+  if (res.ok) links = parseLinks(await res.text());
+} catch {
+  /* fetch fail ho to neeche fallback chalega */
+}
+
+const isSingleSegment = (p: string) => /^\/[^/]+$/.test(p);
+let collections = links.filter((l) => isSingleSegment(l.path) && !NOT_COLLECTION.has(l.path));
+const help = HELP_PATHS.map((p) => links.find((l) => l.path === p)).filter(Boolean) as Link[];
+
+if (!collections.length) collections = [{ path: "/store", text: "Shop all" }];
+
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -32,17 +81,18 @@ const picks = [
       rel="stylesheet"
     />
 
-    <!-- Meta Pixel / Google Ads conversion code yahan paste karein (purchase event isi page par fire hota hai) -->
+    <!-- Meta Pixel / Google Ads purchase conversion code yahan paste karein -->
   </head>
 
   <body>
     <header class="site-header">
-      <a class="brand" href={`${SITE}/store`} aria-label="Musfira's home">
+      <a class="brand" href="/" aria-label="Musfira's home">
         <span class="brand-name">Musfira's</span>
         <span class="brand-tag"><i></i>Made to adore<i></i></span>
       </a>
       <nav class="site-nav" aria-label="Main">
-        {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+        <a href="/">Home</a>
+        {collections.map((l) => <a href={l.path}>{l.text}</a>)}
       </nav>
     </header>
 
@@ -55,30 +105,22 @@ const picks = [
           process them right away.
         </p>
         <p class="note">Please keep your phone active for the verification call.</p>
-        <a class="cta" href={`${SITE}/store`}>Continue shopping</a>
-      </section>
-
-      <section class="picks" aria-labelledby="picks-title">
-        <h2 id="picks-title">You may also like</h2>
-        <div class="grid">
-          {picks.map((p) => (
-            <a class="pick" href={p.href}>
-              <span class="thumb"><img src={p.img} alt={p.name} loading="lazy" /></span>
-              <span class="pname">{p.name}</span>
-              <span class="pact">View product</span>
-            </a>
-          ))}
-        </div>
+        <a class="cta" href="/store">Continue shopping</a>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="f-brand">Musfira's <small>Made to adore</small></div>
-      <nav class="f-links" aria-label="Footer">
-        {nav.map((n) => <a href={n.href}>{n.label}</a>)}
-        <a href={`${SITE}/reviews`}>Reviews</a>
+      <nav class="f-links" aria-label="Shop">
+        <a href="/">Home</a>
+        {collections.map((l) => <a href={l.path}>{l.text}</a>)}
       </nav>
-      <p class="copy">© {new Date().getFullYear()} Musfira's. All rights reserved.</p>
+      {help.length > 0 && (
+        <nav class="f-links f-help" aria-label="Help and info">
+          {help.map((l) => <a href={l.path}>{l.text}</a>)}
+        </nav>
+      )}
+      <p class="copy">© {year} Musfira's. All rights reserved.</p>
     </footer>
   </body>
 </html>
@@ -108,7 +150,6 @@ const picks = [
   a { color: inherit; text-decoration: none; }
   a:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
 
-  /* Header */
   .site-header {
     background: #fff;
     border-bottom: 1px solid #f0f0f0;
@@ -126,8 +167,7 @@ const picks = [
   .site-nav a { color: var(--maroon); font-weight: 600; padding: 4px 0; border-bottom: 1px solid transparent; }
   .site-nav a:hover { border-bottom-color: var(--pink); color: var(--pink); }
 
-  /* Main */
-  main { flex: 1; width: 100%; padding: 32px 16px 40px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  main { flex: 1; width: 100%; padding: 40px 16px 48px; display: flex; flex-direction: column; align-items: center; }
 
   .card {
     width: 100%; max-width: 480px; background: #fff; text-align: center;
@@ -146,37 +186,20 @@ const picks = [
   }
   .cta:hover { box-shadow: 0 8px 20px rgba(230, 0, 126, 0.35); }
 
-  /* Suggestions: hamesha 2 side by side */
-  .picks { width: 100%; max-width: 900px; background: #fff; border: 1px solid var(--blush); border-radius: 24px; padding: 28px 16px; text-align: center; }
-  .picks h2 { margin: 0 0 20px; font-family: var(--serif); font-size: 22px; color: var(--maroon); }
-  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .pick { background: var(--paper); border: 1px solid #f1f1f1; border-radius: 16px; padding: 10px; display: flex; flex-direction: column; align-items: center; min-width: 0; transition: border-color .2s, background .2s; }
-  .pick:hover { background: #fff5f9; border-color: var(--blush); }
-  .thumb { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #eee; margin-bottom: 10px; }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .pname { font-size: 13px; font-weight: 700; color: var(--maroon); margin-bottom: 4px; }
-  .pact { font-size: 12px; font-weight: 700; color: var(--pink); }
-
-  /* Footer */
   .site-footer { background: #fff; border-top: 1px solid #f0f0f0; padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; }
   .f-brand { font-family: var(--serif); font-size: 20px; font-weight: 670; color: var(--pink); }
   .f-brand small { display: block; font-size: 10px; font-weight: 600; margin-top: 2px; }
-  .f-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 14px 0; font-size: 13px; }
+  .f-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 14px 0 0; font-size: 13px; }
   .f-links a { color: var(--maroon); font-weight: 600; }
   .f-links a:hover { color: var(--pink); }
-  .copy { margin: 0; font-size: 12px; color: #999; }
+  .f-help a { color: #777; font-weight: 500; }
+  .copy { margin: 16px 0 0; font-size: 12px; color: #999; }
 
   @media (min-width: 900px) {
     .site-header { flex-direction: row; justify-content: space-between; padding: 10px 40px; }
-    .picks { padding: 40px; }
-    .grid { gap: 24px; }
-    .thumb { aspect-ratio: 4 / 3; }
-    .pname { font-size: 16px; }
   }
   @media (max-width: 480px) {
     .card { padding: 36px 20px 28px; border-radius: 22px; }
     .card h1 { font-size: 24px; }
-    .pname { font-size: 11.5px; }
-    .pact { font-size: 10.5px; }
   }
 </style>

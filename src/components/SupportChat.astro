@@ -3,7 +3,7 @@
 // Live agent button ka WhatsApp number src/config/site.js se aata hai (whatsappUrl), yahan number likhna nahi.
 // Jawab badalne hon to neeche <script> ke andar TOPICS mein sirf text badlein.
 //
-// [NEW] hideLauncher prop: true ho to floating chat icon nahi dikhta (order page par use hota hai).
+// hideLauncher prop: true ho to floating chat icon nahi dikhta (order page par use hota hai).
 //       Chat tab "Need help?" button se window.openSupportChat() ke zariye khulta hai.
 //       Store ke baqi pages par pehle jaisa chalta hai (prop dene ki zaroorat nahi).
 import { whatsappUrl } from '../config/site.js';
@@ -129,8 +129,8 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   position:fixed; z-index:2147483001;
   right:16px; right:max(16px, env(safe-area-inset-right,0px));
   bottom:70px; bottom:calc(70px + env(safe-area-inset-bottom,0px));
-  width:368px; max-width:calc(100vw - 24px);
-  height:580px;
+  width:380px; max-width:calc(100vw - 24px);
+  height:600px;
   max-height:calc(100vh - 100px);
   max-height:calc(100dvh - 100px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
   display:flex; flex-direction:column; overflow:hidden;
@@ -151,16 +151,17 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
 /* Header: halka blush, elite */
 .msc-head{
-  display:flex; align-items:center; gap:12px; padding:18px 14px 12px 16px;
+  flex-shrink:0;
+  display:flex; align-items:center; gap:12px; padding:16px 14px 10px 16px;
   background:linear-gradient(180deg,#fff 0%,#fff6fa 100%);
 }
 .msc-avatar{                   /* safed circle, magenta M (logo jaisa) */
-  flex-shrink:0; width:42px; height:42px; border-radius:50%;
+  flex-shrink:0; width:40px; height:40px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:#fff; color:var(--msc-pink);
   border:1.5px solid #f6bcd8;
   box-shadow:0 4px 12px rgba(230,0,126,.18);
-  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:23px; font-weight:600; line-height:1;
+  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:22px; font-weight:600; line-height:1;
 }
 .msc-head-text{ flex:1; min-width:0; }
 .msc-title{ font-size:14px; font-weight:800; letter-spacing:.4px; color:var(--msc-maroon); }
@@ -178,8 +179,9 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
 /* "Made to adore" chhoti soft tagline */
 .msc-tag{
+  flex-shrink:0;
   display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:0 16px 10px; background:#fff6fa; border-bottom:1px solid var(--msc-line);
+  padding:0 16px 8px; background:#fff6fa; border-bottom:1px solid var(--msc-line);
 }
 .msc-tag span{
   font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:12px;
@@ -197,14 +199,14 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-body::-webkit-scrollbar-thumb:hover, .msc-chips::-webkit-scrollbar-thumb:hover{ background:var(--msc-pink); }
 
-/* ───── Messages ───── */
+/* ───── Messages: jawab wale hisse ko sab se zyada jagah ───── */
 .msc-body{
-  flex:1; min-height:0; overflow-y:auto; padding:16px 14px 8px; -webkit-overflow-scrolling:touch;
+  flex:1 1 auto; min-height:190px; overflow-y:auto; padding:16px 14px 8px; -webkit-overflow-scrolling:touch;
   background:linear-gradient(180deg,#fff6fa 0%,#fff 38%);
   display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth;
 }
 .msc-msg{
-  max-width:88%; padding:11px 15px; font-size:13.5px; line-height:1.65; font-weight:500;
+  max-width:90%; padding:11px 15px; font-size:13.5px; line-height:1.65; font-weight:500;
   white-space:pre-line; word-break:break-word;
   animation:mscIn .35s cubic-bezier(.22,.61,.36,1);
 }
@@ -230,17 +232,17 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-typing span:nth-child(3){ animation-delay:.36s; }
 @keyframes mscDot{ 0%,70%,100%{ transform:translateY(0); opacity:.35; } 35%{ transform:translateY(-4px); opacity:1; } }
 
-/* ───── Quick-reply chips ───── */
+/* ───── Quick-reply chips: compact, apni limit ke andar scroll ───── */
 .msc-chips{
-  display:flex; flex-wrap:wrap; gap:8px; padding:10px 14px 12px;
+  display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px 10px;
   background:#fff6fa; border-top:1px solid var(--msc-line);
-  max-height:42%; overflow-y:auto; flex-shrink:0;
+  max-height:100px; overflow-y:auto; flex-shrink:0;
 }
 .msc-chips:empty{ display:none; }
 .msc-chip{
-  padding:9px 14px; border-radius:999px; cursor:pointer;
-  background:#fff; color:var(--msc-maroon); border:1.5px solid #f1c4da;
-  font-family:inherit; font-size:12.5px; font-weight:700; letter-spacing:.2px; text-align:left;
+  padding:6px 11px; border-radius:999px; cursor:pointer;
+  background:#fff; color:var(--msc-maroon); border:1px solid #f1c4da;
+  font-family:inherit; font-size:11.5px; font-weight:700; letter-spacing:.2px; text-align:left; line-height:1.25;
   transition:all .22s ease; animation:mscIn .4s ease backwards;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
@@ -248,20 +250,18 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 @media (hover:hover){
   .msc-chip:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; transform:translateY(-2px); box-shadow:0 8px 18px rgba(230,0,126,.24); }
 }
-.msc-chip.agent{ background:#f0fdf4; color:#15803d; border-color:#bbf7d0; text-decoration:none; display:inline-block; }
-.msc-chip.agent:active{ background:#16a34a; color:#fff; border-color:transparent; }
-@media (hover:hover){
-  .msc-chip.agent:hover{ background:linear-gradient(145deg,#52d98c,#27b867); color:#fff; border-color:transparent; box-shadow:0 8px 18px rgba(39,184,103,.28); }
-}
+/* neeche pehle se green WhatsApp button hai, is liye duplicate chip chhupa diya.
+   Wapas chahiye to is ek line ko hata dein. */
+.msc-chip.agent{ display:none !important; }
 .msc-chips.is-busy .msc-chip{ opacity:.5; pointer-events:none; }
 
 /* ───── Footer: live agent ───── */
-.msc-foot{ padding:11px 14px 13px; background:#fff; border-top:1px solid var(--msc-line); flex-shrink:0; }
+.msc-foot{ padding:8px 12px 10px; background:#fff; border-top:1px solid var(--msc-line); flex-shrink:0; }
 .msc-agent{
   display:flex; align-items:center; justify-content:center; gap:10px;
-  padding:12px 18px; border-radius:999px; text-decoration:none; color:#fff;
+  padding:10px 16px; border-radius:999px; text-decoration:none; color:#fff;
   background:linear-gradient(145deg,#52d98c,#27b867);
-  font-size:11.5px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
+  font-size:11px; font-weight:800; letter-spacing:.8px; text-transform:uppercase;
   box-shadow:0 8px 20px rgba(39,184,103,.28);
   transition:transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
@@ -269,7 +269,18 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-agent svg{ width:17px; height:17px; fill:currentColor; flex-shrink:0; }
 .msc-agent:active{ transform:scale(.97); }
 @media (hover:hover){ .msc-agent:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(39,184,103,.36); } }
-.msc-note{ margin-top:8px; text-align:center; font-size:10px; font-weight:600; color:#a08b97; letter-spacing:.3px; }
+.msc-note{ margin-top:6px; text-align:center; font-size:10px; font-weight:600; color:#a08b97; letter-spacing:.3px; }
+
+/* ───── Bari screen (desktop / PC / bara laptop) ───── */
+@media (min-width:1280px) and (min-height:760px){
+  .msc-panel{ width:400px; height:640px; }
+  .msc-msg{ font-size:14px; }
+}
+
+/* ───── Tablet / iPad (521px – 1024px) ───── */
+@media (min-width:521px) and (max-width:1024px){
+  .msc-panel{ width:392px; height:620px; }
+}
 
 /* ───── Mobile / iPhone ───── */
 @media (max-width:520px){
@@ -277,26 +288,38 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     left:10px; right:10px; width:auto; max-width:none;
     left:max(10px, env(safe-area-inset-left,0px)); right:max(10px, env(safe-area-inset-right,0px));
     bottom:64px; bottom:calc(64px + env(safe-area-inset-bottom,0px));
-    height:600px;
+    height:620px;
     max-height:calc(100vh - 88px);
     max-height:calc(100dvh - 88px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
     border-radius:20px;
   }
   .msc-launcher{ width:40px; height:40px; right:14px; right:max(14px, env(safe-area-inset-right,0px)); bottom:14px; bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
   .msc-launcher svg{ width:18px; height:18px; }
-  .msc-msg{ font-size:13px; }
-}
-/* Chhoti height (laptop chhota window / phone landscape) */
-@media (max-height:560px){
-  .msc-head{ padding:14px 14px 8px 16px; }
-  .msc-avatar{ width:36px; height:36px; font-size:20px; }
-  .msc-tag{ display:none; }
-  .msc-note{ display:none; }
-  .msc-chips{ padding:8px 12px; }
-  .msc-chip{ padding:7px 12px; font-size:12px; }
+  .msc-body{ min-height:170px; padding:14px 12px 8px; }
+  .msc-msg{ font-size:13px; max-width:92%; }
+  .msc-chips{ max-height:92px; padding:7px 10px 8px; gap:5px; }
+  .msc-chip{ padding:5px 10px; font-size:11px; }
+  .msc-foot{ padding:7px 10px 9px; }
+  .msc-agent{ padding:9px 14px; font-size:10.5px; }
 }
 
-/* ───── [NEW] Launcher chhupa hua (order page): icon nahi, panel neeche ke qareeb ───── */
+/* Chhoti height (laptop chhota window, phone landscape): jawab ko jagah milti rahe */
+@media (max-height:700px){
+  .msc-tag{ display:none; }
+  .msc-body{ min-height:130px; }
+  .msc-chips{ max-height:78px; }
+}
+@media (max-height:560px){
+  .msc-head{ padding:12px 14px 8px 16px; }
+  .msc-avatar{ width:34px; height:34px; font-size:19px; }
+  .msc-note{ display:none; }
+  .msc-body{ min-height:100px; }
+  .msc-chips{ max-height:58px; padding:6px 10px; }
+  .msc-chip{ padding:5px 10px; font-size:11px; }
+  .msc-agent{ padding:8px 14px; }
+}
+
+/* ───── Launcher chhupa hua (order page): icon nahi, panel neeche ke qareeb ───── */
 .msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
 .msc-root.msc-no-launcher .msc-panel{
   bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
@@ -338,7 +361,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   var TOPICS = [
     { id: 'order', label: '🛍️ I want to place an order',
       answer: "Placing an order is quick and easy ✨\n\nYou can order in whichever way you like:\n\n• Buy it now: open any product and tap Buy it now to check out straight away.\n• Add to Cart: collect your favourites, then open your cart and check out together.\n\nEnter your delivery details and confirm. We will message you on WhatsApp to verify your order and get it on its way.\n\nPay when it reaches your door with Cash on Delivery." },
-        { id: 'delivery', label: '🚚 Delivery time',
+    { id: 'delivery', label: '🚚 Delivery time',
       answer: "We deliver across the UAE 🇦🇪\n\nEstimated delivery is 1–3 working days after your order is confirmed.\n\nOn public holidays, in bad weather or during busy courier periods, delivery can occasionally take a little longer. If that happens, we will keep you updated: your courier name and tracking details are shared on WhatsApp as soon as your order is dispatched, and our team is always happy to help you with any update 📦" },
     { id: 'payment', label: '💳 Payment methods',
       answer: "We offer Cash on Delivery 💵\n\nYou pay only when your order arrives at your door. No advance payment and no card details needed, so you can shop with complete peace of mind." },
@@ -509,7 +532,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     if (!e.target.closest('.msc-body, .msc-chips')) e.preventDefault();
   }, { passive: false });
 
-  // [NEW] Bahar se (order page ka "Need help?" button) chat kholne / band karne ke liye
+  // Bahar se (order page ka "Need help?" button) chat kholne / band karne ke liye
   window.openSupportChat = openChat;
   window.closeSupportChat = closeChat;
 

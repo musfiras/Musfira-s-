@@ -1,11 +1,10 @@
 ---
 // SupportChat.astro : elite auto-reply support widget (free, koi API / server nahi).
-// Live agent button ka WhatsApp number src/config/site.js se aata hai (whatsappUrl), yahan number likhna nahi.
+// Live agent ka WhatsApp number src/config/site.js se aata hai (whatsappUrl), yahan number likhna nahi.
 // Jawab badalne hon to neeche <script> ke andar TOPICS mein sirf text badlein.
 //
 // hideLauncher prop: true ho to floating chat icon nahi dikhta (order page par use hota hai).
 //       Chat tab "Need help?" button se window.openSupportChat() ke zariye khulta hai.
-//       Store ke baqi pages par pehle jaisa chalta hai (prop dene ki zaroorat nahi).
 import { whatsappUrl } from '../config/site.js';
 
 const { hideLauncher = false } = Astro.props;
@@ -15,17 +14,14 @@ try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
 ---
 <div id="mscRoot" class={"msc-root" + (hideLauncher ? " msc-no-launcher" : "")} data-wa={wa}>
 
-  <!-- Soft backdrop: chat khulne par baqi page niche chhup jata hai -->
   <div id="mscBackdrop" class="msc-backdrop" aria-hidden="true"></div>
 
-  <!-- Floating launcher -->
   <button type="button" id="mscLauncher" class="msc-launcher" aria-label="Open Musfira's support chat" aria-expanded="false" aria-controls="mscPanel">
     <span class="msc-launcher-tip">Need help?</span>
     <svg class="msc-ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.8 8.8 0 0 1-3.6-.8L3 20.5l1.5-4.9A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/><circle cx="8.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="12" cy="11.5" r=".8" fill="currentColor"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/></svg>
     <svg class="msc-ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
 
-  <!-- Chat panel -->
   <section id="mscPanel" class="msc-panel" role="dialog" aria-modal="true" aria-label="Musfira's support chat" aria-hidden="true">
     <header class="msc-head">
       <div class="msc-avatar" aria-hidden="true">M</div>
@@ -43,14 +39,6 @@ try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
     <div id="mscBody" class="msc-body" aria-live="polite"></div>
 
     <div id="mscChips" class="msc-chips"></div>
-
-    <footer class="msc-foot">
-      <a id="mscAgent" class="msc-agent" href="#" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        <span>Need help? Chat with a live agent</span>
-      </a>
-      <div class="msc-note">Replies instantly · Live agent on WhatsApp</div>
-    </footer>
   </section>
 </div>
 
@@ -64,10 +52,9 @@ try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
   font-family:'Montserrat',system-ui,sans-serif;
 }
 
-/* Chat khulne par piche ka page scroll band */
 html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
-/* ───── Backdrop (header aur cart ke bhi upar, taake sab niche chhup jaye) ───── */
+/* Backdrop */
 .msc-backdrop{
   position:fixed; inset:0; z-index:2147483000;
   background:rgba(70,14,36,.34);
@@ -77,7 +64,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-backdrop.is-open{ opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s; }
 
-/* ───── Launcher (chhota, maroon, pink waves) ───── */
+/* Launcher */
 .msc-launcher{
   position:fixed; z-index:8900;
   right:16px; right:max(16px, env(safe-area-inset-right,0px));
@@ -95,7 +82,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-launcher.is-open{ z-index:2147483002; }
 .msc-launcher.is-open .msc-ic-chat{ display:none; }
 .msc-launcher.is-open .msc-ic-x{ display:block; }
-/* pink waves */
 .msc-launcher::before, .msc-launcher::after{
   content:""; position:absolute; inset:-3px; border-radius:50%;
   border:2px solid rgba(230,0,126,.5); opacity:0; pointer-events:none;
@@ -124,7 +110,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-launcher:hover .msc-launcher-tip{ opacity:1; transform:translateY(-50%) translateX(0); }
 }
 
-/* ───── Panel: har device mein poora screen ke andar fit ───── */
+/* Panel */
 .msc-panel{
   position:fixed; z-index:2147483001;
   right:16px; right:max(16px, env(safe-area-inset-right,0px));
@@ -140,7 +126,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   transform:translateY(16px) scale(.97); transform-origin:bottom right;
   transition:opacity .3s ease, transform .4s cubic-bezier(.22,.61,.36,1), visibility 0s linear .4s;
 }
-.msc-panel::before{            /* patli maroon top border */
+.msc-panel::before{
   content:""; position:absolute; top:0; left:0; right:0; height:2px; z-index:2;
   background:var(--msc-maroon);
 }
@@ -149,13 +135,13 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   transition:opacity .3s ease, transform .4s cubic-bezier(.22,.61,.36,1), visibility 0s;
 }
 
-/* Header: halka blush, elite */
+/* Header */
 .msc-head{
   flex-shrink:0;
   display:flex; align-items:center; gap:12px; padding:16px 14px 10px 16px;
   background:linear-gradient(180deg,#fff 0%,#fff6fa 100%);
 }
-.msc-avatar{                   /* safed circle, magenta M (logo jaisa) */
+.msc-avatar{
   flex-shrink:0; width:40px; height:40px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:#fff; color:var(--msc-pink);
@@ -177,7 +163,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-close:active{ background:var(--msc-pink); color:#fff; border-color:transparent; }
 @media (hover:hover){ .msc-close:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; } }
 
-/* "Made to adore" chhoti soft tagline */
+/* Tagline */
 .msc-tag{
   flex-shrink:0;
   display:flex; align-items:center; justify-content:center; gap:8px;
@@ -190,7 +176,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-tag i{ display:block; width:26px; height:1px; background:linear-gradient(90deg,var(--msc-pink),transparent); opacity:.7; }
 .msc-tag i:first-child{ background:linear-gradient(90deg,transparent,var(--msc-pink)); }
 
-/* ───── Soft pink scrollbar ───── */
+/* Soft pink scrollbar */
 .msc-body, .msc-chips{ scrollbar-width:thin; scrollbar-color:#f3a6cd transparent; overscroll-behavior:contain; }
 .msc-body::-webkit-scrollbar, .msc-chips::-webkit-scrollbar{ width:6px; }
 .msc-body::-webkit-scrollbar-track, .msc-chips::-webkit-scrollbar-track{ background:transparent; margin:6px 0; }
@@ -199,9 +185,9 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-body::-webkit-scrollbar-thumb:hover, .msc-chips::-webkit-scrollbar-thumb:hover{ background:var(--msc-pink); }
 
-/* ───── Messages: jawab wale hisse ko sab se zyada jagah ───── */
+/* Messages: jawab ko sab se zyada jagah */
 .msc-body{
-  flex:1 1 auto; min-height:190px; overflow-y:auto; padding:16px 14px 8px; -webkit-overflow-scrolling:touch;
+  flex:1 1 auto; min-height:200px; overflow-y:auto; padding:16px 14px 10px; -webkit-overflow-scrolling:touch;
   background:linear-gradient(180deg,#fff6fa 0%,#fff 38%);
   display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth;
 }
@@ -232,11 +218,11 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-typing span:nth-child(3){ animation-delay:.36s; }
 @keyframes mscDot{ 0%,70%,100%{ transform:translateY(0); opacity:.35; } 35%{ transform:translateY(-4px); opacity:1; } }
 
-/* ───── Quick-reply chips: compact, apni limit ke andar scroll ───── */
+/* Chips: compact, apni limit ke andar scroll */
 .msc-chips{
-  display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px 10px;
+  display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px calc(10px + env(safe-area-inset-bottom,0px) * 0);
   background:#fff6fa; border-top:1px solid var(--msc-line);
-  max-height:100px; overflow-y:auto; flex-shrink:0;
+  max-height:112px; overflow-y:auto; flex-shrink:0;
 }
 .msc-chips:empty{ display:none; }
 .msc-chip{
@@ -250,39 +236,35 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 @media (hover:hover){
   .msc-chip:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; transform:translateY(-2px); box-shadow:0 8px 18px rgba(230,0,126,.24); }
 }
-/* neeche pehle se green WhatsApp button hai, is liye duplicate chip chhupa diya.
-   Wapas chahiye to is ek line ko hata dein. */
-.msc-chip.agent{ display:none !important; }
+
+/* Live agent: sab se upar, poori chaurai, saaf hara, magar patla */
+.msc-chip.agent{
+  order:-1; flex:1 1 100%;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:8px 14px; text-align:center; text-decoration:none;
+  color:#fff; border:none; font-size:11.5px; font-weight:800; letter-spacing:.4px;
+  background:linear-gradient(145deg,#52d98c,#27b867);
+  box-shadow:0 4px 12px rgba(39,184,103,.26);
+}
+.msc-chip.agent svg{ width:15px; height:15px; fill:currentColor; flex-shrink:0; }
+.msc-chip.agent:active{ background:#16a34a; color:#fff; }
+@media (hover:hover){
+  .msc-chip.agent:hover{ background:linear-gradient(145deg,#52d98c,#27b867); color:#fff; box-shadow:0 8px 18px rgba(39,184,103,.34); }
+}
 .msc-chips.is-busy .msc-chip{ opacity:.5; pointer-events:none; }
 
-/* ───── Footer: live agent ───── */
-.msc-foot{ padding:8px 12px 10px; background:#fff; border-top:1px solid var(--msc-line); flex-shrink:0; }
-.msc-agent{
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  padding:10px 16px; border-radius:999px; text-decoration:none; color:#fff;
-  background:linear-gradient(145deg,#52d98c,#27b867);
-  font-size:11px; font-weight:800; letter-spacing:.8px; text-transform:uppercase;
-  box-shadow:0 8px 20px rgba(39,184,103,.28);
-  transition:transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s ease;
-  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
-}
-.msc-agent svg{ width:17px; height:17px; fill:currentColor; flex-shrink:0; }
-.msc-agent:active{ transform:scale(.97); }
-@media (hover:hover){ .msc-agent:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(39,184,103,.36); } }
-.msc-note{ margin-top:6px; text-align:center; font-size:10px; font-weight:600; color:#a08b97; letter-spacing:.3px; }
-
-/* ───── Bari screen (desktop / PC / bara laptop) ───── */
+/* Bari screen (desktop / PC / bara laptop) */
 @media (min-width:1280px) and (min-height:760px){
   .msc-panel{ width:400px; height:640px; }
   .msc-msg{ font-size:14px; }
 }
 
-/* ───── Tablet / iPad (521px – 1024px) ───── */
+/* Tablet / iPad */
 @media (min-width:521px) and (max-width:1024px){
   .msc-panel{ width:392px; height:620px; }
 }
 
-/* ───── Mobile / iPhone ───── */
+/* Mobile / iPhone */
 @media (max-width:520px){
   .msc-panel{
     left:10px; right:10px; width:auto; max-width:none;
@@ -295,31 +277,29 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   }
   .msc-launcher{ width:40px; height:40px; right:14px; right:max(14px, env(safe-area-inset-right,0px)); bottom:14px; bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
   .msc-launcher svg{ width:18px; height:18px; }
-  .msc-body{ min-height:170px; padding:14px 12px 8px; }
+  .msc-body{ min-height:180px; padding:14px 12px 8px; }
   .msc-msg{ font-size:13px; max-width:92%; }
-  .msc-chips{ max-height:92px; padding:7px 10px 8px; gap:5px; }
+  .msc-chips{ max-height:100px; padding:7px 10px 9px; gap:5px; }
   .msc-chip{ padding:5px 10px; font-size:11px; }
-  .msc-foot{ padding:7px 10px 9px; }
-  .msc-agent{ padding:9px 14px; font-size:10.5px; }
+  .msc-chip.agent{ padding:7px 12px; font-size:11px; }
 }
 
-/* Chhoti height (laptop chhota window, phone landscape): jawab ko jagah milti rahe */
+/* Chhoti height: jawab ko jagah milti rahe */
 @media (max-height:700px){
   .msc-tag{ display:none; }
   .msc-body{ min-height:130px; }
-  .msc-chips{ max-height:78px; }
+  .msc-chips{ max-height:84px; }
 }
 @media (max-height:560px){
   .msc-head{ padding:12px 14px 8px 16px; }
   .msc-avatar{ width:34px; height:34px; font-size:19px; }
-  .msc-note{ display:none; }
   .msc-body{ min-height:100px; }
-  .msc-chips{ max-height:58px; padding:6px 10px; }
+  .msc-chips{ max-height:62px; padding:6px 10px; }
   .msc-chip{ padding:5px 10px; font-size:11px; }
-  .msc-agent{ padding:8px 14px; }
+  .msc-chip.agent{ padding:6px 12px; }
 }
 
-/* ───── Launcher chhupa hua (order page): icon nahi, panel neeche ke qareeb ───── */
+/* Launcher chhupa hua (order page) */
 .msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
 .msc-root.msc-no-launcher .msc-panel{
   bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
@@ -335,7 +315,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-agent, .msc-msg{ transition:none; animation:none; }
+  .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-msg{ transition:none; animation:none; }
   .msc-launcher::before, .msc-launcher::after{ animation:none; }
   .msc-typing span{ animation:none; opacity:.8; }
   .msc-body{ scroll-behavior:auto; }
@@ -353,7 +333,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   var closeBtn = document.getElementById('mscClose');
   var body = document.getElementById('mscBody');
   var chips = document.getElementById('mscChips');
-  var agentBtn = document.getElementById('mscAgent');
   var WA = root.getAttribute('data-wa') || '';
 
   // ===== JAWAB (sirf yahan text badlein) =====
@@ -370,8 +349,9 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     { id: 'returns', label: '🔄 Returns & refund',
       answer: "You have 30 days to return or exchange your order 💖\n\nIf something is not right, just message us within 30 days of receiving your parcel and we will gladly help with a return, exchange or refund.\n\nPlease keep the item unused and in its original packaging." }
   ];
-  var AGENT_LABEL = '💬 Talk to a live agent';
+  var AGENT_LABEL = 'Talk to a live agent';
   var FOLLOW = "Was that helpful? You can pick another question, or our team is happy to help personally 💕";
+  var WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
   // ============================================
 
   var busy = false;
@@ -388,11 +368,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
       u.searchParams.set('text', text);
       return u.toString();
     } catch (e) { return WA; }
-  }
-  function refreshAgent() {
-    var url = agentUrl(lastTopic);
-    if (url) { agentBtn.setAttribute('href', url); }
-    else { agentBtn.style.display = 'none'; }
   }
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
@@ -414,7 +389,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     return t;
   }
 
-  // Bot ka jawab: pehle typing dots, phir text khud type hota hai
   function botSay(text, done) {
     var dots = showTyping();
     var wait = 650 + Math.min(text.length * 3, 650);
@@ -437,6 +411,20 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
   function renderChips(exceptId) {
     chips.innerHTML = '';
+
+    // Live agent chip: sab se upar (CSS order:-1), hamesha nazar aaye
+    var url = agentUrl(lastTopic);
+    if (url) {
+      var a = document.createElement('a');
+      a.className = 'msc-chip agent';
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.innerHTML = WA_ICON + '<span></span>';
+      a.lastChild.textContent = AGENT_LABEL;
+      chips.appendChild(a);
+    }
+
     TOPICS.forEach(function (t, idx) {
       if (t.id === exceptId) return;
       var b = document.createElement('button');
@@ -447,16 +435,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
       b.addEventListener('click', function () { choose(t); });
       chips.appendChild(b);
     });
-    var url = agentUrl(lastTopic);
-    if (url) {
-      var a = document.createElement('a');
-      a.className = 'msc-chip agent';
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = AGENT_LABEL;
-      chips.appendChild(a);
-    }
     chips.classList.remove('is-busy');
   }
 
@@ -465,7 +443,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     busy = true;
     chips.classList.add('is-busy');
     lastTopic = topic.label.replace(/^[^A-Za-z]+/, '');
-    refreshAgent();
     addMsg(topic.label, 'me');
     botSay(topic.answer, function () {
       botSay(FOLLOW, function () {
@@ -480,18 +457,16 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     if (started) return;
     started = true;
     busy = true;
-    refreshAgent();
     botSay(GREETING, function () {
       renderChips('');
       busy = false;
     });
   }
 
-  // Piche ka page scroll band / wapas
   function lockScroll() {
-    var sw = window.innerWidth - html.clientWidth;           // desktop scrollbar ki chaurai
+    var sw = window.innerWidth - html.clientWidth;
     prevPad = document.body.style.paddingRight;
-    if (sw > 0) { document.body.style.paddingRight = sw + 'px'; }   // page hilna nahi chahiye
+    if (sw > 0) { document.body.style.paddingRight = sw + 'px'; }
     html.classList.add('msc-lock');
   }
   function unlockScroll() {
@@ -526,7 +501,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     if (e.key === 'Escape' && panel.classList.contains('is-open')) closeChat();
   });
 
-  // iPhone / touch: popup ke bahar ya header par swipe se piche ka page na hile
+  // iPhone / touch: piche ka page na hile
   backdrop.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
   panel.addEventListener('touchmove', function (e) {
     if (!e.target.closest('.msc-body, .msc-chips')) e.preventDefault();
@@ -535,7 +510,5 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   // Bahar se (order page ka "Need help?" button) chat kholne / band karne ke liye
   window.openSupportChat = openChat;
   window.closeSupportChat = closeChat;
-
-  refreshAgent();
 })();
 </script>

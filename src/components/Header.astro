@@ -401,8 +401,8 @@ import { site } from '../config/site.js';
     }
 
     /* ══════ Cart icon + count ══════
-       Khali cart: sirf icon, koi circle nahi.
-       Item add hone par: number bag ke ANDAR (pink, bold), bina circle ke.
+       Khali cart: sirf icon, koi badge nahi.
+       Item add hone par: bag ke neeche-right kone par chhota pill badge (1, 2, 3 ... 11).
        Hide/show cart script karti hai (inline display), isliye yahan display likha hi nahi. */
     .m-header-cart-wrapper {
         cursor: pointer;
@@ -418,66 +418,68 @@ import { site } from '../config/site.js';
         display: flex !important;
         align-items: center;
         justify-content: center;
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
     }
     .m-cart-icon-container svg {
-        width: 34px;
-        height: 34px;
+        width: 36px;
+        height: 36px;
         stroke: var(--orange-maroon, #a3301f);
         stroke-width: 1.5;
         fill: none;
         filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15));
     }
-    /* Selector jaan bujh kar lamba hai + !important: purani CSS kahin aur bachi ho to bhi ye jeetegi */
+    /* Count badge: bag ke neeche-right kone par chhota maroon-pink pill, safed number.
+       Selector jaan bujh kar lamba + !important: purani CSS kahin aur bachi ho to bhi ye jeetegi */
     .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count {
         position: absolute !important;
-        left: 50% !important;
-        top: 61% !important;
-        right: auto !important;
-        bottom: auto !important;
-        transform: translate(-50%, -50%) !important;
+        right: -5px !important;
+        bottom: -3px !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
         align-items: center !important;
         justify-content: center !important;
         width: auto !important;
-        min-width: 0 !important;
-        height: auto !important;
-        background: none !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        padding: 0 !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        padding: 0 5px !important;
         margin: 0 !important;
-        color: #e6007e !important;
+        box-sizing: border-box !important;
+        background: linear-gradient(135deg, #a3301f 0%, #e6007e 100%) !important;
+        color: #fff !important;
+        border: 2px solid #fff !important;
+        border-radius: 999px !important;
+        box-shadow: 0 3px 8px rgba(230, 0, 126, 0.35) !important;
         font-family: 'Montserrat', sans-serif !important;
-        font-size: 13px !important;
+        font-size: 10px !important;
         font-weight: 800 !important;
         line-height: 1 !important;
-        letter-spacing: -0.3px;
+        letter-spacing: .2px;
         pointer-events: none;
-        z-index: 2 !important;
+        z-index: 3 !important;
         visibility: visible;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        animation: mBagCountPop .45s var(--ease-elite);
+        animation: mBagCountPop .5s var(--ease-elite);
     }
-    /* Khali cart = circle/number bilkul nahi. Header ka script data-empty set karta hai */
+    /* Khali cart = badge bilkul nahi. Header ka script data-empty set karta hai */
     .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count[data-empty="1"] { display: none !important; }
     .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count[data-empty="0"] { display: flex !important; }
     @keyframes mBagCountPop {
-        0%   { transform: translate(-50%, -50%) scale(.4); opacity: 0; }
-        60%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
-        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        0%   { transform: scale(.3); opacity: 0; }
+        60%  { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
     }
     @media (max-width: 1024px) and (min-width: 768px) {
-        .m-cart-icon-container { width: 38px; height: 38px; }
-        .m-cart-icon-container svg { width: 30px; height: 30px; }
-        .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count { font-size: 11.5px !important; }
+        .m-cart-icon-container { width: 40px; height: 40px; }
+        .m-cart-icon-container svg { width: 33px; height: 33px; }
+        .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count { font-size: 10px !important; }
     }
     @media (max-width: 767px) {
-        .m-cart-icon-container { width: 35px; height: 35px; }
-        .m-cart-icon-container svg { width: 28px; height: 28px; }
-        .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count { font-size: 10.5px !important; }
+        .m-cart-icon-container { width: 38px; height: 38px; }
+        .m-cart-icon-container svg { width: 31px; height: 31px; }
+        .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count { font-size: 9.5px !important; min-width: 16px !important; height: 16px !important; padding: 0 4px !important; right: -4px !important; bottom: -2px !important; border-width: 1.5px !important; }
     }
 
     @media (prefers-reduced-motion: reduce) {

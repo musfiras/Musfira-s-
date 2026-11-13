@@ -1,0 +1,128 @@
+---
+// MusfirasChoiceBanner.astro : Home page ka "Musfira's Choice" banner (Systeme.io wala design, bilkul same).
+// Image: public/lbnr.jpeg  ->  /lbnr.jpeg
+// Fonts (Bodoni Moda + Montserrat) Layout.astro ke <head> mein pehle se hain.
+---
+<section class="mfch-page">
+  <div class="mfch-top-divider" aria-hidden="true"><span></span></div>
+  <div class="mfch-lifestyle-wrap">
+    <a class="mfch-lifestyle-card" href="/musfiras_choice">
+      <div class="mfch-lifestyle-img-wrap">
+        <img src="/lbnr.jpeg" alt="Musfira's Choice" loading="lazy" decoding="async" />
+      </div>
+      <div class="mfch-lifestyle-content">
+        <h2 class="mfch-lifestyle-heading"><span class="mfch-brand-title-color">Musfira's</span> Choice</h2>
+        <p class="mfch-lifestyle-sub">Our most-loved finds, from bags to accessories, handpicked to make every day feel special</p>
+        <span class="mfch-lifestyle-btn">Shop Now
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<style is:global>
+.mfch-page{
+  --mfch-pink:#e6007e;
+  --mfch-maroon:#a8402d;
+  --mfch-heading-maroon:#9c2954;
+  --mfch-white:#ffffff;
+  --mfch-text-dark:#1a1a1a;
+  --mfch-muted:#555555;
+}
+
+.mfch-page,.mfch-page *,.mfch-page *::before,.mfch-page *::after{box-sizing:border-box;margin:0;padding:0;}
+
+.mfch-page{
+  position:relative;
+  width:100%;max-width:100%;
+  padding-bottom:20px;
+  overflow-x:hidden;
+  background:var(--mfch-white);
+  font-family:'Montserrat',sans-serif;
+  color:var(--mfch-text-dark);
+  -webkit-font-smoothing:antialiased;
+}
+.mfch-page img{display:block;width:100%;height:100%;object-fit:cover;}
+.mfch-page a{text-decoration:none;color:inherit;display:inline-block;}
+
+.mfch-brand-title-color{color:var(--mfch-pink) !important; font-weight:700;}
+
+/* TOP SOFT PINK DIVIDER */
+.mfch-top-divider{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  padding:18px 24px 18px;
+}
+.mfch-top-divider span{
+  display:block;
+  width:100%;
+  max-width:340px;
+  height:1px;
+  background:linear-gradient(to right, transparent 0%, var(--mfch-pink) 50%, transparent 100%);
+  opacity:.45;
+}
+@media(max-width:767px){
+  .mfch-top-divider{padding:14px 12px 14px;}
+  .mfch-top-divider span{max-width:220px;}
+}
+
+/* MUSFIRAS CHOICE CARD */
+.mfch-lifestyle-wrap{
+  width:100%;max-width:1300px;margin:0 auto;padding:0 24px 8px;
+}
+.mfch-page a.mfch-lifestyle-card{
+  display:block;
+  border-radius:0;
+  overflow:hidden;
+  background:var(--mfch-white);
+}
+.mfch-lifestyle-img-wrap{
+  position:relative;width:100%;
+  aspect-ratio:21/9;
+  overflow:hidden;
+}
+.mfch-lifestyle-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.mfch-lifestyle-card:hover .mfch-lifestyle-img-wrap img{transform:scale(1.04);}
+
+.mfch-lifestyle-content{
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:8px;
+  padding:22px 26px 26px;
+  background:var(--mfch-white);
+}
+.mfch-lifestyle-heading{
+  font-family:'Bodoni Moda',serif;
+  font-size:clamp(20px, 2.6vw, 26px);
+  font-weight:900;
+  color:var(--mfch-heading-maroon);
+  line-height:1.25;
+}
+.mfch-lifestyle-sub{
+  font-size:clamp(12px, 1.4vw, 13.5px);
+  font-weight:700;
+  color:var(--mfch-muted);
+  line-height:1.4;
+  max-width:70ch;
+}
+.mfch-lifestyle-btn{
+  background:transparent;color:var(--mfch-maroon);
+  border:2px solid var(--mfch-maroon);
+  font-size:clamp(10px, 1.2vw, 11px);
+  font-weight:900;letter-spacing:0.5px;text-transform:uppercase;
+  padding:11px 26px;border-radius:50px;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.3s ease;
+  margin-top:6px;
+}
+.mfch-lifestyle-btn svg path{stroke:var(--mfch-maroon); transition:stroke .3s ease;}
+.mfch-lifestyle-card:hover .mfch-lifestyle-btn{background:var(--mfch-pink); border-color:var(--mfch-pink); color:var(--mfch-white); box-shadow:0 6px 16px rgba(230,0,126,0.35);}
+.mfch-lifestyle-card:hover .mfch-lifestyle-btn svg path{stroke:var(--mfch-white);}
+
+@media(max-width:767px){
+  .mfch-lifestyle-wrap{padding:0 12px 8px;}
+  .mfch-lifestyle-img-wrap{aspect-ratio:16/9;}
+  .mfch-lifestyle-content{padding:16px 16px 18px; gap:6px;}
+}
+</style>

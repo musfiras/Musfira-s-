@@ -3,7 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import HeroBanner from '../components/HeroBanner.astro';
 import EliteDivider from '../components/EliteDivider.astro';
 import CategoryBanner from '../components/CategoryBanner.astro';
-import MusfirasChoice from '../components/MusfirasChoice.astro';
+import MusfirasChoice from '../components/MusfirasChoice.astro';          // purani file: view all button (jaisi thi waisi)
+import MusfirasChoiceBanner from '../components/MusfirasChoiceBanner.astro'; // naya banner
 import ProductCard from '../components/ProductCard.astro';
 import { productsFor, CHECKOUT_URL } from '../data/products.js';
 
@@ -21,4 +22,7 @@ const homeProducts = productsFor('home');
       {homeProducts.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
     </div>
   )}
+
+  <!-- Musfira's Choice banner: product cards ke NEECHE -->
+  <MusfirasChoiceBanner />
 </Layout>

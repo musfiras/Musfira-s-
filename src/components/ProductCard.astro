@@ -42,3 +42,25 @@ const n = Object.keys(p.stock).length;
     </div>
   </div>
 </div>
+
+<script>
+  // Product link par click: yaad rakho kaun sa product khola
+  document.addEventListener("click", (e) => {
+    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="/product/"]');
+    if (link) sessionStorage.setItem("lastProduct", link.getAttribute("href") || "");
+  });
+
+  // Sirf back dabane par: usi product tak scroll karo
+  function restore() {
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    if (nav && nav.type !== "back_forward") return;
+    const href = sessionStorage.getItem("lastProduct");
+    if (!href) return;
+    const card = document.querySelector(`[data-href="${href}"]`);
+    if (card) {
+      card.scrollIntoView({ block: "center" });
+      sessionStorage.removeItem("lastProduct");
+    }
+  }
+  addEventListener("pageshow", () => setTimeout(restore, 120));
+</script>

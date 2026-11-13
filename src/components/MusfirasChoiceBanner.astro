@@ -1,14 +1,13 @@
 ---
-// MusfirasChoiceBanner.astro : Home page ka "Musfira's Choice" banner (Systeme.io wala design, bilkul same).
+// MusfirasChoiceBanner.astro : Home page ka "Musfira's Choice" banner.
 // Image: public/lbnr.jpeg  ->  /lbnr.jpeg
-// Fonts (Bodoni Moda + Montserrat) Layout.astro ke <head> mein pehle se hain.
 ---
-<section class="mfch-page">
+<section class="mfch-page" data-mfch="v2">
   <div class="mfch-top-divider" aria-hidden="true"><span></span></div>
   <div class="mfch-lifestyle-wrap">
     <a class="mfch-lifestyle-card" href="/musfiras_choice">
       <div class="mfch-lifestyle-img-wrap">
-        <img src="/lbnr.jpeg" alt="Musfira's Choice" loading="lazy" decoding="async" />
+        <img src="/lbnr.jpeg" alt="Musfira's Choice" loading="eager" decoding="async" />
       </div>
       <div class="mfch-lifestyle-content">
         <h2 class="mfch-lifestyle-heading"><span class="mfch-brand-title-color">Musfira's</span> Choice</h2>
@@ -34,10 +33,16 @@
 .mfch-page,.mfch-page *,.mfch-page *::before,.mfch-page *::after{box-sizing:border-box;margin:0;padding:0;}
 
 .mfch-page{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  clear:both;
+  grid-column:1 / -1;
   position:relative;
+  z-index:1;
   width:100%;max-width:100%;
+  min-height:40px;
   padding-bottom:20px;
-  overflow-x:hidden;
   background:var(--mfch-white);
   font-family:'Montserrat',sans-serif;
   color:var(--mfch-text-dark);
@@ -48,7 +53,6 @@
 
 .mfch-brand-title-color{color:var(--mfch-pink) !important; font-weight:700;}
 
-/* TOP SOFT PINK DIVIDER */
 .mfch-top-divider{
   width:100%;
   display:flex;
@@ -68,7 +72,6 @@
   .mfch-top-divider span{max-width:220px;}
 }
 
-/* MUSFIRAS CHOICE CARD */
 .mfch-lifestyle-wrap{
   width:100%;max-width:1300px;margin:0 auto;padding:0 24px 8px;
 }
@@ -82,6 +85,7 @@
   position:relative;width:100%;
   aspect-ratio:21/9;
   overflow:hidden;
+  background:#f6e9ee;
 }
 .mfch-lifestyle-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
 .mfch-lifestyle-card:hover .mfch-lifestyle-img-wrap img{transform:scale(1.04);}

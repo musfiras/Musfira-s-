@@ -3,12 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import HeroBanner from '../components/HeroBanner.astro';
 import EliteDivider from '../components/EliteDivider.astro';
 import CategoryBanner from '../components/CategoryBanner.astro';
-import MusfirasChoice from '../components/MusfirasChoice.astro';          // purani file: view all button (jaisi thi waisi)
-import MusfirasChoiceBanner from '../components/MusfirasChoiceBanner.astro'; // naya banner
+import MusfirasChoice from '../components/MusfirasChoice.astro';
+import MusfirasChoiceBanner from '../components/MusfirasChoiceBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { productsFor, CHECKOUT_URL } from '../data/products.js';
 
-// Sirf wo products jin ke placements me 'home' likha ho (products.js se control hota hai)
 const homeProducts = productsFor('home');
 ---
 <Layout shop={true} title="Musfira's">
@@ -23,6 +22,7 @@ const homeProducts = productsFor('home');
     </div>
   )}
 
-  <!-- Musfira's Choice banner: product cards ke NEECHE -->
-  <MusfirasChoiceBanner />
+  <div style="display:block;width:100%;clear:both;">
+    <MusfirasChoiceBanner />
+  </div>
 </Layout>

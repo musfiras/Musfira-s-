@@ -29,7 +29,34 @@ const schema = {
   <script slot="head" is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
 
   <div class="m-product-page-wrap m-page-mode">
-    <a class="m-back-link" href="/store">← Back to store</a>
+    <a class="m-back-link" href="/store" data-back-to-store>← Back to store</a>
     <ProductDetail p={p} checkoutUrl={CHECKOUT_URL} />
   </div>
+
+  <script>
+    // Customer store ya kisi category page se aaya ho to asli "back" chalao:
+    // wo usi page par, usi jagah wapas jata hai. Seedha link se aaya ho
+    // (WhatsApp, ad, Google) to normal link /store par le jayega.
+    document.querySelectorAll<HTMLElement>('[data-back-to-store]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        let cameFromShop = false;
+        try {
+          const ref = new URL(document.referrer);
+          const path = ref.pathname.replace(/\/+$/, '');
+          cameFromShop =
+            ref.origin === location.origin &&
+            path !== location.pathname.replace(/\/+$/, '') &&
+            !path.startsWith('/product') &&
+            !path.startsWith('/checkout') &&
+            !path.startsWith('/thank_you') &&
+            !path.startsWith('/cart');
+        } catch {}
+
+        if (cameFromShop && history.length > 1) {
+          e.preventDefault();
+          history.back();
+        }
+      });
+    });
+  </script>
 </Layout>

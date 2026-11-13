@@ -38,7 +38,16 @@ try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
 
     <div id="mscBody" class="msc-body" aria-live="polite"></div>
 
-    <div id="mscChips" class="msc-chips"></div>
+    <div class="msc-chipwrap">
+      <div id="mscChips" class="msc-chips"></div>
+      <!-- Jab chips ke neeche aur buttons chhupe hon to ye fade + "More options" nazar aata hai -->
+      <div id="mscMore" class="msc-more" aria-hidden="true">
+        <button type="button" id="mscMoreBtn" class="msc-more-btn" tabindex="-1">
+          <span>More options</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
   </section>
 </div>
 
@@ -176,12 +185,12 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-tag i{ display:block; width:26px; height:1px; background:linear-gradient(90deg,var(--msc-pink),transparent); opacity:.7; }
 .msc-tag i:first-child{ background:linear-gradient(90deg,transparent,var(--msc-pink)); }
 
-/* ───── Soft pink scrollbar ───── */
-.msc-body, .msc-chips{ scrollbar-width:thin; scrollbar-color:#f3a6cd transparent; overscroll-behavior:contain; }
+/* ───── Soft pink scrollbar (chips ka scrollbar hamesha nazar aaye) ───── */
+.msc-body, .msc-chips{ scrollbar-width:thin; scrollbar-color:#ee86b9 #fbe3ef; overscroll-behavior:contain; }
 .msc-body::-webkit-scrollbar, .msc-chips::-webkit-scrollbar{ width:6px; }
-.msc-body::-webkit-scrollbar-track, .msc-chips::-webkit-scrollbar-track{ background:transparent; margin:6px 0; }
+.msc-body::-webkit-scrollbar-track, .msc-chips::-webkit-scrollbar-track{ background:#fbe3ef; border-radius:6px; margin:6px 0; }
 .msc-body::-webkit-scrollbar-thumb, .msc-chips::-webkit-scrollbar-thumb{
-  background:linear-gradient(180deg,#f8b9d6,#f08cbc); border-radius:6px;
+  background:linear-gradient(180deg,#f48fc0,#e6007e); border-radius:6px;
 }
 .msc-body::-webkit-scrollbar-thumb:hover, .msc-chips::-webkit-scrollbar-thumb:hover{ background:var(--msc-pink); }
 
@@ -218,11 +227,14 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-typing span:nth-child(3){ animation-delay:.36s; }
 @keyframes mscDot{ 0%,70%,100%{ transform:translateY(0); opacity:.35; } 35%{ transform:translateY(-4px); opacity:1; } }
 
+/* ───── Chips wrapper (fade + More options is is ke andar) ───── */
+.msc-chipwrap{ position:relative; flex-shrink:0; }
+
 /* ───── Chips (PC / mouse): compact ───── */
 .msc-chips{
   display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px 10px;
   background:#fff6fa; border-top:1px solid var(--msc-line);
-  max-height:112px; overflow-y:auto; flex-shrink:0;
+  max-height:112px; overflow-y:auto; -webkit-overflow-scrolling:touch;
 }
 .msc-chips:empty{ display:none; }
 .msc-chip{
@@ -252,6 +264,29 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-chip.agent:hover{ background:linear-gradient(145deg,#52d98c,#27b867); color:#fff; box-shadow:0 8px 18px rgba(39,184,103,.34); }
 }
 .msc-chips.is-busy .msc-chip{ opacity:.5; pointer-events:none; }
+
+/* ───── "More options" fade + button: jab neeche aur buttons chhupe hon ───── */
+.msc-more{
+  position:absolute; left:0; right:6px; bottom:0; height:54px; z-index:3;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px;
+  background:linear-gradient(180deg, rgba(255,246,250,0) 0%, rgba(255,246,250,.92) 55%, #fff6fa 100%);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .25s ease, visibility 0s linear .25s;
+}
+.msc-more.is-on{ opacity:1; visibility:visible; transition:opacity .25s ease, visibility 0s; }
+.msc-more-btn{
+  pointer-events:auto; cursor:pointer;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:6px 13px 6px 15px; border-radius:999px;
+  background:#fff; color:var(--msc-pink); border:1.5px solid #f3a6cd;
+  font-family:inherit; font-size:10.5px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; line-height:1;
+  box-shadow:0 4px 14px rgba(230,0,126,.22);
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.msc-more-btn svg{ width:13px; height:13px; flex-shrink:0; animation:mscBounce 1.4s ease-in-out infinite; }
+.msc-more-btn:active{ background:var(--msc-pink); color:#fff; border-color:transparent; }
+@media (hover:hover){ .msc-more-btn:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; } }
+@keyframes mscBounce{ 0%,100%{ transform:translateY(-1px); } 50%{ transform:translateY(2px); } }
 
 /* ───── Bari screen (desktop / PC / bara laptop) ───── */
 @media (min-width:1280px) and (min-height:760px){
@@ -297,6 +332,10 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-chip.agent svg{ width:18px; height:18px; }
   .msc-close{ width:40px; height:40px; }
   .msc-close svg{ width:16px; height:16px; }
+  /* touch par scrollbar patla aur hamesha nazar aaye */
+  .msc-chips::-webkit-scrollbar{ width:5px; }
+  .msc-more{ height:60px; }
+  .msc-more-btn{ padding:8px 15px 8px 17px; font-size:11px; }
 }
 
 /* ───── Chhoti height (chhota laptop window / phone landscape) ───── */
@@ -332,9 +371,10 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-msg{ transition:none; animation:none; }
+  .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-msg, .msc-more{ transition:none; animation:none; }
   .msc-launcher::before, .msc-launcher::after{ animation:none; }
   .msc-typing span{ animation:none; opacity:.8; }
+  .msc-more-btn svg{ animation:none; }
   .msc-body{ scroll-behavior:auto; }
 }
 </style>
@@ -350,6 +390,8 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   var closeBtn = document.getElementById('mscClose');
   var body = document.getElementById('mscBody');
   var chips = document.getElementById('mscChips');
+  var more = document.getElementById('mscMore');
+  var moreBtn = document.getElementById('mscMoreBtn');
   var WA = root.getAttribute('data-wa') || '';
 
   // ===== JAWAB (sirf yahan text badlein) =====
@@ -388,6 +430,19 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   }
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
+
+  // "More options" tab tab dikhao jab chips ke neeche aur buttons chhupe hon
+  function updateMore() {
+    var hidden = chips.scrollHeight - chips.clientHeight;
+    var canScroll = hidden > 6;
+    var atEnd = chips.scrollTop + chips.clientHeight >= chips.scrollHeight - 6;
+    more.classList.toggle('is-on', canScroll && !atEnd);
+  }
+  chips.addEventListener('scroll', updateMore, { passive: true });
+  window.addEventListener('resize', updateMore);
+  moreBtn.addEventListener('click', function () {
+    chips.scrollBy({ top: Math.max(chips.clientHeight * 0.8, 80), behavior: 'smooth' });
+  });
 
   function addMsg(text, who) {
     var d = document.createElement('div');
@@ -428,6 +483,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
   function renderChips(exceptId) {
     chips.innerHTML = '';
+    chips.scrollTop = 0;
 
     // Live agent chip: sab se upar (CSS order:-1)
     var url = agentUrl(lastTopic);
@@ -453,12 +509,18 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
       chips.appendChild(b);
     });
     chips.classList.remove('is-busy');
+
+    // layout set hone ke baad check karo ke neeche aur buttons hain ya nahi
+    updateMore();
+    setTimeout(updateMore, 120);
+    setTimeout(updateMore, 500);
   }
 
   function choose(topic) {
     if (busy) return;
     busy = true;
     chips.classList.add('is-busy');
+    more.classList.remove('is-on');
     lastTopic = topic.label.replace(/^[^A-Za-z]+/, '');
     addMsg(topic.label, 'me');
     botSay(topic.answer, function () {
@@ -499,6 +561,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     launcher.setAttribute('aria-expanded', 'true');
     lockScroll();
     start();
+    setTimeout(updateMore, 450);
   }
   function closeChat() {
     panel.classList.remove('is-open');

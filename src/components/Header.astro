@@ -45,12 +45,13 @@ import { site } from '../config/site.js';
         </div>
 
         <div class="nav-side nav-right">
-            <div class="m-header-cart-wrapper" onclick="openDrawer()">
+            <div class="m-header-cart-wrapper" onclick="openDrawer()" role="button" aria-label="Open shopping bag">
     <div class="m-cart-icon-container">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="m-cart-badge" id="m-global-count">0</span>
+        <!-- Cart khali ho to ye chhupa rehta hai (display:none). Item add hote hi cart script isay dikhati hai, number bag ke andar -->
+        <span class="m-cart-badge" id="m-global-count" style="display:none">0</span>
     </div>
 </div>
         </div>
@@ -399,7 +400,10 @@ import { site } from '../config/site.js';
         .about-scroll-body { max-height: 55vh; }
     }
 
-    /* ══════ Cart icon + count (pehle product CSS mein tha, ab header ke saath, taake har page par sahi chale) ══════ */
+    /* ══════ Cart icon + count ══════
+       Khali cart: sirf icon, koi circle nahi.
+       Item add hone par: number bag ke ANDAR (pink, bold), bina circle ke.
+       Hide/show cart script karti hai (inline display), isliye yahan display likha hi nahi. */
     .m-header-cart-wrapper {
         cursor: pointer;
         display: flex !important;
@@ -426,50 +430,49 @@ import { site } from '../config/site.js';
         filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15));
     }
     #m-global-count {
-        position: absolute !important;
-        top: 0px !important;
-        right: -2px !important;
-        background: #e6007e !important;
-        color: #ffffff !important;
-        font-family: 'Montserrat', sans-serif !important;
-        font-size: 11px !important;
-        font-weight: 800 !important;
-        line-height: 1 !important;
-        min-width: 22px !important;
-        height: 22px !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border: 2px solid #ffffff !important;
-        box-shadow: 0 4px 8px rgba(230, 0, 126, 0.3);
-        z-index: 999999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
+        position: absolute;
+        left: 50%;
+        top: 61%;
+        transform: translate(-50%, -50%);
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        color: #e6007e;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.3px;
+        pointer-events: none;
+        z-index: 2;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        animation: mBagCountPop .45s var(--ease-elite);
+    }
+    @keyframes mBagCountPop {
+        0%   { transform: translate(-50%, -50%) scale(.4); opacity: 0; }
+        60%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
     @media (max-width: 1024px) and (min-width: 768px) {
         .m-cart-icon-container { width: 38px; height: 38px; }
         .m-cart-icon-container svg { width: 30px; height: 30px; }
-        #m-global-count { min-width: 20px !important; height: 20px !important; font-size: 10px !important; }
+        #m-global-count { font-size: 11.5px; }
     }
     @media (max-width: 767px) {
         .m-cart-icon-container { width: 35px; height: 35px; }
         .m-cart-icon-container svg { width: 28px; height: 28px; }
-        #m-global-count {
-            top: -2px !important;
-            right: -4px !important;
-            min-width: 18px !important;
-            height: 18px !important;
-            font-size: 9px !important;
-            border-width: 1.5px !important;
-        }
+        #m-global-count { font-size: 10.5px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
         .dropdown-content, .mobile-side-drawer, .drawer-overlay { transition-duration: .01s !important; }
         .dropdown-content > *, .drawer-links > *, .drawer-foot { animation: none !important; }
+        #m-global-count { animation: none !important; }
     }
 </style>
 

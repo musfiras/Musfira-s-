@@ -51,7 +51,7 @@ import { site } from '../config/site.js';
             <path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <!-- Cart khali ho to ye chhupa rehta hai (display:none). Item add hote hi cart script isay dikhati hai, number bag ke andar -->
-        <span class="m-cart-badge" id="m-global-count" style="display:none">0</span>
+        <span class="m-cart-badge" id="m-global-count" data-empty="1">0</span>
     </div>
 </div>
         </div>
@@ -429,30 +429,41 @@ import { site } from '../config/site.js';
         fill: none;
         filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15));
     }
-    #m-global-count {
-        position: absolute;
-        left: 50%;
-        top: 61%;
-        transform: translate(-50%, -50%);
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: 0;
-        box-shadow: none;
-        padding: 0;
-        margin: 0;
-        color: #e6007e;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 13px;
-        font-weight: 800;
-        line-height: 1;
+    /* Selector jaan bujh kar lamba hai + !important: purani CSS kahin aur bachi ho to bhi ye jeetegi */
+    .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count {
+        position: absolute !important;
+        left: 50% !important;
+        top: 61% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: auto !important;
+        background: none !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        color: #e6007e !important;
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
         letter-spacing: -0.3px;
         pointer-events: none;
-        z-index: 2;
+        z-index: 2 !important;
+        visibility: visible;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         animation: mBagCountPop .45s var(--ease-elite);
     }
+    /* Khali cart = circle/number bilkul nahi. Header ka script data-empty set karta hai */
+    .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count[data-empty="1"] { display: none !important; }
+    .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count[data-empty="0"] { display: flex !important; }
     @keyframes mBagCountPop {
         0%   { transform: translate(-50%, -50%) scale(.4); opacity: 0; }
         60%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
@@ -461,12 +472,12 @@ import { site } from '../config/site.js';
     @media (max-width: 1024px) and (min-width: 768px) {
         .m-cart-icon-container { width: 38px; height: 38px; }
         .m-cart-icon-container svg { width: 30px; height: 30px; }
-        #m-global-count { font-size: 11.5px; }
+        .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count { font-size: 11.5px !important; }
     }
     @media (max-width: 767px) {
         .m-cart-icon-container { width: 35px; height: 35px; }
         .m-cart-icon-container svg { width: 28px; height: 28px; }
-        #m-global-count { font-size: 10.5px; }
+        .header-section .m-header-cart-wrapper .m-cart-icon-container #m-global-count { font-size: 10.5px !important; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -553,5 +564,17 @@ import { site } from '../config/site.js';
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape") { closeDd(); closeNav(); }
         });
+    })();
+
+    // Cart count badge: number 0 ho to chhupa do, 1+ ho to bag ke andar dikhao (cart script jaise bhi likhe)
+    (function () {
+        var b = document.getElementById("m-global-count");
+        if (!b) { return; }
+        function sync() {
+            var n = parseInt(String(b.textContent).replace(/\D/g, ""), 10) || 0;
+            b.setAttribute("data-empty", n > 0 ? "0" : "1");
+        }
+        sync();
+        new MutationObserver(sync).observe(b, { childList: true, characterData: true, subtree: true });
     })();
 </script>

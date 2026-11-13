@@ -3,16 +3,40 @@
 // Live agent ka WhatsApp number src/config/site.js se aata hai (whatsappUrl), yahan number likhna nahi.
 // Jawab badalne hon to neeche <script> ke andar TOPICS mein sirf text badlein.
 //
+// OFFERS: products.js se khud aate hain (jis product par offer2/offer3 ho). Yahan kuch manual nahi.
+//         Link category page par jata hai (categories.js se) aur #id se usi product par scroll hota hai.
+//
 // hideLauncher prop: true ho to floating chat icon nahi dikhta (order page par use hota hai).
 //       Chat tab "Need help?" button se window.openSupportChat() ke zariye khulta hai.
 import { whatsappUrl } from '../config/site.js';
+import { offerProducts, offerDetails } from '../data/products.js';
+import { categories } from '../data/categories.js';
 
 const { hideLauncher = false } = Astro.props;
 
 let wa = '';
 try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
+
+// ----- Offers: product kis category page par hai (home / shop-all ko baad mein rakha) -----
+const catByTag = {};
+for (const c of categories) { if (!(c.tag in catByTag)) catByTag[c.tag] = c.slug; }
+
+const pageFor = (p) => {
+  const pl = p.placements || [];
+  for (const t of pl) {
+    if (t !== 'shop-all' && t !== 'home' && catByTag[t]) return '/' + catByTag[t];
+  }
+  if (pl.includes('shop-all')) return '/store';
+  if (pl.includes('home')) return '/';
+  return '/store';
+};
+
+const offers = offerProducts.map((p) => {
+  const d = offerDetails(p);
+  return { n: p.name, u: pageFor(p) + '#' + p.id, o2: d.o2, o3: d.o3 };
+});
 ---
-<div id="mscRoot" class={"msc-root" + (hideLauncher ? " msc-no-launcher" : "")} data-wa={wa}>
+<div id="mscRoot" class={"msc-root" + (hideLauncher ? " msc-no-launcher" : "")} data-wa={wa} data-offers={JSON.stringify(offers)}>
 
   <div id="mscBackdrop" class="msc-backdrop" aria-hidden="true"></div>
 
@@ -40,10 +64,9 @@ try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
 
     <div class="msc-chipwrap">
       <div id="mscChips" class="msc-chips"></div>
-      <!-- Jab chips ke neeche aur buttons chhupe hon to ye fade + "More options" nazar aata hai -->
+      <!-- Neeche aur buttons chhupe hon to chhota soft arrow nazar aata hai -->
       <div id="mscMore" class="msc-more" aria-hidden="true">
-        <button type="button" id="mscMoreBtn" class="msc-more-btn" tabindex="-1">
-          <span>More options</span>
+        <button type="button" id="mscMoreBtn" class="msc-more-btn" tabindex="-1" aria-label="Show more options">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
         </button>
       </div>
@@ -185,7 +208,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-tag i{ display:block; width:26px; height:1px; background:linear-gradient(90deg,var(--msc-pink),transparent); opacity:.7; }
 .msc-tag i:first-child{ background:linear-gradient(90deg,transparent,var(--msc-pink)); }
 
-/* ───── Soft pink scrollbar (chips ka scrollbar hamesha nazar aaye) ───── */
+/* ───── Soft pink scrollbar ───── */
 .msc-body, .msc-chips{ scrollbar-width:thin; scrollbar-color:#ee86b9 #fbe3ef; overscroll-behavior:contain; }
 .msc-body::-webkit-scrollbar, .msc-chips::-webkit-scrollbar{ width:6px; }
 .msc-body::-webkit-scrollbar-track, .msc-chips::-webkit-scrollbar-track{ background:#fbe3ef; border-radius:6px; margin:6px 0; }
@@ -227,7 +250,30 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-typing span:nth-child(3){ animation-delay:.36s; }
 @keyframes mscDot{ 0%,70%,100%{ transform:translateY(0); opacity:.35; } 35%{ transform:translateY(-4px); opacity:1; } }
 
-/* ───── Chips wrapper (fade + More options is is ke andar) ───── */
+/* ───── Offers list (chat ke andar, har product ek tap) ───── */
+.msc-offers{
+  align-self:flex-start; width:92%;
+  display:flex; flex-direction:column; gap:8px;
+  animation:mscIn .35s cubic-bezier(.22,.61,.36,1);
+}
+.msc-offer{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  min-height:48px; padding:10px 14px;
+  background:#fff; border:1px solid #f1c4da; border-radius:14px;
+  text-decoration:none; box-shadow:0 4px 14px rgba(156,41,84,.07);
+  transition:background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.msc-offer-t{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.msc-offer-n{ font-size:13px; font-weight:800; color:var(--msc-maroon); line-height:1.25; word-break:break-word; }
+.msc-offer-d{ font-size:11.5px; font-weight:700; color:var(--msc-pink); line-height:1.3; }
+.msc-offer svg{ width:16px; height:16px; flex-shrink:0; color:var(--msc-pink); }
+.msc-offer:active{ background:#fff0f7; border-color:var(--msc-pink); }
+@media (hover:hover){
+  .msc-offer:hover{ background:#fff6fa; border-color:var(--msc-pink); transform:translateY(-1px); box-shadow:0 8px 18px rgba(230,0,126,.16); }
+}
+
+/* ───── Chips wrapper ───── */
 .msc-chipwrap{ position:relative; flex-shrink:0; }
 
 /* ───── Chips (PC / mouse): compact ───── */
@@ -265,25 +311,26 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-chips.is-busy .msc-chip{ opacity:.5; pointer-events:none; }
 
-/* ───── "More options" fade + button: jab neeche aur buttons chhupe hon ───── */
+/* ───── Chhota soft arrow: jab neeche aur buttons chhupe hon ───── */
 .msc-more{
-  position:absolute; left:0; right:6px; bottom:0; height:54px; z-index:3;
-  display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px;
-  background:linear-gradient(180deg, rgba(255,246,250,0) 0%, rgba(255,246,250,.92) 55%, #fff6fa 100%);
+  position:absolute; left:0; right:6px; bottom:0; height:38px; z-index:3;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px;
+  background:linear-gradient(180deg, rgba(255,246,250,0) 0%, rgba(255,246,250,.9) 60%, #fff6fa 100%);
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .25s ease, visibility 0s linear .25s;
 }
 .msc-more.is-on{ opacity:1; visibility:visible; transition:opacity .25s ease, visibility 0s; }
 .msc-more-btn{
-  pointer-events:auto; cursor:pointer;
-  display:inline-flex; align-items:center; gap:5px;
-  padding:6px 13px 6px 15px; border-radius:999px;
-  background:#fff; color:var(--msc-pink); border:1.5px solid #f3a6cd;
-  font-family:inherit; font-size:10.5px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; line-height:1;
-  box-shadow:0 4px 14px rgba(230,0,126,.22);
+  position:relative; pointer-events:auto; cursor:pointer;
+  width:28px; height:28px; padding:0; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.94); color:var(--msc-pink);
+  border:1px solid #f3c1da;
+  box-shadow:0 2px 8px rgba(230,0,126,.16);
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
-.msc-more-btn svg{ width:13px; height:13px; flex-shrink:0; animation:mscBounce 1.4s ease-in-out infinite; }
+.msc-more-btn::after{ content:""; position:absolute; inset:-6px; }   /* tap area bara, nazar nahi aata */
+.msc-more-btn svg{ width:14px; height:14px; animation:mscBounce 1.6s ease-in-out infinite; }
 .msc-more-btn:active{ background:var(--msc-pink); color:#fff; border-color:transparent; }
 @media (hover:hover){ .msc-more-btn:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; } }
 @keyframes mscBounce{ 0%,100%{ transform:translateY(-1px); } 50%{ transform:translateY(2px); } }
@@ -313,6 +360,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-launcher{ width:44px; height:44px; right:14px; right:max(14px, env(safe-area-inset-right,0px)); bottom:14px; bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
   .msc-body{ padding:14px 12px 8px; }
   .msc-msg{ max-width:92%; }
+  .msc-offers{ width:96%; }
 }
 
 /* ───── TOUCH devices (phone, iPhone, iPad): bade, aasan tap buttons ───── */
@@ -332,10 +380,10 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-chip.agent svg{ width:18px; height:18px; }
   .msc-close{ width:40px; height:40px; }
   .msc-close svg{ width:16px; height:16px; }
-  /* touch par scrollbar patla aur hamesha nazar aaye */
   .msc-chips::-webkit-scrollbar{ width:5px; }
-  .msc-more{ height:60px; }
-  .msc-more-btn{ padding:8px 15px 8px 17px; font-size:11px; }
+  .msc-more{ height:42px; }
+  .msc-more-btn{ width:32px; height:32px; }
+  .msc-more-btn svg{ width:15px; height:15px; }
 }
 
 /* ───── Chhoti height (chhota laptop window / phone landscape) ───── */
@@ -371,7 +419,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-msg, .msc-more{ transition:none; animation:none; }
+  .msc-launcher, .msc-panel, .msc-backdrop, .msc-chip, .msc-msg, .msc-more, .msc-offers, .msc-offer{ transition:none; animation:none; }
   .msc-launcher::before, .msc-launcher::after{ animation:none; }
   .msc-typing span{ animation:none; opacity:.8; }
   .msc-more-btn svg{ animation:none; }
@@ -394,6 +442,11 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   var moreBtn = document.getElementById('mscMoreBtn');
   var WA = root.getAttribute('data-wa') || '';
 
+  // Offers products.js se khud aate hain (build ke waqt). Yahan kuch badalna nahi.
+  var OFFERS = [];
+  try { OFFERS = JSON.parse(root.getAttribute('data-offers') || '[]'); } catch (e) { OFFERS = []; }
+  var MAX_OFFERS = 6;   // chat mein zyada se zyada kitne offer products dikhane hain
+
   // ===== JAWAB (sirf yahan text badlein) =====
   var GREETING = "Hi 👋 Welcome to Musfira’s!\nI’m here to help. What would you like to know?";
   var TOPICS = [
@@ -408,9 +461,17 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     { id: 'returns', label: '🔄 Returns & refund',
       answer: "You have 30 days to return or exchange your order 💖\n\nIf something is not right, just message us within 30 days of receiving your parcel and we will gladly help with a return, exchange or refund.\n\nPlease keep the item unused and in its original packaging." }
   ];
+
+  // Offers button: sirf tab aata hai jab store mein kam az kam ek offer product ho
+  if (OFFERS.length) {
+    TOPICS.unshift({ id: 'offers', label: '🔥 Offers', offers: true,
+      answer: "Here are our current offers 🎁\n\nTap any product to go straight to it." });
+  }
+
   var AGENT_LABEL = 'Talk to a live agent';
   var FOLLOW = "Was that helpful? You can pick another question, or our team is happy to help personally 💕";
   var WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+  var CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
   // ============================================
 
   var busy = false;
@@ -431,7 +492,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
 
-  // "More options" tab tab dikhao jab chips ke neeche aur buttons chhupe hon
+  // Chhota arrow tab dikhao jab chips ke neeche aur buttons chhupe hon
   function updateMore() {
     var hidden = chips.scrollHeight - chips.clientHeight;
     var canScroll = hidden > 6;
@@ -481,6 +542,58 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     }, wait);
   }
 
+  // ----- Offers list: har product ek tap, seedha category page par us product tak -----
+  function offerText(o) {
+    var parts = [];
+    if (o.o2) parts.push('Buy 2 for AED ' + o.o2);
+    if (o.o3) parts.push('Buy 3 for AED ' + o.o3);
+    return parts.join(' · ');
+  }
+
+  function goOffer(e, a) {
+    var u = new URL(a.getAttribute('href'), window.location.href);
+    var same = u.pathname.replace(/\/$/, '') === window.location.pathname.replace(/\/$/, '');
+    closeChat();
+    if (same) {
+      // Isi page par hain: reload nahi, seedha us card par scroll
+      e.preventDefault();
+      var id = decodeURIComponent(u.hash.slice(1));
+      setTimeout(function () {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('m-flash');
+        setTimeout(function () { el.classList.remove('m-flash'); }, 2200);
+      }, 120);
+    }
+  }
+
+  function addOffers() {
+    var wrap = document.createElement('div');
+    wrap.className = 'msc-offers';
+    OFFERS.slice(0, MAX_OFFERS).forEach(function (o) {
+      var a = document.createElement('a');
+      a.className = 'msc-offer';
+      a.href = o.u;
+      var t = document.createElement('span');
+      t.className = 'msc-offer-t';
+      var n = document.createElement('span');
+      n.className = 'msc-offer-n';
+      n.textContent = o.n;
+      var d = document.createElement('span');
+      d.className = 'msc-offer-d';
+      d.textContent = offerText(o);
+      t.appendChild(n);
+      t.appendChild(d);
+      a.appendChild(t);
+      a.insertAdjacentHTML('beforeend', CHEV);
+      a.addEventListener('click', function (e) { goOffer(e, a); });
+      wrap.appendChild(a);
+    });
+    body.appendChild(wrap);
+    scrollDown();
+  }
+
   function renderChips(exceptId) {
     chips.innerHTML = '';
     chips.scrollTop = 0;
@@ -510,7 +623,6 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     });
     chips.classList.remove('is-busy');
 
-    // layout set hone ke baad check karo ke neeche aur buttons hain ya nahi
     updateMore();
     setTimeout(updateMore, 120);
     setTimeout(updateMore, 500);
@@ -524,6 +636,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
     lastTopic = topic.label.replace(/^[^A-Za-z]+/, '');
     addMsg(topic.label, 'me');
     botSay(topic.answer, function () {
+      if (topic.offers) addOffers();
       botSay(FOLLOW, function () {
         renderChips(topic.id);
         busy = false;

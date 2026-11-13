@@ -43,6 +43,18 @@ const n = Object.keys(p.stock).length;
   </div>
 </div>
 
+<style is:global>
+  /* Chat ke Offers link se aane par card header ke neeche na chhupe */
+  .m-master-box { scroll-margin-top: 110px; }
+  @keyframes mCardFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(230,0,126,0); }
+    25%  { box-shadow: 0 0 0 4px rgba(230,0,126,.35), 0 10px 28px rgba(230,0,126,.25); }
+    100% { box-shadow: 0 0 0 0 rgba(230,0,126,0); }
+  }
+  .m-master-box.m-flash .m-main-card { animation: mCardFlash 2s ease; }
+  @media (prefers-reduced-motion: reduce) { .m-master-box.m-flash .m-main-card { animation: none; } }
+</style>
+
 <script>
   // Product link par click: yaad rakho kaun sa product khola
   document.addEventListener("click", (e) => {
@@ -63,4 +75,17 @@ const n = Object.keys(p.stock).length;
     }
   }
   addEventListener("pageshow", () => setTimeout(restore, 120));
+
+  // Chat ke Offers link se (/bags#PROD_30): usi card par scroll aur halka glow
+  function focusHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el || !el.classList.contains("m-master-box")) return;
+    el.scrollIntoView({ block: "center" });
+    el.classList.add("m-flash");
+    setTimeout(() => el.classList.remove("m-flash"), 2200);
+  }
+  if (document.readyState === "complete") setTimeout(focusHash, 150);
+  else addEventListener("load", () => setTimeout(focusHash, 150));
 </script>

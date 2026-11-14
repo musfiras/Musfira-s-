@@ -13,7 +13,9 @@ import { whatsappUrl } from '../config/site.js';
 import { offerProducts, offerDetails } from '../data/products.js';
 import { categories } from '../data/categories.js';
 
-const { hideLauncher = true } = Astro.props;
+// Floating chat icon HAMESHA band hai (kisi page se prop pass ho tab bhi nahi dikhta).
+// Chat sirf "Need help?" button (HelpLinks.astro) se khulta hai.
+const hideLauncher = true;
 
 let wa = '';
 try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
@@ -409,8 +411,8 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-chipwrap{ max-height:48%; }
 }
 
-/* ───── Launcher chhupa hua (ab default) ───── */
-.msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
+/* ───── Launcher hamesha chhupa hua ───── */
+.msc-root .msc-launcher, .msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
 .msc-root.msc-no-launcher .msc-panel{
   bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
   height:min(640px, calc(100vh - 32px));

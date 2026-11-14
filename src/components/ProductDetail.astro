@@ -1,5 +1,7 @@
 ---
 const { p, checkoutUrl } = Astro.props;
+const many = p.images.length > 1;
+const scrollable = p.images.length > 4;
 ---
 <div
   class="m-master-box"
@@ -13,34 +15,51 @@ const { p, checkoutUrl } = Astro.props;
 >
   <div class="m-pop-overlay">
     <div class="m-pop-box">
-      <div class="m-maroon-top-bar"></div>
       <div class="m-close-x">&times;</div>
 
       <div class="m-pop-layout">
         <div class="m-pop-left">
-          <h3 class="m-pop-heading">PRODUCT DETAILS</h3>
 
           <div class="m-slider-container">
             <div class="m-track" onscroll="syncDots(this)">
               {p.images.map((src, i) => (
-                <img src={src} alt={`${p.name} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+                <img src={src} alt={`${p.name} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
               ))}
             </div>
-            <div class="m-arrow-next" onclick="goNext(this)">&#10230;</div>
+            <!-- zaroori: script setupDots() isay dhundti hai, is liye rakha hai (CSS se chhupa hua) -->
             <div class="m-dots-wrapper"></div>
           </div>
+
+          {many && (
+            <div class="m-thumbs-wrap">
+              <div class="m-thumbs">
+                {p.images.map((src, i) => (
+                  <button type="button" class={i === 0 ? 'm-thumb is-on' : 'm-thumb'} data-i={i} aria-label={`Photo ${i + 1}`}>
+                    <img src={src} alt="" loading="lazy" decoding="async" />
+                  </button>
+                ))}
+              </div>
+              {scrollable && (
+                <button type="button" class="m-thumbs-next" aria-label="More photos">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <div class="m-pop-right">
           <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin-top: 50px; margin-bottom: 15px; border-left: 3px solid #e6007e; padding-left: 8px;">Select Color & QTY</div>
           <div class="m-config-rows"></div>
 
-          <button class="m-add-row-btn" onclick={`addDynamicRow('${p.id}')`}>+ ADD ANOTHER COLOR</button>
+          <!-- Bundle ki live line (script isi ko bharti hai). Button script se pehli row mein, qty ke left par aata hai -->
+          <div class="m-offer-hint"></div>
+          <button class="m-add-row-btn" onclick={`addDynamicRow('${p.id}')`}>+ ADD COLOR</button>
 
           <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin: 20px 0 10px 0; border-left: 3px solid #e6007e; padding-left: 8px;">MADE TO REACH YOU</div>
           <div class="m-delivery-note">
-            <span class="m-dn-main">Estimated delivery: <b>1 to 3 working days</b></span>
-            <span class="m-dn-sub">Carefully packed, beautifully delivered to your door.</span>
+            <span class="m-dn-main">Estimated delivery: <b>1 to 3 days</b></span>
+            <span class="m-dn-sub">Free delivery all over UAE</span>
           </div>
 
           <div class="m-final-bill">Total: AED <span>{p.price}</span></div>
@@ -63,3 +82,173 @@ const { p, checkoutUrl } = Astro.props;
     </div>
   </div>
 </div>
+
+<style is:global>
+/* =====================================================
+   PRODUCT PAGE UPDATE
+   ===================================================== */
+
+/* 1) Maroon line, heading, arrow, dots khatam */
+.m-maroon-top-bar { display: none !important; }
+.m-arrow-next { display: none !important; }
+.m-dots-wrapper { display: none !important; }
+
+/* 2) THUMBNAILS */
+.m-thumbs-wrap {
+  position: relative; box-sizing: border-box;
+  margin: 8px 0 10px; padding: 0 28px 0 2px;
+}
+.m-thumbs {
+  position: relative;
+  display: flex; gap: 7px; overflow-x: auto; scroll-behavior: smooth;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.m-thumbs::-webkit-scrollbar { display: none; }
+.m-thumb {
+  flex: 0 0 calc((100% - 21px) / 4); aspect-ratio: 1 / 1;
+  box-sizing: border-box; padding: 2px; margin: 0; background: #fff;
+  border: 1px solid #fbd9e8; border-radius: 9px;
+  cursor: pointer; scroll-snap-align: start; overflow: hidden;
+  opacity: .7; transition: opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.m-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 6px; }
+.m-thumb.is-on { opacity: 1; border-color: #e6007e; box-shadow: 0 0 0 1px #e6007e inset; }
+@media (hover: hover) and (pointer: fine) { .m-thumb:hover { opacity: 1; border-color: #e6007e; } }
+.m-thumbs-next {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 22px; height: 22px; padding: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid #fbd9e8; color: #800000;
+  box-shadow: 0 2px 8px rgba(128,0,0,.10); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.m-thumbs-next svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.m-thumbs-next:active { background: #e6007e; color: #fff; border-color: #e6007e; }
+@media (hover: hover) and (pointer: fine) { .m-thumbs-next:hover { background: #e6007e; color: #fff; border-color: #e6007e; } }
+@media (min-width: 1024px) {
+  .m-thumbs-wrap { max-width: min(100%, 79vh); margin-left: auto; margin-right: auto; }
+}
+
+/* 3) BUNDLE OFFER: patla, kam height, soft */
+.m-offer-box { padding: 5px 8px !important; margin-top: 18px !important; border-color: #fdeaf3 !important; border-radius: 10px !important; }
+@media (max-width: 1023px) { .m-offer-box { margin-top: 26px !important; } }
+.m-offer-title { font-size: 9.5px !important; letter-spacing: 1.2px !important; margin-bottom: 4px !important; }
+.m-offer-tiers { gap: 5px !important; }
+.m-offer-tier { padding: 3px 4px !important; border-radius: 8px !important; }
+.m-ot-n { font-size: 9px !important; }
+.m-ot-new { font-size: 12.5px !important; margin-top: 0 !important; }
+.m-ot-old { font-size: 9px !important; }
+.m-offer-hint { font-size: 11px !important; margin: 3px 0 6px !important; }
+
+/* 4) COLOR BOXES: chhote, soft, elite */
+.m-swatches { gap: 11px 6px !important; padding-top: 5px !important; }
+.m-swatch {
+  padding: 4px 10px 4px 7px !important; min-height: 28px !important;
+  font-size: 11px !important; font-weight: 700 !important; gap: 6px !important;
+  border-radius: 8px !important; border-color: #fbd9e8 !important;
+}
+.m-swatch.is-sel { font-weight: 800 !important; }
+.m-sw-dot { width: 12px !important; height: 12px !important; }
+.m-sw-stock { font-size: 8px !important; top: -6px !important; left: 7px !important; }
+.m-master-box .m-swatch .m-sw-sold b { font-size: 10px !important; }
+.m-master-box .m-swatch .m-sw-sold b::after { font-size: 9.5px !important; }
+.m-master-box .m-swatches:has(.m-sw-sold) { row-gap: 24px !important; padding-bottom: 17px !important; }
+
+/* 5) QTY BOX: kam round (square type), height zyada, left-right bara */
+.m-qty-box {
+  border-radius: 9px !important; height: 44px !important; width: 176px !important;
+  border-color: #fbd9e8 !important; box-shadow: none !important; flex: 0 0 auto;
+}
+.m-qty-box button { min-width: 54px !important; font-size: 22px !important; }
+.m-qty-box input { width: 68px !important; }
+@media (max-width: 480px) {
+  .m-qty-box { width: 150px !important; height: 42px !important; }
+  .m-qty-box button { min-width: 44px !important; }
+  .m-qty-box input { width: 62px !important; }
+}
+@media (max-width: 360px) {
+  .m-qty-box { width: 134px !important; }
+  .m-qty-box button { min-width: 40px !important; }
+  .m-qty-box input { width: 54px !important; }
+}
+
+/* 6) ADD COLOR button: pehli row mein, left par, qty ke barabar (script isay row mein laati hai) */
+.m-row-item .m-add-row-btn {
+  order: 2; flex: 1 1 0; min-width: 0;
+  width: auto !important; height: 44px; margin: 0 !important; padding: 0 8px !important;
+  font-size: 11px !important; letter-spacing: .5px !important; white-space: nowrap;
+  border: 1px solid #f3b3d1 !important; border-radius: 9px !important;
+  -webkit-text-stroke: 0; animation: none !important;
+}
+@media (max-width: 480px) { .m-row-item .m-add-row-btn { height: 42px; font-size: 10.5px !important; } }
+
+/* 7) ESTIMATED DELIVERY: soft aur chhota */
+.m-delivery-note { padding: 6px 10px !important; margin: 8px 0 !important; border-color: #fdf0f6 !important; border-radius: 10px !important; }
+.m-dn-main { font-size: 11px !important; font-weight: 600 !important; color: #b0788f !important; }
+.m-dn-main b { font-weight: 700 !important; }
+.m-dn-sub { font-family: 'Segoe UI', sans-serif !important; font-style: normal !important; font-size: 10px !important; margin-top: 1px !important; color: #c39aae !important; }
+
+/* 8) Sticky bar ke peeche content na chhupe */
+.m-page-mode .m-pop-layout { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
+</style>
+
+<script is:inline>
+(function () {
+  var root = document.querySelector('.m-product-page-wrap .m-master-box');
+  if (!root) return;
+
+  /* ---- A) ADD COLOR button: pehli row mein, qty ke left par ---- */
+  function placeAdd() {
+    var btn = root.querySelector('.m-add-row-btn');
+    var row = root.querySelector('.m-config-rows > .m-row-item');
+    if (btn && row && btn.parentNode !== row) row.appendChild(btn);
+  }
+  placeAdd();
+  new MutationObserver(placeAdd).observe(root, { childList: true, subtree: true });
+
+  /* ---- B) THUMBNAILS ---- */
+  var track = root.querySelector('.m-track');
+  var strip = root.querySelector('.m-thumbs');
+  var next = root.querySelector('.m-thumbs-next');
+  if (!track || !strip) return;
+  var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
+  var cur = 0;
+
+  function mark(i) {
+    cur = i;
+    items.forEach(function (el, k) { el.classList.toggle('is-on', k === i); });
+    var el = items[i];
+    if (!el) return;
+    var l = el.offsetLeft;
+    if (l < strip.scrollLeft || l + el.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollTo({ left: Math.max(l - 2, 0), behavior: 'smooth' });
+    }
+  }
+  function go(i) {
+    track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+    mark(i);
+  }
+  items.forEach(function (el, i) { el.addEventListener('click', function () { go(i); }); });
+
+  /* ek arrow: aage ke thumbnails, end par pehle par jump */
+  if (next) {
+    next.addEventListener('click', function () {
+      var atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4;
+      if (atEnd) { strip.scrollTo({ left: 0, behavior: 'smooth' }); go(0); }
+      else { strip.scrollBy({ left: strip.clientWidth * 0.75, behavior: 'smooth' }); }
+    });
+  }
+
+  /* badi pic swipe ho to thumbnail sync */
+  var tmr;
+  track.addEventListener('scroll', function () {
+    clearTimeout(tmr);
+    tmr = setTimeout(function () {
+      var i = Math.round(track.scrollLeft / (track.clientWidth || 1));
+      if (i !== cur && items[i]) mark(i);
+    }, 80);
+  }, { passive: true });
+})();
+</script>

@@ -31,12 +31,11 @@ const n = Object.keys(p.stock).length;
               <span class="m-dot-anim"></span> in stock
             </div>
           </div>
-          <h2 class="m-pname-line">{p.name}</h2>
+          <h2 class="m-pname-line"><a href={href} class="m-pname-a">{p.name}</a></h2>
           <div class="m-price-row">
             <span class="m-new-p">AED {p.price}</span>
             <span class="m-old-p">AED {p.oldPrice}</span>
           </div>
-          <a class="m-details-trigger" href={href}>view details</a>
         </div>
       </div>
     </div>
@@ -53,9 +52,69 @@ const n = Object.keys(p.stock).length;
   }
   .m-master-box.m-flash .m-main-card { animation: mCardFlash 2s ease; }
   @media (prefers-reduced-motion: reduce) { .m-master-box.m-flash .m-main-card { animation: none; } }
+
+  /* ===== Poora card clickable ===== */
+  .m-master-box .m-main-card { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+  /* ===== Product name: thora bold + dark black, left ===== */
+  .m-master-box .m-main-card .m-pname-line {
+    color: #000 !important;
+    font-weight: 800 !important;
+    padding: 0 6px !important;
+  }
+  .m-master-box .m-pname-a { color: inherit !important; text-decoration: none !important; font-weight: inherit !important; }
+
+  /* ===== Prices: left side ===== */
+  .m-master-box .m-main-card .m-price-row {
+    text-align: left !important;
+    padding: 0 6px !important;
+  }
+  .m-master-box .m-main-card .m-old-p { margin-left: 6px !important; }
+
+  /* ===== Green bundle offer text: View Details button hat gaya, is liye ab upar aa gaya.
+     Left, thora bold. Position:absolute hi hai, is liye card ki height barabar rehti hai ===== */
+  .m-master-box > .m-card-offer {
+    top: 100% !important;
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 2px 0 0 !important;
+    padding: 2px 6px !important;
+    text-align: left !important;
+    font-weight: 800 !important;
+  }
 </style>
 
 <script>
+  // Offer line par click: popup nahi, seedha product page
+  document.addEventListener("click", (e) => {
+    const pill = (e.target as HTMLElement).closest<HTMLElement>(".m-card-offer");
+    if (!pill) return;
+    const box = pill.closest<HTMLElement>(".m-master-box");
+    const href = box?.getAttribute("data-href");
+    if (!href) return;
+    e.preventDefault();
+    e.stopPropagation();
+    sessionStorage.setItem("lastProduct", href);
+    location.href = href;
+  }, true);
+
+  // Card par kahin bhi click = product page
+  document.addEventListener("click", (e) => {
+    if (e.defaultPrevented) return;
+    const t = e.target as HTMLElement;
+    if (t.closest("a, button")) return;
+    const card = t.closest<HTMLElement>(".m-main-card");
+    if (!card) return;
+    const box = card.closest<HTMLElement>(".m-master-box");
+    const href = box?.getAttribute("data-href");
+    if (!href) return;
+    sessionStorage.setItem("lastProduct", href);
+    location.href = href;
+  });
+
   // Product link par click: yaad rakho kaun sa product khola
   document.addEventListener("click", (e) => {
     const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="/product/"]');

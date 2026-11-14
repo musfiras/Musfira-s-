@@ -72,8 +72,9 @@ const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
     <!-- Cart drawer: har page par khud load hota hai (HTML + CSS + live stock script) -->
     <CartDrawer />
 
-    <!-- Support chat: auto-reply buttons + live agent (WhatsApp). Har page par aata hai -->
-    <SupportChat />
+    <!-- Support chat: auto-reply buttons + live agent (WhatsApp). Har page par aata hai.
+         Product page par floating icon nahi (sticky bar ka Chat button isay kholta hai) -->
+    <SupportChat hideLauncher={shop && pageType === 'product'} />
 
     <!-- Safety: cart drawer script na chale to bhi cart icon par click error na de.
          CartDrawer ke baad hai, isliye asli openDrawer maujood ho to ye kuch nahi karta. -->

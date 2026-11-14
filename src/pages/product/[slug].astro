@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ProductDetail from '../../components/ProductDetail.astro';
+import ProductStickyBar from '../../components/ProductStickyBar.astro';
 import { products, CHECKOUT_URL } from '../../data/products.js';
 
 export function getStaticPaths() {
@@ -32,6 +33,9 @@ const schema = {
     <a class="m-back-link" href="/store" data-back-to-store>← Back </a>
     <ProductDetail p={p} checkoutUrl={CHECKOUT_URL} />
   </div>
+
+  <!-- Sticky bottom bar: Home | Chat | Cart | Buy it now -->
+  <ProductStickyBar id={p.id} />
 
   <script>
     // Customer store ya kisi category page se aaya ho to asli "back" chalao:

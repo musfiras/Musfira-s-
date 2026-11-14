@@ -1,77 +1,104 @@
 ---
-// Daraz jaisa sticky bottom bar: Home | Chat | Cart (maroon) | Buy it now (orangy maroon)
-// Ye product page ke asli buttons ko click karta hai, is liye cart / checkout ki saari logic same rehti hai.
+// Sticky bottom bar (Daraz style): upar patli total line, neeche Home | Chat | Cart | Buy it now
+// Total .m-final-bill se live sync hota hai (koi nayi calculation nahi, sirf wahi number dikhata hai).
 const { id } = Astro.props;
 ---
 <div id="mStickyBar" class="msb" role="toolbar" aria-label="Quick actions" data-id={id}>
-  <a class="msb-ic" href="/" aria-label="Home">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></svg>
-    <span>Home</span>
-  </a>
 
-  <button type="button" class="msb-ic" id="msbChat" aria-label="Chat with us">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.8 8.8 0 0 1-3.6-.8L3 20.5l1.5-4.9A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/><circle cx="8.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="12" cy="11.5" r=".8" fill="currentColor"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/></svg>
-    <span>Chat</span>
-  </button>
+  <div class="msb-total" aria-live="polite">
+    <div class="msb-t-left">
+      <span class="msb-t-lab">Total</span>
+      <b class="msb-t-new" id="msbTNew">AED</b>
+      <s class="msb-t-old" id="msbTOld" hidden></s>
+    </div>
+    <span class="msb-t-save" id="msbTSave" hidden></span>
+  </div>
 
-  <div class="msb-btns">
-    <button type="button" class="msb-cart" id="msbCart">Add to Cart</button>
-    <button type="button" class="msb-buy" id="msbBuy">Buy it now</button>
+  <div class="msb-row">
+    <a class="msb-ic" href="/" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></svg>
+      <span>Home</span>
+    </a>
+
+    <button type="button" class="msb-ic" id="msbChat" aria-label="Chat with us">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.8 8.8 0 0 1-3.6-.8L3 20.5l1.5-4.9A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/><circle cx="8.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="12" cy="11.5" r=".8" fill="currentColor"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/></svg>
+      <span>Chat</span>
+    </button>
+
+    <div class="msb-btns">
+      <button type="button" class="msb-cart" id="msbCart">Add to Cart</button>
+      <button type="button" class="msb-buy" id="msbBuy">Buy it now</button>
+    </div>
   </div>
 </div>
 
 <style is:global>
   .msb {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 8800;
-    display: flex; align-items: stretch; gap: 4px;
-    height: calc(58px + env(safe-area-inset-bottom, 0px));
-    padding: 0 0 env(safe-area-inset-bottom, 0px) 6px;
+    display: flex; flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     background: #fff; border-top: 1px solid #f4dde9;
-    box-shadow: 0 -6px 18px rgba(128, 0, 0, 0.08);
+    box-shadow: 0 -5px 16px rgba(128, 0, 0, 0.07);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
+
+  /* TOTAL LINE: patli, soft, elite */
+  .msb-total {
+    height: 28px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; background: #fffafc; border-bottom: 1px solid #f8e6ef;
+  }
+  .msb-t-left { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
+  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 13.5px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
+  .msb-t-old { font-size: 10px; font-weight: 500; color: #a0a0a0; }
+  .msb-t-save { font-size: 10px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
+  .msb-t-old[hidden], .msb-t-save[hidden] { display: none; }
+
+  /* BAR: pehle se patli (46px) */
+  .msb-row { display: flex; align-items: stretch; height: 46px; padding-left: 4px; }
   .msb-ic {
-    flex: 0 0 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    flex: 0 0 46px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
     background: none; border: none; padding: 0; cursor: pointer; text-decoration: none;
     color: #800000; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .msb-ic svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-  .msb-ic span { font-size: 10px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
+  .msb-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .msb-ic span { font-size: 9px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
   .msb-ic:active { color: #e6007e; }
 
   .msb-btns { flex: 1; display: flex; min-width: 0; }
   .msb-cart, .msb-buy {
     flex: 1; border: none; cursor: pointer; color: #fff;
-    font-family: inherit; font-size: 14.5px; font-weight: 800; letter-spacing: .3px;
+    font-family: inherit; font-size: 13.5px; font-weight: 700; letter-spacing: .3px;
     white-space: nowrap; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     transition: filter .2s ease;
   }
   .msb-cart {
     background: #800000;
-    clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
-    padding-left: 10px;
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+    padding-left: 8px;
   }
   .msb-buy {
     background: #a3301f;
-    clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
-    margin-left: -14px; padding-left: 14px;
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+    margin-left: -12px; padding-left: 12px;
   }
   .msb-cart:active, .msb-buy:active { filter: brightness(.9); }
   @media (hover: hover) { .msb-cart:hover, .msb-buy:hover { filter: brightness(1.08); } }
 
   @media (max-width: 380px) {
-    .msb-cart, .msb-buy { font-size: 13px; }
-    .msb-ic { flex-basis: 46px; }
+    .msb-cart, .msb-buy { font-size: 12.5px; }
+    .msb-ic { flex-basis: 42px; }
+    .msb-total { padding: 0 10px; }
   }
 
-  /* Laptop / PC: bar beech mein, chhoti */
+  /* Laptop / PC: bar beech mein */
   @media (min-width: 1024px) {
-    .msb { left: 50%; right: auto; width: 620px; transform: translateX(-50%); border-radius: 14px 14px 0 0; border: 1px solid #f4dde9; border-bottom: none; }
+    .msb { left: 50%; right: auto; width: 620px; transform: translateX(-50%); border-radius: 14px 14px 0 0; border: 1px solid #f4dde9; border-bottom: none; overflow: hidden; }
   }
 
-  /* Sirf product page par: bar ke peeche content na chhupe, purane do buttons chhupe
+  /* Sirf product page: bar ke peeche content na chhupe, purane do buttons chhupe
      (bar unhi ko click karta hai, is liye wo DOM mein rehte hain) */
-  body.m-product-page { padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px)); }
+  body.m-product-page { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
   .m-product-page-wrap .m-buy-now-btn,
   .m-product-page-wrap .m-cart-add-trigger { display: none !important; }
 </style>
@@ -97,8 +124,37 @@ const { id } = Astro.props;
     if (window.openSupportChat) window.openSupportChat();
   });
 
-  /* "Please select color & quantity first" wala message ab chhupe hue button ke paas dikhta,
-     is liye usay beech wale soft alert mein dikhao (agar wo alert page par maujood ho) */
+  /* ---- TOTAL: .m-final-bill se live sync ---- */
+  var tNew = document.getElementById('msbTNew');
+  var tOld = document.getElementById('msbTOld');
+  var tSave = document.getElementById('msbTSave');
+
+  function sync() {
+    var r = root();
+    var bill = r ? r.querySelector('.m-final-bill') : null;
+    if (!bill) return;
+    var sp = bill.querySelector('span');
+    var v = sp ? sp.textContent.trim() : '';
+    if (v) tNew.textContent = 'AED ' + v;
+
+    var old = bill.querySelector('.m-final-old');
+    var save = bill.querySelector('.m-final-save');
+    if (old && old.textContent.trim()) { tOld.textContent = old.textContent.trim(); tOld.hidden = false; }
+    else { tOld.hidden = true; }
+    if (save && save.textContent.trim()) { tSave.textContent = save.textContent.trim(); tSave.hidden = false; }
+    else { tSave.hidden = true; }
+  }
+
+  var r0 = root();
+  var bill0 = r0 ? r0.querySelector('.m-final-bill') : null;
+  if (bill0) {
+    new MutationObserver(sync).observe(bill0, { childList: true, subtree: true, characterData: true });
+  }
+  sync();
+  setTimeout(sync, 400);
+  window.addEventListener('load', function () { sync(); setTimeout(sync, 600); });
+
+  /* "Please select color & quantity first" wala message beech wale soft alert mein dikhao */
   var al = document.getElementById('cart-alert-' + id);
   if (al) {
     new MutationObserver(function () {

@@ -49,7 +49,8 @@ const scrollable = p.images.length > 4;
         </div>
 
         <div class="m-pop-right">
-          <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin-top: 50px; margin-bottom: 12px; border-left: 3px solid #e6007e; padding-left: 8px;">Select Color & QTY</div>
+          <!-- Bundle offer box script se banta hai, aur neeche wali script isay is heading ke UPAR rakhti hai -->
+          <div class="m-sec-head" style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin-top: 50px; margin-bottom: 12px; border-left: 3px solid #e6007e; padding-left: 8px;">Select Color & QTY</div>
 
           <!-- Sare colors ek hi line mein (script khud bharti hai) -->
           <div class="m-palette"></div>
@@ -84,7 +85,7 @@ const scrollable = p.images.length > 4;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v4
+   PRODUCT PAGE UPDATE v5
    ===================================================== */
 
 /* 1) Maroon line, heading, arrow, dots khatam */
@@ -130,7 +131,7 @@ const scrollable = p.images.length > 4;
   .m-thumbs-wrap { max-width: min(100%, 79vh); margin-left: auto; margin-right: auto; }
 }
 
-/* 3) BUNDLE OFFER: patla, kam height, soft */
+/* 3) BUNDLE OFFER: sab se upar, patla, soft */
 .m-offer-box { padding: 5px 8px !important; margin-top: 18px !important; border-color: #fdeaf3 !important; border-radius: 10px !important; }
 @media (max-width: 1023px) { .m-offer-box { margin-top: 26px !important; } }
 .m-offer-title { font-size: 9.5px !important; letter-spacing: 1.2px !important; margin-bottom: 4px !important; }
@@ -141,7 +142,7 @@ const scrollable = p.images.length > 4;
 .m-ot-old { font-size: 9px !important; }
 .m-offer-hint { font-size: 11px !important; margin: 3px 0 6px !important; }
 
-/* 4) COLOR PALETTE: sare colors ek line mein (wrap ho sakte hain agar bohat zyada hon) */
+/* 4) COLOR PALETTE: sare colors ek line mein */
 .m-palette {
   display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center;
   gap: 14px 6px; padding: 6px 2px 4px; margin: 0 0 8px; text-align: left;
@@ -159,7 +160,7 @@ const scrollable = p.images.length > 4;
 .m-master-box .m-palette .m-swatch .m-sw-sold b { font-size: 9.5px !important; }
 .m-master-box .m-palette .m-swatch .m-sw-sold b::after { font-size: 9px !important; }
 
-/* 5) SELECTED ROW: [Add Color] [selected color] ........ [qty]  (ek line, patli, soft) */
+/* 5) SELECTED ROW: [Add Color] [selected color] ........ [qty] */
 .m-config-rows .m-row-item {
   display: flex !important; flex-wrap: nowrap !important; align-items: center !important;
   gap: 8px !important;
@@ -168,12 +169,11 @@ const scrollable = p.images.length > 4;
   background: #fff !important;
   box-shadow: 0 3px 10px -8px rgba(128, 0, 0, 0.25) !important;
 }
-/* har row ke andar wale purane sare-colors wale bubbles chhupe (palette upar hai) */
 .m-config-rows .m-row-item .m-swatches { display: none !important; }
 
 .m-config-rows .m-row-item .m-add-row-btn { order: 1; }
 .m-config-rows .m-row-item .m-sel-chip { order: 2; }
-.m-config-rows .m-row-item .m-qty-box { order: 3; margin-left: auto !important; }
+.m-config-rows .m-row-item .m-qty-box { order: 3; margin-left: auto !important; margin-right: 6px !important; }
 
 .m-sel-chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -185,24 +185,30 @@ const scrollable = p.images.length > 4;
 .m-sel-chip .m-sw-dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,.16); flex-shrink: 0; box-sizing: border-box; }
 .m-sel-chip .m-sc-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
 
-/* REMOVE: chhota cross (✕), box ke andar right side par, vertically beech mein */
-.m-config-rows .m-row-item:has(.m-remove-btn) { padding-right: 38px !important; }
+/* REMOVE (✕): box ki upar wali border par, right kone mein, placeholder jaisa.
+   Qty se door, is liye galti se press nahi hota. Tap area bara (::after). */
+.m-config-rows .m-row-item:has(.m-remove-btn) { margin-top: 16px !important; }
 .m-config-rows .m-row-item .m-remove-btn {
-  position: absolute !important; top: 50% !important; right: 8px !important; left: auto !important;
-  transform: translateY(-50%) !important;
-  width: 22px; height: 22px; padding: 0 !important; margin: 0 !important;
+  position: absolute !important; top: -10px !important; right: 14px !important; left: auto !important; bottom: auto !important;
+  transform: none !important; order: 9;
+  width: 20px; height: 20px; padding: 0 !important; margin: 0 !important;
   font-size: 0 !important; line-height: 0; -webkit-text-stroke: 0 !important;
   display: flex; align-items: center; justify-content: center;
   border: 1px solid #f3c9dc !important; border-radius: 50% !important;
   background: #fff !important; color: #a3301f !important; cursor: pointer;
+  box-shadow: 0 2px 6px -2px rgba(128, 0, 0, 0.25) !important;
+  z-index: 3;
 }
 .m-config-rows .m-row-item .m-remove-btn::before {
-  content: "\2715"; font-size: 10px; font-weight: 700; line-height: 1;
+  content: "\2715"; font-size: 9px; font-weight: 700; line-height: 1;
 }
+.m-config-rows .m-row-item .m-remove-btn::after { content: ""; position: absolute; inset: -7px; }
 @media (hover: hover) and (pointer: fine) {
   .m-config-rows .m-row-item .m-remove-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
 }
-.m-config-rows .m-row-item .m-remove-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; transform: translateY(-50%) scale(.94) !important; }
+.m-config-rows .m-row-item .m-remove-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
+/* "color already selected" wali chhoti pill ab left kone par, taake cross se na takraye */
+.m-config-rows .m-row-item .m-pink-popup { right: auto !important; left: 12px !important; }
 
 /* QTY BOX: square type, soft, patla */
 .m-qty-box {
@@ -211,13 +217,30 @@ const scrollable = p.images.length > 4;
 }
 .m-qty-box button { min-width: 36px !important; font-size: 19px !important; }
 .m-qty-box input { width: 46px !important; }
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 1023px) {
+  .m-config-rows .m-row-item { padding: 8px 12px !important; }
+  .m-config-rows .m-row-item .m-qty-box { margin-right: 8px !important; }
+  .m-sel-chip .m-sc-name { max-width: 160px; }
+}
+/* Laptop / PC */
+@media (min-width: 1024px) {
+  .m-config-rows .m-row-item { padding: 8px 12px !important; }
+  .m-config-rows .m-row-item .m-qty-box { margin-right: 8px !important; }
+  .m-config-rows .m-row-item .m-remove-btn { right: 16px !important; }
+  .m-sel-chip .m-sc-name { max-width: 150px; }
+}
+/* Mobile / iPhone */
 @media (max-width: 480px) {
   .m-config-rows .m-row-item { gap: 6px !important; padding: 7px 8px !important; }
+  .m-config-rows .m-row-item .m-qty-box { margin-right: 5px !important; }
   .m-qty-box { width: 102px !important; height: 33px !important; }
   .m-qty-box button { min-width: 32px !important; }
   .m-qty-box input { width: 38px !important; }
   .m-sel-chip { padding: 4px 8px 4px 6px; font-size: 10.5px; }
   .m-sel-chip .m-sc-name { max-width: 70px; }
+  .m-config-rows .m-row-item .m-remove-btn { right: 12px !important; }
 }
 @media (max-width: 360px) {
   .m-qty-box { width: 92px !important; }
@@ -242,7 +265,6 @@ const scrollable = p.images.length > 4;
   .m-pop-right button.m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; }
 }
 .m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; transform: scale(.97); }
-/* jab tak button row ke bahar ho (rows banne se pehle) */
 .m-pop-right > button.m-add-row-btn { margin: 4px 0 8px !important; }
 
 /* 7) Page wala total: chhota aur soft (asli total sticky bar mein bhi dikhta hai) */
@@ -265,10 +287,10 @@ const scrollable = p.images.length > 4;
   var next = root.querySelector('.m-thumbs-next');
   if (track && strip) {
     var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
-    var cur = 0;
+    var cur0 = 0;
 
     var mark = function (i) {
-      cur = i;
+      cur0 = i;
       items.forEach(function (el, k) { el.classList.toggle('is-on', k === i); });
       var el = items[i];
       if (!el) return;
@@ -296,10 +318,24 @@ const scrollable = p.images.length > 4;
       clearTimeout(tmr);
       tmr = setTimeout(function () {
         var i = Math.round(track.scrollLeft / (track.clientWidth || 1));
-        if (i !== cur && items[i]) mark(i);
+        if (i !== cur0 && items[i]) mark(i);
       }, 80);
     }, { passive: true });
   }
+
+  /* ================= BUNDLE BOX: heading ke UPAR ================= */
+  var right = root.querySelector('.m-pop-right');
+  var head = root.querySelector('.m-sec-head');
+  function placeOffer() {
+    var box = root.querySelector('.m-offer-box');
+    if (box && head && head.parentNode && box.nextElementSibling !== head) {
+      head.parentNode.insertBefore(box, head);
+    }
+  }
+  if (right) {
+    new MutationObserver(placeOffer).observe(right, { childList: true, subtree: true });
+  }
+  placeOffer();
 
   /* ================= COLOR PALETTE + SELECTED ROW ================= */
   var cfg = root.querySelector('.m-config-rows');
@@ -314,8 +350,6 @@ const scrollable = p.images.length > 4;
   }
   function selOf(row) { return row.querySelector('.m-color-select'); }
 
-  /* palette par click: sab se neeche wali (active) row ka color badlo.
-     Asli swatch ko click karte hain, taake sold-out / duplicate ke purane alerts waise hi chalen */
   function pick(c) {
     var rs = rowsList();
     if (!rs.length) return;
@@ -330,21 +364,19 @@ const scrollable = p.images.length > 4;
 
     var first = rs[0];
     var src = [].slice.call(first.querySelectorAll('.m-swatch'));
-    if (!src.length) return; /* swatches abhi ban rahe hain */
+    if (!src.length) return;
 
     var active = rs[rs.length - 1];
     var curSel = selOf(active);
     var cur = curSel ? curSel.value : '';
     var used = rs.filter(function (r) { return r !== active; }).map(function (r) { var s = selOf(r); return s ? s.value : ''; });
 
-    /* rang ke dots ka map */
     var dots = {};
     src.forEach(function (s) {
       var d = s.querySelector('.m-sw-dot');
       dots[s.getAttribute('data-c')] = d ? d.style.background : '';
     });
 
-    /* ---- palette (sirf tab dobara banao jab kuch badla ho) ---- */
     var sig = src.map(function (s) { return s.className.replace(/\bis-sel\b|\bis-used\b/g, '') + '~' + s.textContent; }).join('|') + '#' + cur + '#' + used.join(',');
     if (sig !== lastSig) {
       lastSig = sig;
@@ -364,7 +396,6 @@ const scrollable = p.images.length > 4;
       });
     }
 
-    /* ---- har row mein selected color ka chip ---- */
     rs.forEach(function (row) {
       var s = selOf(row);
       if (!s) return;
@@ -383,7 +414,6 @@ const scrollable = p.images.length > 4;
       if (dt.style.background !== bg) dt.style.background = bg;
     });
 
-    /* ---- Add Color button: pehli row mein, left par ---- */
     if (addBtn && addBtn.parentNode !== first) first.insertBefore(addBtn, first.firstChild);
   }
 
@@ -393,10 +423,9 @@ const scrollable = p.images.length > 4;
     raf = requestAnimationFrame(function () { raf = 0; sync(); });
   }
 
-  /* palette cfg ke bahar hai, is liye is observer se loop nahi banta */
   new MutationObserver(queue).observe(cfg, { childList: true, subtree: true, attributes: true, characterData: true });
   cfg.addEventListener('change', queue);
-  window.addEventListener('load', function () { queue(); setTimeout(queue, 500); });
+  window.addEventListener('load', function () { queue(); placeOffer(); setTimeout(function () { queue(); placeOffer(); }, 500); });
   queue();
 })();
 </script>

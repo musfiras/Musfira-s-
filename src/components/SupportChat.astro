@@ -144,17 +144,17 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-launcher:hover .msc-launcher-tip{ opacity:1; transform:translateY(-50%) translateX(0); }
 }
 
-/* ───── Panel: height screen ke hisaab se khud set (har device mein fit) ───── */
+/* ───── Panel: CHHOTA size (har device par). Height screen ke hisaab se khud set ───── */
 .msc-panel{
   position:fixed; z-index:2147483001;
   right:16px; right:max(16px, env(safe-area-inset-right,0px));
   bottom:70px; bottom:calc(70px + env(safe-area-inset-bottom,0px));
-  width:380px; max-width:calc(100vw - 24px);
-  height:min(600px, calc(100vh - 86px));
-  height:min(600px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+  width:330px; max-width:calc(100vw - 24px);
+  height:min(470px, calc(100vh - 86px));
+  height:min(470px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
   display:flex; flex-direction:column; overflow:hidden;
-  background:#fff; border:1px solid var(--msc-line); border-radius:22px;
-  box-shadow:0 26px 70px rgba(120,20,60,.28), 0 4px 14px rgba(0,0,0,.08);
+  background:#fff; border:1px solid var(--msc-line); border-radius:20px;
+  box-shadow:0 22px 60px rgba(120,20,60,.26), 0 4px 14px rgba(0,0,0,.08);
   opacity:0; visibility:hidden; pointer-events:none;
   transform:translateY(16px) scale(.97); transform-origin:bottom right;
   transition:opacity .3s ease, transform .4s cubic-bezier(.22,.61,.36,1), visibility 0s linear .4s;
@@ -171,28 +171,28 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 /* ───── Header ───── */
 .msc-head{
   flex:0 0 auto;
-  display:flex; align-items:center; gap:12px; padding:14px 14px 8px 16px;
+  display:flex; align-items:center; gap:10px; padding:11px 12px 7px 14px;
   background:linear-gradient(180deg,#fff 0%,#fff6fa 100%);
 }
 .msc-avatar{
-  flex-shrink:0; width:38px; height:38px; border-radius:50%;
+  flex-shrink:0; width:34px; height:34px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:#fff; color:var(--msc-pink);
   border:1.5px solid #f6bcd8;
   box-shadow:0 4px 12px rgba(230,0,126,.18);
-  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:21px; font-weight:600; line-height:1;
+  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:19px; font-weight:600; line-height:1;
 }
 .msc-head-text{ flex:1; min-width:0; }
-.msc-title{ font-size:14px; font-weight:800; letter-spacing:.4px; color:var(--msc-maroon); }
-.msc-sub{ display:flex; align-items:center; gap:6px; margin-top:3px; font-size:11px; font-weight:600; color:#8a7480; }
+.msc-title{ font-size:13.5px; font-weight:800; letter-spacing:.4px; color:var(--msc-maroon); }
+.msc-sub{ display:flex; align-items:center; gap:6px; margin-top:2px; font-size:10.5px; font-weight:600; color:#8a7480; }
 .msc-sub i{ width:7px; height:7px; border-radius:50%; background:#2fcf6b; box-shadow:0 0 0 3px rgba(47,207,107,.2); display:block; }
 .msc-close{
-  flex-shrink:0; width:32px; height:32px; border-radius:50%; border:1px solid #f5cfe3; cursor:pointer;
+  flex-shrink:0; width:30px; height:30px; border-radius:50%; border:1px solid #f5cfe3; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   background:var(--msc-lpink); color:var(--msc-maroon); transition:all .25s ease;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
-.msc-close svg{ width:14px; height:14px; }
+.msc-close svg{ width:13px; height:13px; }
 .msc-close:active{ background:var(--msc-pink); color:#fff; border-color:transparent; }
 @media (hover:hover){ .msc-close:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; } }
 
@@ -200,10 +200,10 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-tag{
   flex:0 0 auto;
   display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:0 16px 7px; background:#fff6fa; border-bottom:1px solid var(--msc-line);
+  padding:0 16px 6px; background:#fff6fa; border-bottom:1px solid var(--msc-line);
 }
 .msc-tag span{
-  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:12px;
+  font-family:'Bodoni Moda',Georgia,serif; font-style:italic; font-size:11.5px;
   color:var(--msc-pink); letter-spacing:.3px; white-space:nowrap;
 }
 .msc-tag i{ display:block; width:26px; height:1px; background:linear-gradient(90deg,var(--msc-pink),transparent); opacity:.7; }
@@ -218,33 +218,33 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-body::-webkit-scrollbar-thumb:hover, .msc-chips::-webkit-scrollbar-thumb:hover{ background:var(--msc-pink); }
 
-/* ───── Messages: baqi bachi hui jagah le leta hai (kam az kam 96px) ───── */
+/* ───── Messages: baqi bachi hui jagah le leta hai (kam az kam 84px) ───── */
 .msc-body{
-  flex:1 1 0; min-height:96px; overflow-y:auto; padding:14px 14px 8px; -webkit-overflow-scrolling:touch;
+  flex:1 1 0; min-height:84px; overflow-y:auto; padding:12px 12px 8px; -webkit-overflow-scrolling:touch;
   background:linear-gradient(180deg,#fff6fa 0%,#fff 38%);
-  display:flex; flex-direction:column; gap:10px; scroll-behavior:smooth;
+  display:flex; flex-direction:column; gap:9px; scroll-behavior:smooth;
 }
 .msc-msg{
-  max-width:90%; padding:11px 15px; font-size:13.5px; line-height:1.65; font-weight:500;
+  max-width:90%; padding:9px 13px; font-size:13px; line-height:1.6; font-weight:500;
   white-space:pre-line; word-break:break-word;
   animation:mscIn .35s cubic-bezier(.22,.61,.36,1);
 }
 .msc-msg.bot{
   align-self:flex-start; color:var(--msc-text); background:#fff;
-  border:1px solid var(--msc-line); border-radius:4px 18px 18px 18px;
+  border:1px solid var(--msc-line); border-radius:4px 16px 16px 16px;
   box-shadow:0 4px 14px rgba(156,41,84,.06);
 }
 .msc-msg.me{
   align-self:flex-end; color:#fff; font-weight:600;
   background:linear-gradient(135deg,var(--msc-maroon),var(--msc-pink));
-  border-radius:18px 4px 18px 18px;
+  border-radius:16px 4px 16px 16px;
   box-shadow:0 6px 16px rgba(230,0,126,.22);
 }
 @keyframes mscIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
 
 .msc-typing{
-  align-self:flex-start; display:flex; gap:5px; padding:14px 16px;
-  background:#fff; border:1px solid var(--msc-line); border-radius:4px 18px 18px 18px;
+  align-self:flex-start; display:flex; gap:5px; padding:12px 14px;
+  background:#fff; border:1px solid var(--msc-line); border-radius:4px 16px 16px 16px;
 }
 .msc-typing span{ width:7px; height:7px; border-radius:50%; background:var(--msc-pink); opacity:.35; animation:mscDot 1.1s infinite ease-in-out; }
 .msc-typing span:nth-child(2){ animation-delay:.18s; }
@@ -253,22 +253,22 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
 /* ───── Offers list (chat ke andar, har product ek tap) ───── */
 .msc-offers{
-  align-self:flex-start; width:92%;
-  display:flex; flex-direction:column; gap:8px;
+  align-self:flex-start; width:94%;
+  display:flex; flex-direction:column; gap:7px;
   animation:mscIn .35s cubic-bezier(.22,.61,.36,1);
 }
 .msc-offer{
   display:flex; align-items:center; justify-content:space-between; gap:10px;
-  min-height:48px; padding:10px 14px;
-  background:#fff; border:1px solid #f1c4da; border-radius:14px;
+  min-height:44px; padding:8px 12px;
+  background:#fff; border:1px solid #f1c4da; border-radius:13px;
   text-decoration:none; box-shadow:0 4px 14px rgba(156,41,84,.07);
   transition:background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
 .msc-offer-t{ display:flex; flex-direction:column; gap:3px; min-width:0; }
-.msc-offer-n{ font-size:13px; font-weight:800; color:var(--msc-maroon); line-height:1.25; word-break:break-word; }
-.msc-offer-d{ font-size:11.5px; font-weight:700; color:var(--msc-pink); line-height:1.3; }
-.msc-offer svg{ width:16px; height:16px; flex-shrink:0; color:var(--msc-pink); }
+.msc-offer-n{ font-size:12.5px; font-weight:800; color:var(--msc-maroon); line-height:1.25; word-break:break-word; }
+.msc-offer-d{ font-size:11px; font-weight:700; color:var(--msc-pink); line-height:1.3; }
+.msc-offer svg{ width:15px; height:15px; flex-shrink:0; color:var(--msc-pink); }
 .msc-offer:active{ background:#fff0f7; border-color:var(--msc-pink); }
 @media (hover:hover){
   .msc-offer:hover{ background:#fff6fa; border-color:var(--msc-pink); transform:translateY(-1px); box-shadow:0 8px 18px rgba(230,0,126,.16); }
@@ -282,7 +282,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 }
 .msc-chips{
   flex:1 1 auto; min-height:0;
-  display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px; padding:8px 12px 10px;
+  display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px; padding:7px 11px 9px;
   background:#fff6fa; border-top:1px solid var(--msc-line);
   overflow-y:auto; -webkit-overflow-scrolling:touch;
 }
@@ -318,7 +318,7 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 
 /* ───── Chhota soft arrow: jab neeche aur buttons chhupe hon ───── */
 .msc-more{
-  position:absolute; left:0; right:6px; bottom:0; height:34px; z-index:3;
+  position:absolute; left:0; right:6px; bottom:0; height:32px; z-index:3;
   display:flex; align-items:flex-end; justify-content:center; padding-bottom:4px;
   background:linear-gradient(180deg, rgba(255,246,250,0) 0%, rgba(255,246,250,.9) 60%, #fff6fa 100%);
   opacity:0; visibility:hidden; pointer-events:none;
@@ -340,61 +340,61 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 @media (hover:hover){ .msc-more-btn:hover{ background:var(--msc-pink); color:#fff; border-color:transparent; } }
 @keyframes mscBounce{ 0%,100%{ transform:translateY(-1px); } 50%{ transform:translateY(2px); } }
 
-/* ───── Bari screen (desktop / PC / bara laptop) ───── */
+/* ───── Bari screen (desktop / PC / bara laptop): thora sa hi bara, chhota hi rehta hai ───── */
 @media (min-width:1280px) and (min-height:760px){
   .msc-panel{
-    width:400px;
-    height:min(640px, calc(100vh - 86px));
-    height:min(640px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+    width:340px;
+    height:min(490px, calc(100vh - 86px));
+    height:min(490px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
   }
-  .msc-msg{ font-size:14px; }
+  .msc-msg{ font-size:13.5px; }
 }
 
 /* ───── Tablet / iPad ───── */
 @media (min-width:521px) and (max-width:1024px){
   .msc-panel{
-    width:392px;
-    height:min(620px, calc(100vh - 86px));
-    height:min(620px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+    width:330px;
+    height:min(470px, calc(100vh - 86px));
+    height:min(470px, calc(100dvh - 86px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
   }
 }
 
-/* ───── Mobile / iPhone: panel ───── */
+/* ───── Mobile / iPhone: panel (neeche daayen, chhota) ───── */
 @media (max-width:520px){
   .msc-panel{
-    left:10px; right:10px; width:auto; max-width:none;
-    left:max(10px, env(safe-area-inset-left,0px)); right:max(10px, env(safe-area-inset-right,0px));
+    left:auto; right:14px; right:max(14px, env(safe-area-inset-right,0px));
+    width:min(310px, calc(100vw - 28px)); max-width:none;
     bottom:64px; bottom:calc(64px + env(safe-area-inset-bottom,0px));
-    height:min(640px, calc(100vh - 80px));
-    height:min(640px, calc(100dvh - 80px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
-    border-radius:20px;
+    height:min(440px, calc(100vh - 80px));
+    height:min(440px, calc(100dvh - 80px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+    border-radius:18px;
   }
   .msc-launcher{ width:44px; height:44px; right:14px; right:max(14px, env(safe-area-inset-right,0px)); bottom:14px; bottom:calc(14px + env(safe-area-inset-bottom,0px)); }
-  .msc-body{ padding:12px 12px 8px; }
-  .msc-msg{ max-width:92%; }
-  .msc-offers{ width:96%; }
+  .msc-body{ padding:10px 10px 7px; }
+  .msc-msg{ max-width:93%; }
+  .msc-offers{ width:97%; }
 }
 
-/* ───── TOUCH devices (phone, iPhone, iPad): aasan tap, magar jagah ka khayal ───── */
+/* ───── TOUCH devices (phone, iPhone, iPad): aasan tap, magar chhoti jagah ka khayal ───── */
 @media (pointer:coarse), (max-width:520px){
-  .msc-msg{ font-size:14px; }
-  .msc-chips{ gap:7px; padding:9px 12px 11px; }
+  .msc-msg{ font-size:13px; }
+  .msc-chips{ gap:6px; padding:8px 10px 10px; }
   .msc-chip{
-    min-height:40px; padding:9px 15px;
-    font-size:12.5px; font-weight:700; line-height:1.2; border-width:1.5px;
+    min-height:36px; padding:7px 13px;
+    font-size:12px; font-weight:700; line-height:1.2; border-width:1.5px;
     display:inline-flex; align-items:center;
   }
   .msc-chip.agent{
-    min-height:38px; padding:8px 14px; font-size:12.5px; border-width:1px;
+    min-height:36px; padding:7px 12px; font-size:12px; border-width:1px;
     display:flex; justify-content:center;
   }
-  .msc-chip.agent svg{ width:16px; height:16px; }
-  .msc-close{ width:38px; height:38px; }
-  .msc-close svg{ width:15px; height:15px; }
+  .msc-chip.agent svg{ width:15px; height:15px; }
+  .msc-close{ width:34px; height:34px; }
+  .msc-close svg{ width:14px; height:14px; }
   .msc-chips::-webkit-scrollbar{ width:5px; }
-  .msc-more{ height:38px; }
-  .msc-more-btn{ width:30px; height:30px; }
-  .msc-more-btn svg{ width:14px; height:14px; }
+  .msc-more{ height:34px; }
+  .msc-more-btn{ width:28px; height:28px; }
+  .msc-more-btn svg{ width:13px; height:13px; }
 }
 
 /* ───── Chhoti height (chhota laptop window / phone landscape) ───── */
@@ -402,9 +402,9 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-tag{ display:none; }
 }
 @media (max-height:620px){
-  .msc-head{ padding:10px 14px 6px 16px; }
-  .msc-avatar{ width:32px; height:32px; font-size:18px; }
-  .msc-body{ min-height:84px; }
+  .msc-head{ padding:9px 12px 5px 14px; }
+  .msc-avatar{ width:30px; height:30px; font-size:17px; }
+  .msc-body{ min-height:76px; }
   .msc-chipwrap{ max-height:48%; }
 }
 
@@ -412,14 +412,14 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 .msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
 .msc-root.msc-no-launcher .msc-panel{
   bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
-  height:min(640px, calc(100vh - 32px));
-  height:min(640px, calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+  height:min(490px, calc(100vh - 32px));
+  height:min(490px, calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
 }
 @media (max-width:520px){
   .msc-root.msc-no-launcher .msc-panel{
     bottom:10px; bottom:calc(10px + env(safe-area-inset-bottom,0px));
-    height:min(660px, calc(100vh - 24px));
-    height:min(660px, calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
+    height:min(460px, calc(100vh - 24px));
+    height:min(460px, calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));
   }
 }
 

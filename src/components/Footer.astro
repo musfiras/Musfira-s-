@@ -26,8 +26,8 @@ const year = new Date().getFullYear();
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5.6L20 11l-5.6 2.4L12 19l-2.4-5.6L4 11l5.6-2.4L12 3z"/></svg>
         </span>
         <div>
-          <div class="mfs-promise-title">Hand-selected</div>
-          <p class="mfs-promise-text">Every piece is picked by us, one by one, so you only see what we would love to carry ourselves.</p>
+          <div class="mfs-promise-title">Thoughtfully curated</div>
+          <p class="mfs-promise-text">Each piece is selected with care, so our collection stays refined, considered and worth adoring.</p>
         </div>
       </div>
       <div class="mfs-promise">
@@ -36,7 +36,7 @@ const year = new Date().getFullYear();
         </span>
         <div>
           <div class="mfs-promise-title">Delivered across the UAE</div>
-          <p class="mfs-promise-text">Sent to your door with care, wherever you are in the Emirates.</p>
+          <p class="mfs-promise-text">Sent to your door with care, across the Emirates.</p>
         </div>
       </div>
       <div class="mfs-promise">
@@ -58,7 +58,7 @@ const year = new Date().getFullYear();
       <div class="mfs-col mfs-brand-col">
         <img src="/mlogo.png?v=2" alt="Musfira’s logo" class="mfs-footer-logo-img" width="140" height="140" loading="lazy" decoding="async">
         <div class="mfs-tag"><i></i><span>Made to adore</span><i></i></div>
-        <p class="mfs-about">Musfira’s is a little world of ladies’ bags, jewellery, wallets, watches and accessories, chosen by hand and sent to you with care, so every piece feels special the moment it arrives.</p>
+        <p class="mfs-about">Musfira’s is a little world of ladies’ bags, jewellery, wallets, watches and accessories, thoughtfully curated and sent to you with care, so every piece feels special the moment it arrives.</p>
         <div class="mfs-social-row">
           {site.social.map((s) => (
             <a href={s.href} {...(s.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} class="mfs-social-icon" aria-label={s.name} set:html={icons[s.key] ?? ''} />
@@ -87,7 +87,7 @@ const year = new Date().getFullYear();
   <!-- ══ 3. CLOSING LINE + COPYRIGHT ══ -->
   <div class="mfs-wrap">
     <div class="mfs-bottom">
-      <p class="mfs-closing">Every <span class="mfs-brand">Musfira’s</span> piece is hand-selected by us and delivered to your door with care. <span class="mfs-brand">Made to adore.</span></p>
+      <p class="mfs-closing">Every <span class="mfs-brand">Musfira’s</span> piece is thoughtfully curated and delivered to your door with care. <span class="mfs-brand">Made to adore.</span></p>
       <div class="mfs-bottom-row">
         <div class="mfs-footer-copy">&#169; <span id="mfsYear">{year}</span> <span class="mfs-brand-soft">Musfira’s</span> &#183; All Rights Reserved</div>
         <button type="button" id="mfsTop" class="mfs-top-btn" aria-label="Back to top"><span>Back to top</span><b>&#8593;</b></button>

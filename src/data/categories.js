@@ -8,10 +8,11 @@
 //  tagline  : heading ke neeche pink line
 //  text     : chhoti description
 //  banner   : (optional) hero banner. Na likho to banner nahi dikhega.
-//             image      -> public folder wali image, jaise '/mbnr.jpeg'
+//             image      -> public folder wali image, jaise '/tbnr.jpeg'
 //             lineBlack  -> banner par pehla lafz (safed)
 //             lineAccent -> banner par doosra lafz (pink italic)
 //             tagline    -> banner ke neeche maroon line
+//             taglineHref-> (optional) tagline par click karne se kahan jaye, jaise '/store/'
 //
 //  "Shop All" ka page /store/ pehle se hai (store.astro), use yahan nahi likhna.
 // ============================================================================
@@ -23,10 +24,11 @@ export const categories = [
     tagline: 'Carry everything. Compromise nothing.',
     text: 'Spacious, durable carry bags made for women who do it all, in style.',
     banner: {
-      image: '/mbnr.jpeg',
+      image: '/tbnr.jpeg',
       lineBlack: 'Bags &',
       lineAccent: 'Carrying',
-      tagline: 'Stylish bags for the woman who carries it all, and compromises on nothing.',
+      tagline: 'Spacious, durable carry bags made for women who do it all, in style',
+      taglineHref: '/store/',
     },
   },
   {

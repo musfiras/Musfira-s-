@@ -49,7 +49,12 @@ const scrollable = p.images.length > 4;
         </div>
 
         <div class="m-pop-right">
-          <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin-top: 50px; margin-bottom: 15px; border-left: 3px solid #e6007e; padding-left: 8px;">Select Color & QTY</div>
+          <div style="font-size: 11px; font-weight: 800; color: #E6007E; text-transform: uppercase; margin-top: 50px; margin-bottom: 12px; border-left: 3px solid #e6007e; padding-left: 8px;">Select Color & QTY</div>
+
+          <!-- Sare colors ek hi line mein (script khud bharti hai) -->
+          <div class="m-palette"></div>
+
+          <!-- Neeche: selected color + qty (+ Add Color usi line mein) -->
           <div class="m-config-rows"></div>
 
           <button class="m-add-row-btn" onclick={`addDynamicRow('${p.id}')`}>+ ADD COLOR</button>
@@ -79,7 +84,7 @@ const scrollable = p.images.length > 4;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v2
+   PRODUCT PAGE UPDATE v4
    ===================================================== */
 
 /* 1) Maroon line, heading, arrow, dots khatam */
@@ -136,70 +141,117 @@ const scrollable = p.images.length > 4;
 .m-ot-old { font-size: 9px !important; }
 .m-offer-hint { font-size: 11px !important; margin: 3px 0 6px !important; }
 
-/* 4) COLOR + QTY BOX: patla, soft (colors aur qty ek line mein, jagah kam ho to qty neeche) */
+/* 4) COLOR PALETTE: sare colors ek line mein (wrap ho sakte hain agar bohat zyada hon) */
+.m-palette {
+  display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center;
+  gap: 14px 6px; padding: 6px 2px 4px; margin: 0 0 8px; text-align: left;
+}
+.m-palette:empty { display: none; }
+.m-palette:has(.m-sw-sold) { row-gap: 22px; padding-bottom: 18px; }
+.m-palette .m-swatch {
+  padding: 3px 9px 3px 6px !important; min-height: 26px !important;
+  font-size: 10.5px !important; font-weight: 700 !important; gap: 5px !important;
+  border-radius: 8px !important; border-color: #f6dce8 !important;
+}
+.m-palette .m-swatch.is-sel { font-weight: 800 !important; }
+.m-palette .m-sw-dot { width: 11px !important; height: 11px !important; }
+.m-palette .m-sw-stock { font-size: 7.5px !important; top: -6px !important; left: 7px !important; }
+.m-master-box .m-palette .m-swatch .m-sw-sold b { font-size: 9.5px !important; }
+.m-master-box .m-palette .m-swatch .m-sw-sold b::after { font-size: 9px !important; }
+
+/* 5) SELECTED ROW: [Add Color] [selected color] ........ [qty]  (ek line, patli, soft) */
 .m-config-rows .m-row-item {
-  display: flex !important; flex-wrap: wrap !important; align-items: center !important;
-  gap: 6px 8px !important;
-  padding: 8px 10px !important; margin-bottom: 8px !important;
-  border-radius: 10px !important; border-color: #fbd9e8 !important; background: #fffdfe !important;
+  display: flex !important; flex-wrap: nowrap !important; align-items: center !important;
+  gap: 8px !important;
+  padding: 7px 10px !important; margin-bottom: 8px !important;
+  border-radius: 12px !important; border: 1px solid #f6dce8 !important;
+  background: #fff !important;
+  box-shadow: 0 3px 10px -8px rgba(128, 0, 0, 0.25) !important;
 }
-.m-config-rows .m-row-item .m-swatches {
-  flex: 0 1 auto !important; order: 1;
-  gap: 12px 6px !important; padding-top: 6px !important;
-}
-.m-config-rows .m-row-item .m-qty-box { order: 2; margin-left: auto !important; }
+/* har row ke andar wale purane sare-colors wale bubbles chhupe (palette upar hai) */
+.m-config-rows .m-row-item .m-swatches { display: none !important; }
 
-.m-swatch {
-  padding: 4px 10px 4px 7px !important; min-height: 28px !important;
-  font-size: 11px !important; font-weight: 700 !important; gap: 6px !important;
-  border-radius: 8px !important; border-color: #fbd9e8 !important;
-}
-.m-swatch.is-sel { font-weight: 800 !important; }
-.m-sw-dot { width: 12px !important; height: 12px !important; }
-.m-sw-stock { font-size: 8px !important; top: -6px !important; left: 7px !important; }
-.m-master-box .m-swatch .m-sw-sold b { font-size: 10px !important; }
-.m-master-box .m-swatch .m-sw-sold b::after { font-size: 9.5px !important; }
-.m-master-box .m-swatches:has(.m-sw-sold) { row-gap: 22px !important; padding-bottom: 15px !important; }
+.m-config-rows .m-row-item .m-add-row-btn { order: 1; }
+.m-config-rows .m-row-item .m-sel-chip { order: 2; }
+.m-config-rows .m-row-item .m-qty-box { order: 3; margin-left: auto !important; }
 
-/* REMOVE: box ke kone par chhota, height nahi barhata */
+.m-sel-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-width: 0; flex: 0 1 auto;
+  padding: 4px 10px 4px 7px; box-sizing: border-box;
+  background: #fff5f9; border: 1px solid #e6007e; border-radius: 8px;
+  font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 800; color: #800000; line-height: 1.2;
+}
+.m-sel-chip .m-sw-dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,.16); flex-shrink: 0; box-sizing: border-box; }
+.m-sel-chip .m-sc-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+
+/* REMOVE: chhota cross (✕), box ke andar right side par, vertically beech mein */
+.m-config-rows .m-row-item:has(.m-remove-btn) { padding-right: 38px !important; }
 .m-config-rows .m-row-item .m-remove-btn {
-  position: absolute; top: -9px; right: 10px; order: 3;
-  padding: 2px 9px !important; font-size: 9px !important; background: #fff;
+  position: absolute !important; top: 50% !important; right: 8px !important; left: auto !important;
+  transform: translateY(-50%) !important;
+  width: 22px; height: 22px; padding: 0 !important; margin: 0 !important;
+  font-size: 0 !important; line-height: 0; -webkit-text-stroke: 0 !important;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid #f3c9dc !important; border-radius: 50% !important;
+  background: #fff !important; color: #a3301f !important; cursor: pointer;
 }
-
-/* QTY BOX: square type, soft */
-.m-qty-box {
-  border-radius: 9px !important; height: 38px !important; width: 138px !important;
-  border-color: #fbd9e8 !important; box-shadow: none !important; flex: 0 0 auto;
-}
-.m-qty-box button { min-width: 42px !important; font-size: 20px !important; }
-.m-qty-box input { width: 54px !important; }
-@media (max-width: 480px) {
-  .m-qty-box { width: 122px !important; height: 36px !important; }
-  .m-qty-box button { min-width: 38px !important; }
-  .m-qty-box input { width: 46px !important; }
-}
-
-/* 5) ADD COLOR: box ke neeche chhota soft button */
-.m-pop-right .m-add-row-btn {
-  display: inline-flex !important; align-items: center; justify-content: center;
-  width: auto !important; height: 30px; margin: 2px 0 8px !important; padding: 0 16px !important;
-  font-size: 10.5px !important; letter-spacing: .7px !important; white-space: nowrap;
-  background: #fff !important; color: #800000 !important;
-  border: 1px dashed #e6007e !important; border-radius: 8px !important;
-  -webkit-text-stroke: 0 !important; animation: none !important;
+.m-config-rows .m-row-item .m-remove-btn::before {
+  content: "\2715"; font-size: 10px; font-weight: 700; line-height: 1;
 }
 @media (hover: hover) and (pointer: fine) {
-  .m-pop-right .m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; }
+  .m-config-rows .m-row-item .m-remove-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
+}
+.m-config-rows .m-row-item .m-remove-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; transform: translateY(-50%) scale(.94) !important; }
+
+/* QTY BOX: square type, soft, patla */
+.m-qty-box {
+  border-radius: 9px !important; height: 34px !important; width: 118px !important;
+  border-color: #f6dce8 !important; box-shadow: none !important; flex: 0 0 auto;
+}
+.m-qty-box button { min-width: 36px !important; font-size: 19px !important; }
+.m-qty-box input { width: 46px !important; }
+@media (max-width: 480px) {
+  .m-config-rows .m-row-item { gap: 6px !important; padding: 7px 8px !important; }
+  .m-qty-box { width: 102px !important; height: 33px !important; }
+  .m-qty-box button { min-width: 32px !important; }
+  .m-qty-box input { width: 38px !important; }
+  .m-sel-chip { padding: 4px 8px 4px 6px; font-size: 10.5px; }
+  .m-sel-chip .m-sc-name { max-width: 70px; }
+}
+@media (max-width: 360px) {
+  .m-qty-box { width: 92px !important; }
+  .m-qty-box input { width: 32px !important; }
+  .m-sel-chip .m-sc-name { max-width: 54px; }
 }
 
-/* 6) Page wala total: chhota aur soft (asli total sticky bar mein bhi dikhta hai) */
+/* 6) ADD COLOR: orangy maroon, patla, hover par pink (pehli row mein, left par) */
+.m-pop-right button.m-add-row-btn,
+.m-pop-right button.m-add-row-btn:focus,
+.m-pop-right button.m-add-row-btn:focus-visible {
+  display: inline-flex !important; align-items: center; justify-content: center;
+  flex: 0 0 auto; width: auto !important; height: 30px; margin: 0 !important; padding: 0 12px !important;
+  font-size: 10px !important; font-weight: 800 !important; letter-spacing: .6px !important; white-space: nowrap;
+  background: #a3301f !important; color: #fff !important;
+  border: none !important; border-radius: 8px !important;
+  -webkit-text-stroke: 0 !important; animation: none !important; box-shadow: none !important;
+  outline: none !important; cursor: pointer;
+  transition: background .25s ease, transform .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .m-pop-right button.m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; }
+}
+.m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; transform: scale(.97); }
+/* jab tak button row ke bahar ho (rows banne se pehle) */
+.m-pop-right > button.m-add-row-btn { margin: 4px 0 8px !important; }
+
+/* 7) Page wala total: chhota aur soft (asli total sticky bar mein bhi dikhta hai) */
 .m-page-mode .m-final-bill { font-size: 19px !important; margin: 8px 0 12px !important; letter-spacing: 0 !important; }
 .m-page-mode .m-final-old { font-size: 11px !important; }
 .m-page-mode .m-final-save { font-size: 10.5px !important; }
 
-/* 7) Sticky bar ke peeche content na chhupe */
-.m-page-mode .m-pop-layout { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important; }
+/* 8) Sticky bar ke peeche content na chhupe */
+.m-page-mode .m-pop-layout { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
 </style>
 
 <script is:inline>
@@ -207,47 +259,144 @@ const scrollable = p.images.length > 4;
   var root = document.querySelector('.m-product-page-wrap .m-master-box');
   if (!root) return;
 
-  /* THUMBNAILS */
+  /* ================= THUMBNAILS ================= */
   var track = root.querySelector('.m-track');
   var strip = root.querySelector('.m-thumbs');
   var next = root.querySelector('.m-thumbs-next');
-  if (!track || !strip) return;
-  var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
-  var cur = 0;
+  if (track && strip) {
+    var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
+    var cur = 0;
 
-  function mark(i) {
-    cur = i;
-    items.forEach(function (el, k) { el.classList.toggle('is-on', k === i); });
-    var el = items[i];
-    if (!el) return;
-    var l = el.offsetLeft;
-    if (l < strip.scrollLeft || l + el.offsetWidth > strip.scrollLeft + strip.clientWidth) {
-      strip.scrollTo({ left: Math.max(l - 2, 0), behavior: 'smooth' });
+    var mark = function (i) {
+      cur = i;
+      items.forEach(function (el, k) { el.classList.toggle('is-on', k === i); });
+      var el = items[i];
+      if (!el) return;
+      var l = el.offsetLeft;
+      if (l < strip.scrollLeft || l + el.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+        strip.scrollTo({ left: Math.max(l - 2, 0), behavior: 'smooth' });
+      }
+    };
+    var go = function (i) {
+      track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+      mark(i);
+    };
+    items.forEach(function (el, i) { el.addEventListener('click', function () { go(i); }); });
+
+    if (next) {
+      next.addEventListener('click', function () {
+        var atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4;
+        if (atEnd) { strip.scrollTo({ left: 0, behavior: 'smooth' }); go(0); }
+        else { strip.scrollBy({ left: strip.clientWidth * 0.75, behavior: 'smooth' }); }
+      });
     }
-  }
-  function go(i) {
-    track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
-    mark(i);
-  }
-  items.forEach(function (el, i) { el.addEventListener('click', function () { go(i); }); });
 
-  /* ek arrow: aage ke thumbnails, end par pehle par jump */
-  if (next) {
-    next.addEventListener('click', function () {
-      var atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4;
-      if (atEnd) { strip.scrollTo({ left: 0, behavior: 'smooth' }); go(0); }
-      else { strip.scrollBy({ left: strip.clientWidth * 0.75, behavior: 'smooth' }); }
+    var tmr;
+    track.addEventListener('scroll', function () {
+      clearTimeout(tmr);
+      tmr = setTimeout(function () {
+        var i = Math.round(track.scrollLeft / (track.clientWidth || 1));
+        if (i !== cur && items[i]) mark(i);
+      }, 80);
+    }, { passive: true });
+  }
+
+  /* ================= COLOR PALETTE + SELECTED ROW ================= */
+  var cfg = root.querySelector('.m-config-rows');
+  var pal = root.querySelector('.m-palette');
+  var addBtn = root.querySelector('.m-add-row-btn');
+  if (!cfg || !pal) return;
+
+  var lastSig = '';
+
+  function rowsList() {
+    return [].slice.call(cfg.children).filter(function (r) { return r.classList && r.classList.contains('m-row-item'); });
+  }
+  function selOf(row) { return row.querySelector('.m-color-select'); }
+
+  /* palette par click: sab se neeche wali (active) row ka color badlo.
+     Asli swatch ko click karte hain, taake sold-out / duplicate ke purane alerts waise hi chalen */
+  function pick(c) {
+    var rs = rowsList();
+    if (!rs.length) return;
+    var active = rs[rs.length - 1];
+    var sw = [].slice.call(active.querySelectorAll('.m-swatch')).filter(function (s) { return s.getAttribute('data-c') === c; })[0];
+    if (sw) sw.click();
+  }
+
+  function sync() {
+    var rs = rowsList();
+    if (!rs.length) { if (pal.innerHTML) pal.innerHTML = ''; lastSig = ''; return; }
+
+    var first = rs[0];
+    var src = [].slice.call(first.querySelectorAll('.m-swatch'));
+    if (!src.length) return; /* swatches abhi ban rahe hain */
+
+    var active = rs[rs.length - 1];
+    var curSel = selOf(active);
+    var cur = curSel ? curSel.value : '';
+    var used = rs.filter(function (r) { return r !== active; }).map(function (r) { var s = selOf(r); return s ? s.value : ''; });
+
+    /* rang ke dots ka map */
+    var dots = {};
+    src.forEach(function (s) {
+      var d = s.querySelector('.m-sw-dot');
+      dots[s.getAttribute('data-c')] = d ? d.style.background : '';
     });
+
+    /* ---- palette (sirf tab dobara banao jab kuch badla ho) ---- */
+    var sig = src.map(function (s) { return s.className.replace(/\bis-sel\b|\bis-used\b/g, '') + '~' + s.textContent; }).join('|') + '#' + cur + '#' + used.join(',');
+    if (sig !== lastSig) {
+      lastSig = sig;
+      pal.innerHTML = '';
+      src.forEach(function (s) {
+        var c = s.getAttribute('data-c');
+        var n = s.cloneNode(true);
+        n.classList.remove('is-sel', 'is-used');
+        if (c === cur) n.classList.add('is-sel');
+        if (used.indexOf(c) > -1) n.classList.add('is-used');
+        n.setAttribute('aria-pressed', c === cur ? 'true' : 'false');
+        n.addEventListener('click', function () { pick(c); });
+        n.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(c); }
+        });
+        pal.appendChild(n);
+      });
+    }
+
+    /* ---- har row mein selected color ka chip ---- */
+    rs.forEach(function (row) {
+      var s = selOf(row);
+      if (!s) return;
+      var chip = row.querySelector(':scope > .m-sel-chip');
+      if (!chip) {
+        chip = document.createElement('span');
+        chip.className = 'm-sel-chip';
+        chip.innerHTML = '<span class="m-sw-dot"></span><span class="m-sc-name"></span>';
+        var q = row.querySelector('.m-qty-box');
+        if (q) row.insertBefore(chip, q); else row.appendChild(chip);
+      }
+      var nm = chip.querySelector('.m-sc-name');
+      if (nm.textContent !== s.value) nm.textContent = s.value;
+      var dt = chip.querySelector('.m-sw-dot');
+      var bg = dots[s.value] || '';
+      if (dt.style.background !== bg) dt.style.background = bg;
+    });
+
+    /* ---- Add Color button: pehli row mein, left par ---- */
+    if (addBtn && addBtn.parentNode !== first) first.insertBefore(addBtn, first.firstChild);
   }
 
-  /* badi pic swipe ho to thumbnail sync */
-  var tmr;
-  track.addEventListener('scroll', function () {
-    clearTimeout(tmr);
-    tmr = setTimeout(function () {
-      var i = Math.round(track.scrollLeft / (track.clientWidth || 1));
-      if (i !== cur && items[i]) mark(i);
-    }, 80);
-  }, { passive: true });
+  var raf = 0;
+  function queue() {
+    if (raf) return;
+    raf = requestAnimationFrame(function () { raf = 0; sync(); });
+  }
+
+  /* palette cfg ke bahar hai, is liye is observer se loop nahi banta */
+  new MutationObserver(queue).observe(cfg, { childList: true, subtree: true, attributes: true, characterData: true });
+  cfg.addEventListener('change', queue);
+  window.addEventListener('load', function () { queue(); setTimeout(queue, 500); });
+  queue();
 })();
 </script>

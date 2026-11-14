@@ -37,40 +37,43 @@ const { id } = Astro.props;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 8800;
     display: flex; flex-direction: column;
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    background: #fff; border-top: 1px solid #f4dde9;
-    box-shadow: 0 -5px 16px rgba(128, 0, 0, 0.07);
+    background: #fff;
+    border-top: 1px solid #ececec;
+    /* upar ki taraf soft shadow: bar page se alag nazar aaye */
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12), 0 -1px 4px rgba(0, 0, 0, 0.06);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
 
-  /* TOTAL LINE: patli, soft, elite */
+  /* TOTAL LINE: patli, pure white */
   .msb-total {
-    height: 28px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 14px; background: #fffafc; border-bottom: 1px solid #f8e6ef;
+    height: 24px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; background: #fff; border-bottom: 1px solid #f0f0f0;
   }
   .msb-t-left { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
-  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 13.5px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
-  .msb-t-old { font-size: 10px; font-weight: 500; color: #a0a0a0; }
-  .msb-t-save { font-size: 10px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
+  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
+  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
+  .msb-t-old { font-size: 9.5px; font-weight: 500; color: #a0a0a0; }
+  .msb-t-save { font-size: 9.5px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
   .msb-t-old[hidden], .msb-t-save[hidden] { display: none; }
 
-  /* BAR: pehle se patli (46px) */
-  .msb-row { display: flex; align-items: stretch; height: 46px; padding-left: 4px; }
+  /* BAR: patli (40px), white */
+  .msb-row { display: flex; align-items: stretch; height: 40px; padding-left: 4px; background: #fff; }
   .msb-ic {
-    flex: 0 0 46px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    flex: 0 0 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
     background: none; border: none; padding: 0; cursor: pointer; text-decoration: none;
     color: #800000; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .msb-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-  .msb-ic span { font-size: 9px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
+  .msb-ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .msb-ic span { font-size: 8.5px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
   .msb-ic:active { color: #e6007e; }
+  @media (hover: hover) { .msb-ic:hover { color: #e6007e; } }
 
   .msb-btns { flex: 1; display: flex; min-width: 0; }
   .msb-cart, .msb-buy {
     flex: 1; border: none; cursor: pointer; color: #fff;
-    font-family: inherit; font-size: 13.5px; font-weight: 700; letter-spacing: .3px;
+    font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: .3px;
     white-space: nowrap; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-    transition: filter .2s ease;
+    transition: background .25s ease;
   }
   .msb-cart {
     background: #800000;
@@ -82,23 +85,25 @@ const { id } = Astro.props;
     clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
     margin-left: -12px; padding-left: 12px;
   }
-  .msb-cart:active, .msb-buy:active { filter: brightness(.9); }
-  @media (hover: hover) { .msb-cart:hover, .msb-buy:hover { filter: brightness(1.08); } }
+  /* dono buttons par pink: laptop par hover, mobile par dabate waqt */
+  .msb-cart:active, .msb-buy:active { background: #e6007e; }
+  @media (hover: hover) { .msb-cart:hover, .msb-buy:hover { background: #e6007e; } }
 
   @media (max-width: 380px) {
-    .msb-cart, .msb-buy { font-size: 12.5px; }
-    .msb-ic { flex-basis: 42px; }
+    .msb-cart, .msb-buy { font-size: 12px; }
+    .msb-ic { flex-basis: 40px; }
     .msb-total { padding: 0 10px; }
   }
 
-  /* Laptop / PC: bar beech mein */
+  /* Laptop / PC: bar beech mein (shadow bhi dikhe, is liye overflow hidden nahi) */
   @media (min-width: 1024px) {
-    .msb { left: 50%; right: auto; width: 620px; transform: translateX(-50%); border-radius: 14px 14px 0 0; border: 1px solid #f4dde9; border-bottom: none; overflow: hidden; }
+    .msb { left: 50%; right: auto; width: 620px; transform: translateX(-50%); border-radius: 14px 14px 0 0; border: 1px solid #ececec; border-bottom: none; }
+    .msb-total { border-radius: 14px 14px 0 0; }
   }
 
   /* Sirf product page: bar ke peeche content na chhupe, purane do buttons chhupe
      (bar unhi ko click karta hai, is liye wo DOM mein rehte hain) */
-  body.m-product-page { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  body.m-product-page { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
   .m-product-page-wrap .m-buy-now-btn,
   .m-product-page-wrap .m-cart-add-trigger { display: none !important; }
 </style>

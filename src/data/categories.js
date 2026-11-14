@@ -37,6 +37,13 @@ export const categories = [
     title: 'Fashion & Accessories',
     tagline: 'The finishing touch to every look.',
     text: 'Jewellery, wallets, watches and more, hand-selected to complete your style.',
+    banner: {
+      image: '/mbnr.jpeg',
+      lineBlack: 'Fashion &',
+      lineAccent: 'Accessories',
+      tagline: 'Wallets, watches and more, finishing touches that make every outfit unforgettable',
+      taglineHref: '/fashion_accessories/',
+    },
   },
   {
     slug: 'musfiras_choice',

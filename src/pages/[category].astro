@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
 import BagsCategoryBanner from '../components/BagsCategoryBanner.astro';
+import FashionCategoryBanner from '../components/FashionCategoryBanner.astro';
 import { productsFor, CHECKOUT_URL } from '../data/products.js';
 import { categories } from '../data/categories.js';
 
@@ -11,11 +12,18 @@ export function getStaticPaths() {
 
 const { c } = Astro.props;
 const list = productsFor(c.tag);
+
+// Har category ka apna banner component (naya banner banao to yahan ek line jodo)
+const bannerFor = {
+  bags_carrying: BagsCategoryBanner,
+  fashion_accessories: FashionCategoryBanner,
+};
+const Banner = bannerFor[c.slug];
 ---
 <Layout shop={true} title={`${c.title} | Musfira's`} description={c.text}>
-  {c.banner ? (
+  {c.banner && Banner ? (
     <>
-      <BagsCategoryBanner {...c.banner} />
+      <Banner {...c.banner} />
       <h1 class="cat-sr">{c.title}</h1>
     </>
   ) : (

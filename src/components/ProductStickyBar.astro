@@ -1,5 +1,6 @@
 ---
-// Sticky bottom bar (Daraz style): upar patli total line, neeche Home | Chat | Cart | Buy it now
+// Mobile/tablet: sticky bottom bar (Home | Chat | Add to Cart | Buy it now) + upar patli total line
+// Laptop/PC (1024px+): bar nahi, Add to Cart + Buy it now alag buttons, right side par Total ke neeche
 // Total .m-final-bill se live sync hota hai (koi nayi calculation nahi, sirf wahi number dikhata hai).
 const { id } = Astro.props;
 ---
@@ -32,14 +33,22 @@ const { id } = Astro.props;
   </div>
 </div>
 
+<!-- SIRF LAPTOP/PC: do alag buttons. Script inhe .m-pop-right mein Total ke neeche le jati hai.
+     Mobile/tablet par ye display:none rehte hain. -->
+<div class="msb-dsk" id="msbDsk">
+  <button type="button" class="msb-d-cart" id="msbDCart">Add to Cart</button>
+  <button type="button" class="msb-d-buy" id="msbDBuy">Buy it now</button>
+</div>
+
 <style is:global>
   .msb {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 8800;
-    display: flex; flex-direction: column;
+    display: flex; flex-direction: column; box-sizing: border-box;
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
     background: #fff;
     border-top: 1px solid #ececec;
-    /* upar ki taraf soft shadow: bar page se alag nazar aaye */
     box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12), 0 -1px 4px rgba(0, 0, 0, 0.06);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
@@ -70,7 +79,7 @@ const { id } = Astro.props;
 
   .msb-btns { flex: 1; display: flex; min-width: 0; }
   .msb-cart, .msb-buy {
-    flex: 1; border: none; cursor: pointer; color: #fff;
+    flex: 1; min-width: 0; border: none; cursor: pointer; color: #fff;
     font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: .3px;
     white-space: nowrap; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     transition: background .25s ease;
@@ -85,24 +94,58 @@ const { id } = Astro.props;
     clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
     margin-left: -12px; padding-left: 12px;
   }
-  /* dono buttons par pink: laptop par hover, mobile par dabate waqt */
   .msb-cart:active, .msb-buy:active { background: #e6007e; }
   @media (hover: hover) { .msb-cart:hover, .msb-buy:hover { background: #e6007e; } }
 
+  /* chhoti screens (iPhone SE / chhote Android) */
   @media (max-width: 380px) {
     .msb-cart, .msb-buy { font-size: 12px; }
     .msb-ic { flex-basis: 40px; }
     .msb-total { padding: 0 10px; }
   }
+  @media (max-width: 340px) {
+    .msb-cart, .msb-buy { font-size: 11px; letter-spacing: 0; }
+    .msb-ic { flex-basis: 36px; }
+    .msb-ic span { font-size: 8px; }
+  }
 
-  /* Laptop / PC: bar beech mein (shadow bhi dikhe, is liye overflow hidden nahi) */
-  @media (min-width: 1024px) {
-    .msb { left: 50%; right: auto; width: 620px; transform: translateX(-50%); border-radius: 14px 14px 0 0; border: 1px solid #ececec; border-bottom: none; }
+  /* Tablet (600 se 1023px): bar beech mein ek nafees card ki tarah */
+  @media (min-width: 600px) and (max-width: 1023px) {
+    .msb {
+      left: 50%; right: auto; width: min(100%, 620px); transform: translateX(-50%);
+      border-radius: 14px 14px 0 0; border: 1px solid #ececec; border-bottom: none;
+    }
     .msb-total { border-radius: 14px 14px 0 0; }
   }
 
-  /* Sirf product page: bar ke peeche content na chhupe, purane do buttons chhupe
-     (bar unhi ko click karta hai, is liye wo DOM mein rehte hain) */
+  /* DESKTOP BUTTONS: mobile/tablet par chhupe hue */
+  .msb-dsk { display: none; }
+
+  /* Laptop / PC (1024px+): sticky bar bilkul band, uski jagah right side ke do buttons */
+  @media (min-width: 1024px) {
+    .msb { display: none !important; }
+    body.m-product-page { padding-bottom: 0 !important; }
+
+    .msb-dsk {
+      display: flex; gap: 12px; align-items: stretch;
+      width: 100%; margin: 6px 0 14px; box-sizing: border-box;
+      font-family: 'Segoe UI', 'Montserrat', sans-serif;
+    }
+    .msb-d-cart, .msb-d-buy {
+      flex: 1; min-width: 0; height: 46px; border: none; cursor: pointer; color: #fff;
+      font-family: inherit; font-size: clamp(13px, 1.1vw, 15px); font-weight: 700; letter-spacing: .3px;
+      white-space: nowrap; transition: background .25s ease;
+      clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+      padding: 0 12px 0 20px;
+    }
+    .msb-d-cart { background: #800000; }
+    .msb-d-buy  { background: #a3301f; }
+    .msb-d-cart:hover, .msb-d-buy:hover { background: #e6007e; }
+    .msb-d-cart:active, .msb-d-buy:active { background: #e6007e; }
+  }
+
+  /* Product page: mobile/tablet par bar ke peeche content na chhupe, purane do buttons chhupe
+     (bar / naye buttons unhi ko click karte hain, is liye wo DOM mein rehte hain) */
   body.m-product-page { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
   .m-product-page-wrap .m-buy-now-btn,
   .m-product-page-wrap .m-cart-add-trigger { display: none !important; }
@@ -117,19 +160,38 @@ const { id } = Astro.props;
   function root() { return document.getElementById(id); }
   function realBtn(sel) { var r = root(); return r ? r.querySelector(sel) : null; }
 
-  document.getElementById('msbBuy').addEventListener('click', function () {
-    var b = realBtn('.m-buy-now-btn');
-    if (b) b.click();
-  });
-  document.getElementById('msbCart').addEventListener('click', function () {
-    var b = realBtn('.m-cart-add-trigger');
-    if (b) b.click();
-  });
+  function doBuy()  { var b = realBtn('.m-buy-now-btn');      if (b) b.click(); }
+  function doCart() { var b = realBtn('.m-cart-add-trigger'); if (b) b.click(); }
+
+  /* mobile / tablet bar */
+  document.getElementById('msbBuy').addEventListener('click', doBuy);
+  document.getElementById('msbCart').addEventListener('click', doCart);
   document.getElementById('msbChat').addEventListener('click', function () {
     if (window.openSupportChat) window.openSupportChat();
   });
 
-  /* ---- TOTAL: .m-final-bill se live sync ---- */
+  /* desktop buttons (same logic: wahi asli buttons click hote hain) */
+  var dBuy = document.getElementById('msbDBuy');
+  var dCart = document.getElementById('msbDCart');
+  if (dBuy) dBuy.addEventListener('click', doBuy);
+  if (dCart) dCart.addEventListener('click', doCart);
+
+  /* desktop buttons ko right side mein Total ke neeche rakho */
+  function placeDesktop() {
+    var dsk = document.getElementById('msbDsk');
+    var r = root();
+    if (!dsk || !r) return;
+    var bill = r.querySelector('.m-final-bill');
+    if (bill && bill.parentNode && bill.nextElementSibling !== dsk) {
+      bill.parentNode.insertBefore(dsk, bill.nextSibling);
+    }
+  }
+  placeDesktop();
+  document.addEventListener('DOMContentLoaded', placeDesktop);
+  window.addEventListener('load', function () { placeDesktop(); setTimeout(placeDesktop, 500); });
+  setTimeout(placeDesktop, 300);
+
+  /* ---- TOTAL (mobile bar): .m-final-bill se live sync ---- */
   var tNew = document.getElementById('msbTNew');
   var tOld = document.getElementById('msbTOld');
   var tSave = document.getElementById('msbTSave');

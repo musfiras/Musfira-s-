@@ -1,7 +1,6 @@
 ---
 const { p, checkoutUrl } = Astro.props;
 const many = p.images.length > 1;
-const scrollable = p.images.length > 4;
 ---
 <div
   class="m-master-box"
@@ -39,11 +38,9 @@ const scrollable = p.images.length > 4;
                   </button>
                 ))}
               </div>
-              {scrollable && (
-                <button type="button" class="m-thumbs-next" aria-label="More photos">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-                </button>
-              )}
+              <button type="button" class="m-thumbs-next" aria-label="More photos">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+              </button>
             </div>
           )}
         </div>
@@ -85,7 +82,7 @@ const scrollable = p.images.length > 4;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v6
+   PRODUCT PAGE UPDATE v8
    ===================================================== */
 
 /* 1) Maroon line, heading, arrow, dots khatam */
@@ -93,22 +90,28 @@ const scrollable = p.images.length > 4;
 .m-arrow-next { display: none !important; }
 .m-dots-wrapper { display: none !important; }
 
-/* 2) THUMBNAILS */
+/* 2) THUMBNAILS: chhote, har screen par fit (size screen ke hisaab se) */
+.m-master-box { --m-th: clamp(40px, 11vw, 48px); }
+@media (min-width: 481px) and (max-width: 1023px) { .m-master-box { --m-th: 52px; } }
+@media (min-width: 1024px) { .m-master-box { --m-th: 56px; } }
+
 .m-thumbs-wrap {
-  position: relative; box-sizing: border-box;
-  margin: 8px 0 10px; padding: 0 28px 0 2px;
+  position: relative; box-sizing: border-box; width: 100%;
+  margin: 8px 0 10px; padding: 0 2px;
 }
+/* arrow tab hi dikhta hai jab thumbnails zyada hon (script class lagati hai) */
+.m-thumbs-wrap.has-more { padding-right: 28px; }
 .m-thumbs {
   position: relative;
-  display: flex; gap: 7px; overflow-x: auto; scroll-behavior: smooth;
+  display: flex; gap: 6px; overflow-x: auto; scroll-behavior: smooth;
   scrollbar-width: none; -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
 }
 .m-thumbs::-webkit-scrollbar { display: none; }
 .m-thumb {
-  flex: 0 0 calc((100% - 21px) / 4); aspect-ratio: 1 / 1;
+  flex: 0 0 var(--m-th); width: var(--m-th); height: var(--m-th);
   box-sizing: border-box; padding: 2px; margin: 0; background: #fff;
-  border: 1px solid #fbd9e8; border-radius: 9px;
+  border: 1px solid #fbd9e8; border-radius: 8px;
   cursor: pointer; scroll-snap-align: start; overflow: hidden;
   opacity: .7; transition: opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
   -webkit-tap-highlight-color: transparent;
@@ -119,11 +122,12 @@ const scrollable = p.images.length > 4;
 .m-thumbs-next {
   position: absolute; right: 0; top: 50%; transform: translateY(-50%);
   width: 22px; height: 22px; padding: 0; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  display: none; align-items: center; justify-content: center;
   background: #fff; border: 1px solid #fbd9e8; color: #800000;
   box-shadow: 0 2px 8px rgba(128,0,0,.10); cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+.m-thumbs-wrap.has-more .m-thumbs-next { display: flex; }
 .m-thumbs-next svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .m-thumbs-next:active { background: #e6007e; color: #fff; border-color: #e6007e; }
 @media (hover: hover) and (pointer: fine) { .m-thumbs-next:hover { background: #e6007e; color: #fff; border-color: #e6007e; } }
@@ -200,9 +204,7 @@ const scrollable = p.images.length > 4;
 .m-sel-chip .m-sw-dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,.16); flex-shrink: 0; box-sizing: border-box; }
 .m-sel-chip .m-sc-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
 
-/* ---- REMOVE: ab "Remove" text button, box ke BAHIR left side par ----
-   Jab koi remove button maujood ho to saari rows thori chhoti ho kar
-   right side par chali jati hain, aur left gutter mein Remove aa jata hai. */
+/* ---- REMOVE: "Remove" text button, box ke BAHIR left side par ---- */
 .m-config-rows:has(.m-remove-btn) .m-row-item { margin-left: 70px !important; }
 
 .m-config-rows .m-row-item .m-remove-btn {
@@ -290,8 +292,7 @@ const scrollable = p.images.length > 4;
 .m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; transform: scale(.97); }
 .m-pop-right > button.m-add-row-btn { margin: 4px 0 8px !important; }
 
-/* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, cut price right side par.
-      "You save" neeche apni line mein. */
+/* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche */
 .m-master-box .m-final-bill {
   display: flex !important; flex-wrap: wrap;
   align-items: baseline; justify-content: center;
@@ -309,8 +310,11 @@ const scrollable = p.images.length > 4;
 .m-page-mode .m-final-old { font-size: 11px !important; }
 .m-page-mode .m-final-save { font-size: 10.5px !important; }
 
-/* 8) Sticky bar ke peeche content na chhupe */
+/* 8) Sticky bar ke peeche content na chhupe (mobile/tablet). Desktop par bar nahi hai */
 .m-page-mode .m-pop-layout { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
+@media (min-width: 1024px) {
+  .m-page-mode .m-pop-layout { padding-bottom: 28px !important; }
+}
 
 /* 9) MOBILE: description box ki upar wali line aur product name ke beech gap */
 @media (max-width: 1023px) {
@@ -327,10 +331,18 @@ const scrollable = p.images.length > 4;
   /* ================= THUMBNAILS ================= */
   var track = root.querySelector('.m-track');
   var strip = root.querySelector('.m-thumbs');
+  var wrap = root.querySelector('.m-thumbs-wrap');
   var next = root.querySelector('.m-thumbs-next');
   if (track && strip) {
     var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
     var cur0 = 0;
+
+    /* arrow sirf tab, jab thumbnails wrap ki poori chauraai mein na samayen */
+    var checkArrow = function () {
+      if (!wrap) return;
+      var room = wrap.clientWidth - 4;
+      wrap.classList.toggle('has-more', strip.scrollWidth > room + 2);
+    };
 
     var mark = function (i) {
       cur0 = i;
@@ -364,6 +376,11 @@ const scrollable = p.images.length > 4;
         if (i !== cur0 && items[i]) mark(i);
       }, 80);
     }, { passive: true });
+
+    checkArrow();
+    window.addEventListener('load', function () { checkArrow(); setTimeout(checkArrow, 400); });
+    window.addEventListener('resize', checkArrow);
+    window.addEventListener('orientationchange', function () { setTimeout(checkArrow, 250); });
   }
 
   /* ================= BUNDLE BOX: heading ke UPAR ================= */
@@ -376,7 +393,7 @@ const scrollable = p.images.length > 4;
     }
   }
 
-  /* ================= TOTAL: cut price + save, bill ke ANDAR (ek line CSS se hoti hai) ================= */
+  /* ================= TOTAL: cut price + save, bill ke ANDAR ================= */
   function fixBill() {
     var bill = root.querySelector('.m-final-bill');
     if (!bill) return;

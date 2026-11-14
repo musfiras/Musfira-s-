@@ -1,5 +1,131 @@
 ---
-// ReviewTab.astro : floating Reviews pill ab band hai.
-// Reviews ka button ab HelpLinks.astro se aata hai (categories dropdown, footer).
-// Is file ko khaali rakha hai taake Layout mein kuch badalna na pare.
+// ReviewTab.astro : bottom-left par chhota soft "Reviews" pill.
+// Sirf home / category (listing) pages par dikhta hai. Product page (/product/...) aur checkout par
+// khud chhup jata hai, kyunki wahan sticky bar hai.
+// Label / link / delay / on-off src/config/site.js (reviews) se aata hai.
+import { site } from '../config/site.js';
+const r = site.reviews;
 ---
+{r.show && (
+  <a href={r.href} id="m-review-btn" class="m-sticky-btn" data-delay={r.delaySeconds} style="display:none;" aria-label={r.label}>
+    <span class="m-sticky-star" aria-hidden="true">&#9733;</span><span class="m-sticky-label">{r.label}</span>
+  </a>
+)}
+
+<style is:global>
+.m-sticky-btn{
+  position:fixed;
+  left:calc(20px + env(safe-area-inset-left, 0px));
+  bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+  right:auto;top:auto;
+  z-index:9000; /* header aur cart drawer ke neeche */
+
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px 6px 9px;
+  background:linear-gradient(180deg,#ffffff,#fdf1f6);
+  color:var(--orange-maroon,#a3301f);
+  text-decoration:none;
+  font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:none;line-height:1;
+  white-space:nowrap;
+
+  border:1px solid rgba(230,0,126,.25);
+  border-radius:999px;
+  box-shadow:0 2px 10px rgba(156,41,84,.13);
+  cursor:pointer;
+  transition:background .3s ease,color .3s ease,box-shadow .3s ease,border-color .3s ease,opacity .3s ease,transform .2s ease;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.m-sticky-star{color:var(--mfs-pink,#e6007e);font-size:10px;line-height:1;transition:color .3s ease;}
+
+/* TAP AREA: nazar nahi aata, par dabana aasan karta hai */
+.m-sticky-btn::before{content:'';position:absolute;top:-8px;bottom:-8px;left:-8px;right:-8px;}
+
+/* PC / laptop hover */
+@media (hover:hover){
+  .m-sticky-btn:hover{
+    background:var(--mfs-pink,#e6007e);color:#fff;border-color:var(--mfs-pink,#e6007e);
+    box-shadow:0 5px 16px rgba(230,0,126,.28);
+  }
+  .m-sticky-btn:hover .m-sticky-star{color:#fff;}
+}
+/* Phone tap */
+.m-sticky-btn:active{transform:scale(.96);}
+.m-sticky-btn:focus-visible{outline:2px solid var(--mfs-pink,#e6007e);outline-offset:2px;}
+
+/* MOBILE: wohi pill, bas aur thora chhota */
+@media (max-width:768px){
+  .m-sticky-btn{
+    left:calc(16px + env(safe-area-inset-left, 0px));
+    bottom:calc(8px + env(safe-area-inset-bottom, 0px));
+    padding:5px 10px 5px 8px;
+    font-size:9px;letter-spacing:.4px;gap:4px;
+  }
+  .m-sticky-star{font-size:9px;}
+}
+
+/* popup khula ho to chhup jaye */
+.m-sticky-btn.m-hide{opacity:0;visibility:hidden;pointer-events:none;}
+@keyframes mReviewIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.m-sticky-btn.m-in{animation:mReviewIn .7s ease forwards;}
+@media (prefers-reduced-motion:reduce){.m-sticky-btn.m-in{animation:none;}}
+</style>
+
+<script is:inline>
+(function () {
+  var btn = document.getElementById('m-review-btn');
+  if (!btn) return;
+
+  // Product page (sticky bar wala) aur checkout par Reviews pill nahi chahiye
+  if (/^\/(product|check_out|checkout)(\/|$)/i.test(window.location.pathname)) {
+    btn.parentNode.removeChild(btn);
+    return;
+  }
+
+  var delay = (parseFloat(btn.getAttribute('data-delay')) || 3) * 1000;
+  setTimeout(function () {
+    btn.style.display = 'inline-flex';
+    btn.classList.add('m-in');
+  }, delay);
+
+  function isPopupLayer(el) {
+    while (el && el !== document.body && el !== document.documentElement) {
+      var cs = getComputedStyle(el);
+      if (cs.position === 'fixed') {
+        var z = parseInt(cs.zIndex, 10);
+        if (!isNaN(z) && z > 9000) return true;
+      }
+      el = el.parentElement;
+    }
+    return false;
+  }
+  function popupAt(x, y) {
+    var stack = document.elementsFromPoint ? document.elementsFromPoint(x, y) : [document.elementFromPoint(x, y)];
+    for (var i = 0; i < stack.length; i++) {
+      var el = stack[i];
+      if (!el || el === btn || btn.contains(el)) continue;
+      return isPopupLayer(el);
+    }
+    return false;
+  }
+  function check() {
+    if (document.hidden) return;
+    var open = popupAt(window.innerWidth / 2, window.innerHeight / 2);
+    if (!open) {
+      var r = btn.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) open = popupAt(r.left + r.width / 2, r.top + r.height / 2);
+    }
+    if (!open) {
+      var d = document.querySelectorAll('dialog[open],[aria-modal="true"]');
+      for (var i = 0; i < d.length; i++) {
+        if (d[i].getClientRects().length && getComputedStyle(d[i]).visibility !== 'hidden') { open = true; break; }
+      }
+    }
+    btn.classList.toggle('m-hide', open);
+  }
+  setInterval(check, 350);
+  ['click', 'touchend', 'keyup'].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(check, 60); setTimeout(check, 400); }, true);
+  });
+})();
+</script>

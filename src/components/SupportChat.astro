@@ -6,16 +6,17 @@
 // OFFERS: products.js se khud aate hain (jis product par offer2/offer3 ho). Yahan kuch manual nahi.
 //         Link category page par jata hai (categories.js se) aur #id se usi product par scroll hota hai.
 //
-// hideLauncher prop: ab DEFAULT true hai, yani floating chat icon kisi page par nahi dikhta.
-//       Chat dropdown / footer / cart drawer ke "Need help?" button (HelpLinks.astro) se
-//       window.openSupportChat() ke zariye khulta hai.
+// hideLauncher prop: true ho to floating chat icon nahi dikhta (order page par use hota hai).
+//       Product page par icon khud chhup jata hai. Chat "Need help?" button (HelpLinks.astro)
+//       aur product page ke sticky bar ke Chat button se window.openSupportChat() ke zariye bhi khulta hai.
 import { whatsappUrl } from '../config/site.js';
 import { offerProducts, offerDetails } from '../data/products.js';
 import { categories } from '../data/categories.js';
 
-// Floating chat icon HAMESHA band hai (kisi page se prop pass ho tab bhi nahi dikhta).
-// Chat sirf "Need help?" button (HelpLinks.astro) se khulta hai.
-const hideLauncher = true;
+// Floating chat icon: home / category pages par dikhta hai.
+// Product page (/product/...) par khud chhup jata hai (wahan sticky bar hai), script neeche.
+// hideLauncher={true} dene par kisi bhi page par nahi dikhta (order page par aisa hi hai).
+const { hideLauncher = false } = Astro.props;
 
 let wa = '';
 try { wa = whatsappUrl() || ''; } catch (e) { wa = ''; }
@@ -411,8 +412,8 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
   .msc-chipwrap{ max-height:48%; }
 }
 
-/* ───── Launcher hamesha chhupa hua ───── */
-.msc-root .msc-launcher, .msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
+/* ───── Launcher chhupa hua (order page / product page) ───── */
+.msc-root.msc-no-launcher .msc-launcher{ display:none !important; }
 .msc-root.msc-no-launcher .msc-panel{
   bottom:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
   height:min(640px, calc(100vh - 32px));
@@ -439,6 +440,11 @@ html.msc-lock, html.msc-lock body{ overflow:hidden !important; }
 (function () {
   var root = document.getElementById('mscRoot');
   if (!root) return;
+
+  // Product page (sticky bar wala) aur checkout par floating icon nahi chahiye
+  if (/^\/(product|check_out|checkout)(\/|$)/i.test(window.location.pathname)) {
+    root.classList.add('msc-no-launcher');
+  }
 
   var launcher = document.getElementById('mscLauncher');
   var panel = document.getElementById('mscPanel');

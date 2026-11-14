@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
 import BagsCategoryBanner from '../components/BagsCategoryBanner.astro';
 import FashionCategoryBanner from '../components/FashionCategoryBanner.astro';
+import MusfirasChoiceCategoryBanner from '../components/MusfirasChoiceCategoryBanner.astro';
 import { productsFor, CHECKOUT_URL } from '../data/products.js';
 import { categories } from '../data/categories.js';
 
@@ -17,6 +18,7 @@ const list = productsFor(c.tag);
 const bannerFor = {
   bags_carrying: BagsCategoryBanner,
   fashion_accessories: FashionCategoryBanner,
+  musfiras_choice: MusfirasChoiceCategoryBanner,
 };
 const Banner = bannerFor[c.slug];
 ---

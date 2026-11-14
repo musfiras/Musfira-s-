@@ -51,5 +51,12 @@ export const categories = [
     title: "Musfira's Choice",
     tagline: 'Handpicked favourites, chosen to elevate your style.',
     text: "Our top picks across every category, picked by us for you.",
+    banner: {
+      image: '/lbnr.jpeg',
+      lineBlack: "Musfira's",
+      lineAccent: 'Choice',
+      tagline: 'Our most-loved finds, from bags to accessories, thoughtfully curated to make every day feel special',
+      taglineHref: '/musfiras_choice/',
+    },
   },
 ];

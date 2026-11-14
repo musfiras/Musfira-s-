@@ -127,9 +127,9 @@ export const productBySlug = (slug) => products.find((p) => p.slug === slug);
 const STOCK = { 'Classic Black': 6, 'Warm Beige': 7 };
 
 add({ id: 'PROD_30', name: 'Celeste Crossbody Sling', slug: 'celeste-crossbody-sling', price: 50, offer2: 95, offer3: 140, stock: STOCK, placements: ['shop-all', 'home'] });
-add({ id: 'PROD_31', name: 'Sample Product 2', price: 50, stock: STOCK, placements: ['shop-all', 'home', 'bags'] });
-add({ id: 'PROD_32', name: 'Sample Product 3', price: 50, offer2: 95, stock: STOCK, placements: ['shop-all', 'home', 'bags'] });
-add({ id: 'PROD_33', name: 'Sample Product 4', price: 50, stock: STOCK, placements: ['shop-all', 'home', 'fashion'] });
+
+
+
 
 // ============================================================================
 //  TEMPLATE (ye line hamesha sab se neeche rahe, isko copy karo, "// " hatao,

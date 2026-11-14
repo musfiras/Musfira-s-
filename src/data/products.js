@@ -127,8 +127,7 @@ export const productBySlug = (slug) => products.find((p) => p.slug === slug);
 const STOCK = { 'Classic Black': 6, 'Warm Beige': 7 };
 
 add({ id: 'PROD_30', name: 'Celeste Crossbody Sling', slug: 'celeste-crossbody-sling', price: 50, offer2: 95, offer3: 140, stock: STOCK, placements: ['shop-all', 'home'] });
-add({ id: 'PROD_35', name: 'ladies handbag daily use', price: 50, oldPrice: 100, offer2: , offer3: , stock: { 'Classic Black': 10, 'Warm Beige': 15, 'Blush Pink': 20 }, images: ['/handbag.jpeg', '/handbag.jpeg', '/handbagg.jpeg', '/img4.jpeg'], placements: ['shop-all', 'home', 'bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });
-
+add({ id: 'PROD_35', name: 'ladies handbag daily use', price: 50, oldPrice: 100, stock: { 'Classic Black': 10, 'Warm Beige': 15, 'Blush Pink': 20 }, images: ['/handbag.jpeg', '/handbag.jpeg', '/handbagg.jpeg', '/img4.jpeg'], placements: ['shop-all', 'home', 'bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });
 
 
 // ============================================================================

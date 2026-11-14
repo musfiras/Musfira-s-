@@ -1,7 +1,9 @@
 ---
 /* CartDrawer.astro
    Layout me SIRF EK BAAR lagana hai. Har page par khud chalega.
-   Sab kuch is file me hai: HTML + CSS + Script (live stock check bhi). */
+   Sab kuch is file me hai: HTML + CSS + Script (live stock check bhi).
+   "Need help?" button HelpLinks.astro se aata hai (checkout button ke neeche). */
+import HelpLinks from './HelpLinks.astro';
 ---
 
 <!-- CART Drawer (side drawer, right se) -->
@@ -26,6 +28,7 @@
         <button type="button" class="m-proceed-btn" onclick="proceedToCheckout()">
             PROCEED TO CHECKOUT →
         </button>
+        <HelpLinks variant="drawer" reviews={false} />
     </div>
 </div>
 
@@ -199,6 +202,10 @@
         .m-proceed-btn:hover { background: linear-gradient(135deg, #e6007e, #ff4fa3); transform: translateY(-2px); box-shadow: 0 14px 28px rgba(230, 0, 126, 0.35); }
     }
 
+    /* Need help? (HelpLinks): checkout button ke neeche, beech mein, soft maroon, hover par pink */
+    .m-drawer-footer .mhl-drawer { margin-top: 8px; }
+    .m-drawer-footer .mhl-drawer .mhl-help { font-size: 11.5px; padding: 8px 14px; }
+
     /* Drawer khula ho to floating WhatsApp button chup */
     body.m-cart-locked a[href*="wa.me"],
     body.m-cart-locked a[href*="whatsapp.com"],
@@ -217,6 +224,7 @@
     @media (max-height: 480px) and (orientation: landscape) {
         .m-drawer-footer { padding-top: 10px; padding-bottom: 10px; }
         .m-cart-empty { padding: 20px; }
+        .m-drawer-footer .mhl-drawer { margin-top: 2px; }
     }
     @media (prefers-reduced-motion: reduce) {
         .m-cart-drawer, .m-cart-overlay, .m-proceed-btn, .m-drawer-close { transition-duration: .01s !important; animation: none !important; }

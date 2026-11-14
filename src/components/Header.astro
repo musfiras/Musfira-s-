@@ -4,7 +4,9 @@
 // <script is:inline> -> JS jaisi hai waisi rehti hai (onclick="openNav()" kaam karta rahe)
 // Google Fonts (Bodoni Moda + Montserrat) ab Layout.astro ke <head> mein hain.
 // openDrawer() aur #m-global-count cart script se aate hain (wo alag step mein).
+// HelpLinks: categories dropdown aur mobile drawer ke end mein Reviews + Need help?
 import { site } from '../config/site.js';
+import HelpLinks from './HelpLinks.astro';
 ---
 <div class="header-section">
     <nav class="nav-container">
@@ -25,6 +27,7 @@ import { site } from '../config/site.js';
                         {site.collections.map((c) => (
                             <a href={c.href}><span>{c.label}</span></a>
                         ))}
+                        <HelpLinks variant="menu" />
                         <div class="drawer-foot dropdown-foot"><i></i><b>◆</b><i></i></div>
                         <button type="button" class="dropdown-close" onclick="closeDropdown(event)" aria-label="Close menu">✕</button>
                     </div>
@@ -88,6 +91,7 @@ import { site } from '../config/site.js';
         {site.collections.map((c) => (
             <a href={c.href} class="pink-mob"><span>{c.label}</span></a>
         ))}
+        <HelpLinks variant="menu" />
     </div>
     <div class="drawer-foot"><i></i><b>◆</b><i></i></div>
 </div>
@@ -229,6 +233,30 @@ import { site } from '../config/site.js';
         .dropdown-content a:hover span::before { color: var(--brand-pink); }
     }
 
+    /* ══════ Reviews + Need help? (dropdown ke end mein) ══════
+       Reviews: category rows jaisa, par extra bold aur pink. Need help?: soft maroon, hover par pink. */
+    .dropdown-content .mhl.mhl-menu {
+        align-items: stretch;
+        margin: 8px 0 0; padding: 8px 0 0;
+        border-top: 1px solid var(--pink-line);
+    }
+    .dropdown-content a.mhl-review {
+        width: auto;
+        color: var(--brand-pink);
+        font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase;
+        padding: 13px 14px;
+    }
+    .dropdown-content a.mhl-review:active { padding-left: 20px; }
+    @media (hover: hover) {
+        .dropdown-content a.mhl-review:hover { transform: none; padding-left: 20px; }
+    }
+    .dropdown-content .mhl.mhl-menu .mhl-help {
+        padding: 9px 14px; font-size: 11px; font-weight: 600; letter-spacing: .5px;
+    }
+    @media (hover: hover) {
+        .dropdown-content .mhl.mhl-menu .mhl-help:hover { transform: none; }
+    }
+
     /* stagger: items glide in one after another each time the menu opens */
     @keyframes mItemIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
     .dropdown.open .dropdown-content > * { animation: mItemIn .55s var(--ease-elite) backwards; }
@@ -335,6 +363,18 @@ import { site } from '../config/site.js';
 
     .collections-heading-mob { margin: 14px 4px 8px; }
 
+    /* Reviews + Need help? (mobile drawer ke end mein) */
+    .mobile-side-drawer .mhl.mhl-menu {
+        margin: 8px 0 0; padding: 8px 14px 0;
+        border-top: 1px solid var(--pink-line);
+    }
+    .mobile-side-drawer .mhl.mhl-menu .mhl-review {
+        padding: 12px 0 8px; font-size: 13px; font-weight: 900; letter-spacing: 1.2px;
+    }
+    .mobile-side-drawer .mhl.mhl-menu .mhl-help {
+        padding: 10px 0; font-size: 12px;
+    }
+
     .drawer-foot { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 26px; color: var(--brand-pink); opacity: .7; }
     .dropdown-foot { margin-top: 16px; margin-bottom: 2px; }
     .drawer-foot i { width: 44px; height: 1px; background: var(--brand-pink); opacity: .5; }
@@ -349,7 +389,8 @@ import { site } from '../config/site.js';
     .mobile-side-drawer.active .drawer-links > *:nth-child(4) { animation-delay: .30s; }
     .mobile-side-drawer.active .drawer-links > *:nth-child(5) { animation-delay: .36s; }
     .mobile-side-drawer.active .drawer-links > *:nth-child(6) { animation-delay: .42s; }
-    .mobile-side-drawer.active .drawer-foot { animation-delay: .5s; }
+    .mobile-side-drawer.active .drawer-links > *:nth-child(7) { animation-delay: .48s; }
+    .mobile-side-drawer.active .drawer-foot { animation-delay: .54s; }
 
     .drawer-cat-title { font-family: 'Montserrat'; font-size: 10px; color: #999; letter-spacing: 2px; font-weight: 700; }
 

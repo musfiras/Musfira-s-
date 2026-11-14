@@ -1,0 +1,101 @@
+---
+// HelpLinks.astro : "Reviews" (extra bold pink text button) + "Need help?" (soft maroon text button).
+// Teen jagah use hota hai:
+//   <HelpLinks variant="menu" />                 -> categories dropdown ke end mein
+//   <HelpLinks variant="footer" />               -> footer mein Help & Info ke neeche
+//   <HelpLinks variant="drawer" reviews={false} /> -> cart drawer mein (sirf Need help?)
+// Reviews ka label / link src/config/site.js (reviews) se aata hai. "Need help?" chat panel kholta hai.
+import { site } from '../config/site.js';
+
+const { variant = 'menu', reviews = true } = Astro.props;
+const r = site.reviews || {};
+---
+<div class={`mhl mhl-${variant}`}>
+  {reviews && r.show && (
+    <a href={r.href} class="mhl-review">{r.label}</a>
+  )}
+  <button type="button" class="mhl-help" data-open-chat>Need help?</button>
+</div>
+
+<style is:global>
+.mhl{
+  display:flex; flex-direction:column; align-items:flex-start; gap:0;
+}
+.mhl-review, .mhl-help{
+  font-family:'Montserrat',sans-serif;
+  background:none; border:0; margin:0; text-align:left; text-decoration:none;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  transition:color .25s ease, transform .3s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Reviews: sab links se zyada bold, pink */
+.mhl-review{
+  display:block; width:fit-content;
+  padding:8px 0;
+  font-size:13.5px; font-weight:900; letter-spacing:.6px; line-height:1.3;
+  color:#e6007e;
+}
+.mhl-review:active{ color:var(--orange-maroon,#a3301f); }
+@media (hover:hover){
+  .mhl-review:hover{ color:var(--orange-maroon,#a3301f); transform:translateX(5px); }
+}
+
+/* Need help?: soft maroon, hover par pink */
+.mhl-help{
+  padding:6px 0;
+  font-size:11.5px; font-weight:600; letter-spacing:.4px; line-height:1.3;
+  color:var(--orange-maroon,#a3301f); opacity:.9;
+}
+.mhl-help:active{ color:#e6007e; opacity:1; }
+@media (hover:hover){
+  .mhl-help:hover{ color:#e6007e; opacity:1; transform:translateX(5px); }
+}
+.mhl-review:focus-visible, .mhl-help:focus-visible{ outline:2px solid #e6007e; outline-offset:3px; border-radius:4px; }
+
+/* Touch devices: tap aasan */
+@media (pointer:coarse){
+  .mhl-review{ padding:10px 0; }
+  .mhl-help{ padding:9px 0; font-size:12px; }
+}
+
+/* ───── Dropdown: categories ke end mein, halki line ke neeche ───── */
+.mhl-menu{
+  margin-top:8px; padding:10px 20px 10px;
+  border-top:1px solid #f4dde9;
+}
+.mhl-menu .mhl-review{ font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase; }
+
+/* ───── Footer: Help & Info ke links jaisa ───── */
+.mhl-footer{ margin-top:2px; }
+
+/* ───── Cart drawer: sirf Need help?, beech mein ───── */
+.mhl-drawer{ align-items:center; margin-top:10px; }
+.mhl-drawer .mhl-help{ padding:6px 12px; text-align:center; }
+@media (hover:hover){
+  .mhl-drawer .mhl-help:hover{ transform:none; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .mhl-review, .mhl-help{ transition:none; }
+}
+</style>
+
+<script is:inline>
+(function () {
+  // Component kai jagah lagta hai, is liye listener sirf ek baar
+  if (window.__mhlBound) return;
+  window.__mhlBound = true;
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-open-chat]');
+    if (!b) return;
+    e.preventDefault();
+    // Cart drawer aur mobile menu chat se upar hain, is liye pehle unhein band karo
+    if (typeof window.closeDrawer === 'function') { try { window.closeDrawer(); } catch (err) {} }
+    if (typeof window.closeNav === 'function') { try { window.closeNav(); } catch (err) {} }
+    if (typeof window.closeDropdown === 'function') { try { window.closeDropdown(); } catch (err) {} }
+    if (typeof window.openSupportChat === 'function') {
+      setTimeout(window.openSupportChat, 60);
+    }
+  });
+})();
+</script>

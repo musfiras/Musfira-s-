@@ -2,8 +2,10 @@
 // Footer.astro : poora footer ek hi file mein.
 // WhatsApp button, floating WhatsApp, number aur email footer se hata diye gaye hain (ye sirf Contact page par rahenge).
 // Links aur social src/config/site.js se aate hain, yahan kuch badalna nahi.
+// Reviews + Need help? buttons HelpLinks.astro se aate hain (Help & Info ke neeche).
 // Colour variables ka naam --mfs-... hai, taake header ke colours se takrao na ho.
 import { site } from '../config/site.js';
+import HelpLinks from './HelpLinks.astro';
 
 const icons: Record<string, string> = {
   facebook: `<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>`,
@@ -79,6 +81,7 @@ const year = new Date().getFullYear();
         {site.pages.map((p) => (
           <a href={p.href} class="mfs-link">{p.label}</a>
         ))}
+        <HelpLinks variant="footer" />
       </nav>
 
     </div>
@@ -228,6 +231,11 @@ const year = new Date().getFullYear();
 @media (hover:hover){
   .mfs-link:hover{ color:var(--mfs-pink); transform:translateX(5px); }
 }
+
+/* Footer ke andar Reviews + Need help? : links ke barabar, Reviews extra bold pink */
+.mfs-footer .mhl-footer{ margin-top:2px; }
+.mfs-footer .mhl-footer .mhl-review{ font-size:13.5px; padding:7px 0; }
+.mfs-footer .mhl-footer .mhl-help{ font-size:12px; padding:5px 0; }
 
 /* ───── 3. Bottom ───── */
 .mfs-bottom{ border-top:1px solid var(--mfs-line); padding-top:26px; text-align:center; }

@@ -85,7 +85,7 @@ const scrollable = p.images.length > 4;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v5
+   PRODUCT PAGE UPDATE v6
    ===================================================== */
 
 /* 1) Maroon line, heading, arrow, dots khatam */
@@ -131,15 +131,29 @@ const scrollable = p.images.length > 4;
   .m-thumbs-wrap { max-width: min(100%, 79vh); margin-left: auto; margin-right: auto; }
 }
 
-/* 3) BUNDLE OFFER: sab se upar, patla, soft */
-.m-offer-box { padding: 5px 8px !important; margin-top: 18px !important; border-color: #fdeaf3 !important; border-radius: 10px !important; }
+/* 3) BUNDLE OFFER: sab se upar, extra patla, elite look */
+.m-offer-box {
+  padding: 4px 7px 5px !important;
+  margin-top: 18px !important;
+  border: 1px solid #f3d3e2 !important;
+  border-radius: 9px !important;
+  background: linear-gradient(180deg, #fffafd 0%, #ffffff 100%) !important;
+  box-shadow: 0 6px 16px -14px rgba(128, 0, 0, 0.35) !important;
+}
 @media (max-width: 1023px) { .m-offer-box { margin-top: 26px !important; } }
-.m-offer-title { font-size: 9.5px !important; letter-spacing: 1.2px !important; margin-bottom: 4px !important; }
+.m-offer-title {
+  font-size: 8.5px !important; letter-spacing: 2.4px !important;
+  margin: 0 0 3px !important; line-height: 1.2 !important;
+  font-weight: 700 !important;
+}
 .m-offer-tiers { gap: 5px !important; }
-.m-offer-tier { padding: 3px 4px !important; border-radius: 8px !important; }
-.m-ot-n { font-size: 9px !important; }
-.m-ot-new { font-size: 12.5px !important; margin-top: 0 !important; }
-.m-ot-old { font-size: 9px !important; }
+.m-offer-tier {
+  padding: 2px 4px !important; border-radius: 7px !important;
+  line-height: 1.12 !important;
+}
+.m-ot-n { font-size: 8px !important; letter-spacing: .9px !important; line-height: 1.15 !important; }
+.m-ot-new { font-size: 11.5px !important; margin-top: 0 !important; line-height: 1.15 !important; }
+.m-ot-old { font-size: 8px !important; line-height: 1.1 !important; }
 .m-offer-hint { font-size: 11px !important; margin: 3px 0 6px !important; }
 
 /* 4) COLOR PALETTE: sare colors ek line mein */
@@ -162,6 +176,7 @@ const scrollable = p.images.length > 4;
 
 /* 5) SELECTED ROW: [Add Color] [selected color] ........ [qty] */
 .m-config-rows .m-row-item {
+  position: relative !important; overflow: visible !important;
   display: flex !important; flex-wrap: nowrap !important; align-items: center !important;
   gap: 8px !important;
   padding: 7px 10px !important; margin-bottom: 8px !important;
@@ -185,67 +200,75 @@ const scrollable = p.images.length > 4;
 .m-sel-chip .m-sw-dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,.16); flex-shrink: 0; box-sizing: border-box; }
 .m-sel-chip .m-sc-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
 
-/* REMOVE (✕): box ki upar wali border par, right kone mein, placeholder jaisa.
-   Qty se door, is liye galti se press nahi hota. Tap area bara (::after). */
-.m-config-rows .m-row-item:has(.m-remove-btn) { margin-top: 16px !important; }
+/* ---- REMOVE: ab "Remove" text button, box ke BAHIR left side par ----
+   Jab koi remove button maujood ho to saari rows thori chhoti ho kar
+   right side par chali jati hain, aur left gutter mein Remove aa jata hai. */
+.m-config-rows:has(.m-remove-btn) .m-row-item { margin-left: 70px !important; }
+
 .m-config-rows .m-row-item .m-remove-btn {
-  position: absolute !important; top: -10px !important; right: 14px !important; left: auto !important; bottom: auto !important;
-  transform: none !important; order: 9;
-  width: 20px; height: 20px; padding: 0 !important; margin: 0 !important;
+  position: absolute !important;
+  top: 50% !important; left: -66px !important; right: auto !important; bottom: auto !important;
+  transform: translateY(-50%) !important; order: 9;
+  width: 58px; height: 26px; padding: 0 !important; margin: 0 !important;
   font-size: 0 !important; line-height: 0; -webkit-text-stroke: 0 !important;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid #f3c9dc !important; border-radius: 50% !important;
+  border: 1px solid #f3c9dc !important; border-radius: 8px !important;
   background: #fff !important; color: #a3301f !important; cursor: pointer;
-  box-shadow: 0 2px 6px -2px rgba(128, 0, 0, 0.25) !important;
+  box-shadow: none !important;
+  transition: background .25s ease, color .25s ease, border-color .25s ease;
   z-index: 3;
+  -webkit-tap-highlight-color: transparent;
 }
 .m-config-rows .m-row-item .m-remove-btn::before {
-  content: "\2715"; font-size: 9px; font-weight: 700; line-height: 1;
+  content: "Remove"; font-size: 10px; font-weight: 800; letter-spacing: .3px; line-height: 1;
+  font-family: 'Segoe UI', sans-serif;
 }
-.m-config-rows .m-row-item .m-remove-btn::after { content: ""; position: absolute; inset: -7px; }
+.m-config-rows .m-row-item .m-remove-btn::after { content: ""; position: absolute; inset: -6px; }
 @media (hover: hover) and (pointer: fine) {
   .m-config-rows .m-row-item .m-remove-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
 }
 .m-config-rows .m-row-item .m-remove-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
-/* "color already selected" wali chhoti pill ab left kone par, taake cross se na takraye */
-.m-config-rows .m-row-item .m-pink-popup { right: auto !important; left: 12px !important; }
 
 /* QTY BOX: square type, soft, patla */
 .m-qty-box {
-  border-radius: 9px !important; height: 34px !important; width: 118px !important;
+  border-radius: 9px !important; height: 34px !important; width: 112px !important;
   border-color: #f6dce8 !important; box-shadow: none !important; flex: 0 0 auto;
 }
-.m-qty-box button { min-width: 36px !important; font-size: 19px !important; }
-.m-qty-box input { width: 46px !important; }
+.m-qty-box button { min-width: 34px !important; font-size: 19px !important; }
+.m-qty-box input { width: 44px !important; }
 
 /* Tablet */
 @media (min-width: 481px) and (max-width: 1023px) {
   .m-config-rows .m-row-item { padding: 8px 12px !important; }
   .m-config-rows .m-row-item .m-qty-box { margin-right: 8px !important; }
-  .m-sel-chip .m-sc-name { max-width: 160px; }
+  .m-sel-chip .m-sc-name { max-width: 130px; }
 }
 /* Laptop / PC */
 @media (min-width: 1024px) {
   .m-config-rows .m-row-item { padding: 8px 12px !important; }
   .m-config-rows .m-row-item .m-qty-box { margin-right: 8px !important; }
-  .m-config-rows .m-row-item .m-remove-btn { right: 16px !important; }
-  .m-sel-chip .m-sc-name { max-width: 150px; }
+  .m-sel-chip .m-sc-name { max-width: 120px; }
 }
 /* Mobile / iPhone */
 @media (max-width: 480px) {
+  .m-config-rows:has(.m-remove-btn) .m-row-item { margin-left: 56px !important; }
+  .m-config-rows .m-row-item .m-remove-btn { left: -54px !important; width: 49px; height: 25px; }
+  .m-config-rows .m-row-item .m-remove-btn::before { font-size: 9px; letter-spacing: .2px; }
   .m-config-rows .m-row-item { gap: 6px !important; padding: 7px 8px !important; }
-  .m-config-rows .m-row-item .m-qty-box { margin-right: 5px !important; }
-  .m-qty-box { width: 102px !important; height: 33px !important; }
-  .m-qty-box button { min-width: 32px !important; }
-  .m-qty-box input { width: 38px !important; }
-  .m-sel-chip { padding: 4px 8px 4px 6px; font-size: 10.5px; }
-  .m-sel-chip .m-sc-name { max-width: 70px; }
-  .m-config-rows .m-row-item .m-remove-btn { right: 12px !important; }
+  .m-config-rows .m-row-item .m-qty-box { margin-right: 4px !important; }
+  .m-qty-box { width: 92px !important; height: 33px !important; }
+  .m-qty-box button { min-width: 29px !important; }
+  .m-qty-box input { width: 34px !important; }
+  .m-sel-chip { padding: 4px 7px 4px 6px; font-size: 10.5px; }
+  .m-sel-chip .m-sc-name { max-width: 52px; }
+  .m-config-rows .m-row-item .m-add-row-btn { padding: 0 8px !important; font-size: 9px !important; }
 }
 @media (max-width: 360px) {
-  .m-qty-box { width: 92px !important; }
-  .m-qty-box input { width: 32px !important; }
-  .m-sel-chip .m-sc-name { max-width: 54px; }
+  .m-config-rows:has(.m-remove-btn) .m-row-item { margin-left: 52px !important; }
+  .m-config-rows .m-row-item .m-remove-btn { left: -50px !important; width: 46px; }
+  .m-qty-box { width: 86px !important; }
+  .m-qty-box input { width: 30px !important; }
+  .m-sel-chip .m-sc-name { max-width: 40px; }
 }
 
 /* 6) ADD COLOR: orangy maroon, patla, hover par pink (pehli row mein, left par) */
@@ -267,13 +290,33 @@ const scrollable = p.images.length > 4;
 .m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; transform: scale(.97); }
 .m-pop-right > button.m-add-row-btn { margin: 4px 0 8px !important; }
 
-/* 7) Page wala total: chhota aur soft (asli total sticky bar mein bhi dikhta hai) */
+/* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, cut price right side par.
+      "You save" neeche apni line mein. */
+.m-master-box .m-final-bill {
+  display: flex !important; flex-wrap: wrap;
+  align-items: baseline; justify-content: center;
+  column-gap: 0; row-gap: 2px;
+}
+.m-master-box .m-final-bill > span:not(.m-final-old):not(.m-final-save) { margin-left: .28em; }
+.m-master-box .m-final-bill .m-final-old {
+  order: 2; display: inline-block !important; width: auto !important;
+  margin: 0 0 0 10px !important; align-self: baseline;
+}
+.m-master-box .m-final-bill .m-final-save {
+  order: 3; flex: 0 0 100%; text-align: center; margin: 0 !important;
+}
 .m-page-mode .m-final-bill { font-size: 19px !important; margin: 8px 0 12px !important; letter-spacing: 0 !important; }
 .m-page-mode .m-final-old { font-size: 11px !important; }
 .m-page-mode .m-final-save { font-size: 10.5px !important; }
 
 /* 8) Sticky bar ke peeche content na chhupe */
 .m-page-mode .m-pop-layout { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
+
+/* 9) MOBILE: description box ki upar wali line aur product name ke beech gap */
+@media (max-width: 1023px) {
+  .m-pop-description { padding-top: 18px !important; }
+  .m-pop-description > :first-child { margin-top: 12px !important; }
+}
 </style>
 
 <script is:inline>
@@ -332,10 +375,22 @@ const scrollable = p.images.length > 4;
       head.parentNode.insertBefore(box, head);
     }
   }
+
+  /* ================= TOTAL: cut price + save, bill ke ANDAR (ek line CSS se hoti hai) ================= */
+  function fixBill() {
+    var bill = root.querySelector('.m-final-bill');
+    if (!bill) return;
+    var old = root.querySelector('.m-final-old');
+    var save = root.querySelector('.m-final-save');
+    if (old && !bill.contains(old)) bill.appendChild(old);
+    if (save && !bill.contains(save)) bill.appendChild(save);
+  }
+
   if (right) {
-    new MutationObserver(placeOffer).observe(right, { childList: true, subtree: true });
+    new MutationObserver(function () { placeOffer(); fixBill(); }).observe(right, { childList: true, subtree: true });
   }
   placeOffer();
+  fixBill();
 
   /* ================= COLOR PALETTE + SELECTED ROW ================= */
   var cfg = root.querySelector('.m-config-rows');
@@ -420,12 +475,12 @@ const scrollable = p.images.length > 4;
   var raf = 0;
   function queue() {
     if (raf) return;
-    raf = requestAnimationFrame(function () { raf = 0; sync(); });
+    raf = requestAnimationFrame(function () { raf = 0; sync(); fixBill(); });
   }
 
   new MutationObserver(queue).observe(cfg, { childList: true, subtree: true, attributes: true, characterData: true });
   cfg.addEventListener('change', queue);
-  window.addEventListener('load', function () { queue(); placeOffer(); setTimeout(function () { queue(); placeOffer(); }, 500); });
+  window.addEventListener('load', function () { queue(); placeOffer(); fixBill(); setTimeout(function () { queue(); placeOffer(); fixBill(); }, 500); });
   queue();
 })();
 </script>

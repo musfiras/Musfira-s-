@@ -4,6 +4,7 @@
 // Header/footer links build ke waqt live site (/store) se khud uthaye jate hain.
 // Jo page site par hai wo aayega, jo nahi hai wo nahi aayega. Naam badlein to
 // yahan kuch change nahi karna, bas agla deploy naya naam utha lega.
+import Analytics from '../components/Analytics.astro';
 
 const SITE = "https://www.musfiras.com";
 
@@ -80,6 +81,9 @@ const year = new Date().getFullYear();
       href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400..900&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Google Analytics -->
+    <Analytics />
 
     <!-- Meta Pixel / Google Ads purchase conversion code yahan paste karein -->
   </head>

@@ -3,6 +3,7 @@
 // Yahan koi site Layout use NAHI hota, is liye store ka header / footer / links / cart yahan auto nahi aate.
 // Sirf SupportChat component use hota hai (floating icon ke baghair), "Need help?" text button se khulta hai.
 import SupportChat from '../components/SupportChat.astro';
+import Analytics from '../components/Analytics.astro';
 ---
 <!doctype html>
 <html lang="en">
@@ -15,6 +16,9 @@ import SupportChat from '../components/SupportChat.astro';
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Google Analytics -->
+  <Analytics />
 </head>
 <body>
 

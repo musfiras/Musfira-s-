@@ -5,6 +5,7 @@ import ProductCardScripts from '../components/ProductCardScripts.astro';
 import ReviewTab from '../components/ReviewTab.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 import SupportChat from '../components/SupportChat.astro';
+import Analytics from '../components/Analytics.astro';
 import storeStyles from '../raw/store-styles.html?raw';
 import storeExtra from '../raw/store-extra.html?raw';
 import storeScripts from '../raw/store-scripts.html?raw';
@@ -59,6 +60,10 @@ const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
 
     {shop && <Fragment set:html={storeStyles} />}
     {shop && <Fragment set:html={storeExtra} />}
+
+    <!-- Google Analytics: Layout use karne wale har page par auto -->
+    <Analytics />
+
     <slot name="head" />
   </head>
   <body class={pageClass}>

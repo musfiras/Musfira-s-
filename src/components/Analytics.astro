@@ -1,0 +1,20 @@
+---
+// Google Analytics (GA4). Sirf yahan ek jagah, baqi pages sirf is component ko include karte hain.
+---
+<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-KZNM20XG22"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-KZNM20XG22');
+
+  /* Product page par product ka naam alag event mein bhejo */
+  window.addEventListener('load', function () {
+    var box = document.querySelector('.m-product-page-wrap .m-master-box');
+    if (box && box.getAttribute('data-pname')) {
+      gtag('event', 'view_item', {
+        items: [{ item_id: box.id, item_name: box.getAttribute('data-pname') }]
+      });
+    }
+  });
+</script>

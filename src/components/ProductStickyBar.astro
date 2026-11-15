@@ -2,7 +2,7 @@
 // Phone / tablet (975px se chhoti screen): neeche sticky bar (Home | Chat | Add to Cart | Buy it now) + upar patli total line.
 //   Landscape mein bar poori width leti hai (left/right gap nahi).
 // Laptop / PC aur mobile ka "Desktop site" mode (975px+): bar nahi,
-//   Add to Cart + Buy it now alag buttons content ke saath Total ke neeche.
+//   Add to Cart + Buy it now alag buttons content ke saath Total ke neeche (hover par halke upar + slow pink).
 // Total .m-final-bill se live sync hota hai (koi nayi calculation nahi, sirf wahi number dikhata hai).
 const { id } = Astro.props;
 ---
@@ -62,8 +62,12 @@ const { id } = Astro.props;
     padding-right: env(safe-area-inset-right, 0px);
     background: #fff;
     border-top: none;
-    /* strong grey shadow: bar page se alag nazar aaye */
-    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.22), 0 -3px 8px rgba(0, 0, 0, 0.14);
+    /* TIGHT "uthi hui" shadow: phailti nahi, kirnon jaisi nahi.
+       1) bareek crisp edge  2) bar ke bilkul qareeb tight shadow  3) halki si lift (negative spread se side mein nahi phailti) */
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.07),
+      0 -3px 6px -1px rgba(0, 0, 0, 0.16),
+      0 -9px 16px -8px rgba(0, 0, 0, 0.24);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
 
@@ -141,20 +145,36 @@ const { id } = Astro.props;
 
     .msb-dsk {
       display: flex; gap: 12px; align-items: stretch;
-      width: 100%; margin: 6px 0 14px; box-sizing: border-box;
+      width: 100%; margin: 8px 0 14px; box-sizing: border-box;
       font-family: 'Segoe UI', 'Montserrat', sans-serif;
     }
     .msb-d-cart, .msb-d-buy {
       flex: 1; min-width: 0; height: 48px; border: none; cursor: pointer; color: #fff;
       font-family: inherit; font-size: clamp(13px, 1.1vw, 15px); font-weight: 700; letter-spacing: .3px;
-      white-space: nowrap; transition: background .25s ease;
+      white-space: nowrap;
       clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
       padding: 0 12px 0 20px;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+      /* slow pink + halka sa upar uthna */
+      transition: background-color .55s ease, transform .45s cubic-bezier(.22, .61, .36, 1);
+      will-change: transform;
     }
-    .msb-d-cart { background: #800000; }
-    .msb-d-buy  { background: #a3301f; }
-    .msb-d-cart:hover, .msb-d-buy:hover { background: #e6007e; }
-    .msb-d-cart:active, .msb-d-buy:active { background: #e6007e; }
+    .msb-d-cart { background-color: #800000; }
+    .msb-d-buy  { background-color: #a3301f; }
+
+    /* mouse hover aur touch (dabate waqt) dono par: thora upar + pink */
+    .msb-d-cart:hover, .msb-d-buy:hover,
+    .msb-d-cart:active, .msb-d-buy:active,
+    .msb-d-cart:focus-visible, .msb-d-buy:focus-visible {
+      background-color: #e6007e;
+      transform: translateY(-3px);
+      outline: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .msb-d-cart, .msb-d-buy { transition: background-color .3s ease; }
+    .msb-d-cart:hover, .msb-d-buy:hover,
+    .msb-d-cart:active, .msb-d-buy:active { transform: none; }
   }
 
   /* Product page: phone / tablet par bar ke peeche content na chhupe, purane do buttons chhupe

@@ -43,14 +43,15 @@ const { id } = Astro.props;
 </div>
 
 <style is:global>
-  /* Bar ki height yahan se badlein (baqi sab khud adjust ho jata hai) */
+  /* Bar ki height yahan se badlein (baqi sab khud adjust ho jata hai)
+     --msb-total = upar ki patli white patti, --msb-row = buttons wali row */
   :root {
-    --msb-total: 26px;
+    --msb-total: 22px;
     --msb-row: 50px;
   }
   /* Landscape mein chhoti height wale phone par bar thori patli, taake screen na ghere */
   @media (orientation: landscape) and (max-height: 500px) {
-    :root { --msb-total: 22px; --msb-row: 44px; }
+    :root { --msb-total: 20px; --msb-row: 44px; }
   }
 
   .msb {
@@ -60,25 +61,25 @@ const { id } = Astro.props;
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
     background: #fff;
-    /* bilkul patli dark maroon line */
-    border-top: 1px solid #800000;
-    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12), 0 -1px 4px rgba(0, 0, 0, 0.06);
+    border-top: none;
+    /* strong grey shadow: bar page se alag nazar aaye */
+    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.22), 0 -3px 8px rgba(0, 0, 0, 0.14);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
 
-  /* TOTAL LINE */
+  /* TOTAL LINE: patli aur soft */
   .msb-total {
     height: var(--msb-total); display: flex; align-items: center; justify-content: space-between;
-    padding: 0 16px; background: #fff; border-bottom: 1px solid #f0f0f0;
+    padding: 0 16px; background: #fff; border-bottom: 1px solid #f3f3f3;
   }
-  .msb-t-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
-  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
-  .msb-t-old { font-size: 10px; font-weight: 500; color: #a0a0a0; }
-  .msb-t-save { font-size: 10px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
+  .msb-t-left { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
+  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
+  .msb-t-old { font-size: 9.5px; font-weight: 500; color: #a0a0a0; }
+  .msb-t-save { font-size: 9.5px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
   .msb-t-old[hidden], .msb-t-save[hidden] { display: none; }
 
-  /* BAR ROW: ab mota, tap karna aasan */
+  /* BAR ROW: buttons aur icons bade, tap karna aasan */
   .msb-row { display: flex; align-items: stretch; height: var(--msb-row); padding-left: 4px; background: #fff; }
   .msb-ic {
     flex: 0 0 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
@@ -122,8 +123,7 @@ const { id } = Astro.props;
     .msb-ic span { font-size: 8.5px; }
   }
 
-  /* Landscape phone: bar poori width, left/right gap nahi. Safe-area (notch) upar padding mein sambhali hui hai.
-     Chaure screen par buttons thore aur aaraam se bade ho jate hain. */
+  /* Landscape phone: bar poori width, left/right gap nahi. Safe-area (notch) upar padding mein sambhali hui hai. */
   @media (orientation: landscape) and (max-height: 500px) {
     .msb-cart, .msb-buy { font-size: 13.5px; }
     .msb-ic svg { width: 19px; height: 19px; }

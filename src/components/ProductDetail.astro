@@ -82,7 +82,8 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v8
+   PRODUCT PAGE UPDATE v9
+   Desktop switch ab 975px par (laptop/PC + mobile ka "Desktop site" mode)
    ===================================================== */
 
 /* 1) Maroon line, heading, arrow, dots khatam */
@@ -92,8 +93,8 @@ const many = p.images.length > 1;
 
 /* 2) THUMBNAILS: chhote, har screen par fit (size screen ke hisaab se) */
 .m-master-box { --m-th: clamp(40px, 11vw, 48px); }
-@media (min-width: 481px) and (max-width: 1023px) { .m-master-box { --m-th: 52px; } }
-@media (min-width: 1024px) { .m-master-box { --m-th: 56px; } }
+@media (min-width: 481px) and (max-width: 974px) { .m-master-box { --m-th: 52px; } }
+@media (min-width: 975px) { .m-master-box { --m-th: 56px; } }
 
 .m-thumbs-wrap {
   position: relative; box-sizing: border-box; width: 100%;
@@ -131,7 +132,7 @@ const many = p.images.length > 1;
 .m-thumbs-next svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .m-thumbs-next:active { background: #e6007e; color: #fff; border-color: #e6007e; }
 @media (hover: hover) and (pointer: fine) { .m-thumbs-next:hover { background: #e6007e; color: #fff; border-color: #e6007e; } }
-@media (min-width: 1024px) {
+@media (min-width: 975px) {
   .m-thumbs-wrap { max-width: min(100%, 79vh); margin-left: auto; margin-right: auto; }
 }
 
@@ -144,7 +145,7 @@ const many = p.images.length > 1;
   background: linear-gradient(180deg, #fffafd 0%, #ffffff 100%) !important;
   box-shadow: 0 6px 16px -14px rgba(128, 0, 0, 0.35) !important;
 }
-@media (max-width: 1023px) { .m-offer-box { margin-top: 26px !important; } }
+@media (max-width: 974px) { .m-offer-box { margin-top: 26px !important; } }
 .m-offer-title {
   font-size: 8.5px !important; letter-spacing: 2.4px !important;
   margin: 0 0 3px !important; line-height: 1.2 !important;
@@ -240,13 +241,13 @@ const many = p.images.length > 1;
 .m-qty-box input { width: 44px !important; }
 
 /* Tablet */
-@media (min-width: 481px) and (max-width: 1023px) {
+@media (min-width: 481px) and (max-width: 974px) {
   .m-config-rows .m-row-item { padding: 8px 12px !important; }
   .m-config-rows .m-row-item .m-qty-box { margin-right: 8px !important; }
   .m-sel-chip .m-sc-name { max-width: 130px; }
 }
-/* Laptop / PC */
-@media (min-width: 1024px) {
+/* Laptop / PC / mobile ka Desktop site mode */
+@media (min-width: 975px) {
   .m-config-rows .m-row-item { padding: 8px 12px !important; }
   .m-config-rows .m-row-item .m-qty-box { margin-right: 8px !important; }
   .m-sel-chip .m-sc-name { max-width: 120px; }
@@ -310,16 +311,45 @@ const many = p.images.length > 1;
 .m-page-mode .m-final-old { font-size: 11px !important; }
 .m-page-mode .m-final-save { font-size: 10.5px !important; }
 
-/* 8) Sticky bar ke peeche content na chhupe (mobile/tablet). Desktop par bar nahi hai */
+/* 8) Sticky bar ke peeche content na chhupe (phone/tablet). Desktop par bar nahi hai */
 .m-page-mode .m-pop-layout { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
-@media (min-width: 1024px) {
+@media (min-width: 975px) {
   .m-page-mode .m-pop-layout { padding-bottom: 28px !important; }
 }
 
-/* 9) MOBILE: description box ki upar wali line aur product name ke beech gap */
-@media (max-width: 1023px) {
+/* 9) PHONE / TABLET: description box ki upar wali line aur product name ke beech gap */
+@media (max-width: 974px) {
   .m-pop-description { padding-top: 18px !important; }
   .m-pop-description > :first-child { margin-top: 12px !important; }
+}
+
+/* 10) MOBILE KA "DESKTOP SITE" MODE (975px se 1023px): laptop jaisa layout
+       Left par photo + thumbnails, right par content. 1024px+ par store ka apna layout chalta hai,
+       is liye ye sirf us beech ki range mein lagta hai. */
+@media (min-width: 975px) and (max-width: 1023px) {
+  .m-page-mode .m-pop-layout.m-pop-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    column-gap: 32px !important;
+    row-gap: 0 !important;
+    align-items: start !important;
+    flex-direction: row !important;
+  }
+  .m-page-mode .m-pop-left.m-pop-left,
+  .m-page-mode .m-pop-right.m-pop-right {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    float: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+  }
+  .m-page-mode .m-pop-left .m-slider-container {
+    max-width: min(100%, 79vh);
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 </style>
 

@@ -1,6 +1,8 @@
 ---
-// Mobile/tablet: sticky bottom bar (Home | Chat | Add to Cart | Buy it now) + upar patli total line
-// Laptop/PC (1024px+): bar nahi, Add to Cart + Buy it now alag buttons, right side par Total ke neeche
+// Phone / tablet (975px se chhoti screen): neeche sticky bar (Home | Chat | Add to Cart | Buy it now) + upar patli total line.
+//   Landscape mein bar poori width leti hai (left/right gap nahi).
+// Laptop / PC aur mobile ka "Desktop site" mode (975px+): bar nahi,
+//   Add to Cart + Buy it now alag buttons content ke saath Total ke neeche.
 // Total .m-final-bill se live sync hota hai (koi nayi calculation nahi, sirf wahi number dikhata hai).
 const { id } = Astro.props;
 ---
@@ -33,14 +35,24 @@ const { id } = Astro.props;
   </div>
 </div>
 
-<!-- SIRF LAPTOP/PC: do alag buttons. Script inhe .m-pop-right mein Total ke neeche le jati hai.
-     Mobile/tablet par ye display:none rehte hain. -->
+<!-- SIRF LAPTOP/PC / DESKTOP MODE: do alag buttons. Script inhe .m-pop-right mein Total ke neeche le jati hai.
+     Phone / tablet par ye display:none rehte hain. -->
 <div class="msb-dsk" id="msbDsk">
   <button type="button" class="msb-d-cart" id="msbDCart">Add to Cart</button>
   <button type="button" class="msb-d-buy" id="msbDBuy">Buy it now</button>
 </div>
 
 <style is:global>
+  /* Bar ki height yahan se badlein (baqi sab khud adjust ho jata hai) */
+  :root {
+    --msb-total: 26px;
+    --msb-row: 50px;
+  }
+  /* Landscape mein chhoti height wale phone par bar thori patli, taake screen na ghere */
+  @media (orientation: landscape) and (max-height: 500px) {
+    :root { --msb-total: 22px; --msb-row: 44px; }
+  }
+
   .msb {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 8800;
     display: flex; flex-direction: column; box-sizing: border-box;
@@ -48,39 +60,40 @@ const { id } = Astro.props;
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
     background: #fff;
-    border-top: 1px solid #ececec;
+    /* bilkul patli dark maroon line */
+    border-top: 1px solid #800000;
     box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12), 0 -1px 4px rgba(0, 0, 0, 0.06);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
 
-  /* TOTAL LINE: patli, pure white */
+  /* TOTAL LINE */
   .msb-total {
-    height: 24px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 14px; background: #fff; border-bottom: 1px solid #f0f0f0;
+    height: var(--msb-total); display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; background: #fff; border-bottom: 1px solid #f0f0f0;
   }
-  .msb-t-left { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
-  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
-  .msb-t-old { font-size: 9.5px; font-weight: 500; color: #a0a0a0; }
-  .msb-t-save { font-size: 9.5px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
+  .msb-t-left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
+  .msb-t-new { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: .2px; color: #e6007e; line-height: 1; }
+  .msb-t-old { font-size: 10px; font-weight: 500; color: #a0a0a0; }
+  .msb-t-save { font-size: 10px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
   .msb-t-old[hidden], .msb-t-save[hidden] { display: none; }
 
-  /* BAR: patli (40px), white */
-  .msb-row { display: flex; align-items: stretch; height: 40px; padding-left: 4px; background: #fff; }
+  /* BAR ROW: ab mota, tap karna aasan */
+  .msb-row { display: flex; align-items: stretch; height: var(--msb-row); padding-left: 4px; background: #fff; }
   .msb-ic {
-    flex: 0 0 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    flex: 0 0 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
     background: none; border: none; padding: 0; cursor: pointer; text-decoration: none;
     color: #800000; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .msb-ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-  .msb-ic span { font-size: 8.5px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
+  .msb-ic svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .msb-ic span { font-size: 9px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
   .msb-ic:active { color: #e6007e; }
   @media (hover: hover) { .msb-ic:hover { color: #e6007e; } }
 
   .msb-btns { flex: 1; display: flex; min-width: 0; }
   .msb-cart, .msb-buy {
     flex: 1; min-width: 0; border: none; cursor: pointer; color: #fff;
-    font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: .3px;
+    font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: .3px;
     white-space: nowrap; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     transition: background .25s ease;
   }
@@ -99,32 +112,32 @@ const { id } = Astro.props;
 
   /* chhoti screens (iPhone SE / chhote Android) */
   @media (max-width: 380px) {
-    .msb-cart, .msb-buy { font-size: 12px; }
-    .msb-ic { flex-basis: 40px; }
-    .msb-total { padding: 0 10px; }
+    .msb-cart, .msb-buy { font-size: 12.5px; }
+    .msb-ic { flex-basis: 46px; }
+    .msb-total { padding: 0 12px; }
   }
   @media (max-width: 340px) {
-    .msb-cart, .msb-buy { font-size: 11px; letter-spacing: 0; }
-    .msb-ic { flex-basis: 36px; }
-    .msb-ic span { font-size: 8px; }
+    .msb-cart, .msb-buy { font-size: 11.5px; letter-spacing: 0; }
+    .msb-ic { flex-basis: 42px; }
+    .msb-ic span { font-size: 8.5px; }
   }
 
-  /* Tablet (600 se 1023px): bar beech mein ek nafees card ki tarah */
-  @media (min-width: 600px) and (max-width: 1023px) {
-    .msb {
-      left: 50%; right: auto; width: min(100%, 620px); transform: translateX(-50%);
-      border-radius: 14px 14px 0 0; border: 1px solid #ececec; border-bottom: none;
-    }
-    .msb-total { border-radius: 14px 14px 0 0; }
+  /* Landscape phone: bar poori width, left/right gap nahi. Safe-area (notch) upar padding mein sambhali hui hai.
+     Chaure screen par buttons thore aur aaraam se bade ho jate hain. */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .msb-cart, .msb-buy { font-size: 13.5px; }
+    .msb-ic svg { width: 19px; height: 19px; }
   }
 
-  /* DESKTOP BUTTONS: mobile/tablet par chhupe hue */
+  /* DESKTOP BUTTONS: phone / tablet par chhupe hue */
   .msb-dsk { display: none; }
 
-  /* Laptop / PC (1024px+): sticky bar bilkul band, uski jagah right side ke do buttons */
-  @media (min-width: 1024px) {
+  /* Laptop / PC aur mobile ka "Desktop site" mode (975px+): sticky bar bilkul band, uski jagah do buttons */
+  @media (min-width: 975px) {
     .msb { display: none !important; }
     body.m-product-page { padding-bottom: 0 !important; }
+    /* bar nahi hai to neeche ki extra jagah bhi nahi chahiye */
+    .m-page-mode .m-pop-layout.m-pop-layout { padding-bottom: 28px !important; }
 
     .msb-dsk {
       display: flex; gap: 12px; align-items: stretch;
@@ -132,7 +145,7 @@ const { id } = Astro.props;
       font-family: 'Segoe UI', 'Montserrat', sans-serif;
     }
     .msb-d-cart, .msb-d-buy {
-      flex: 1; min-width: 0; height: 46px; border: none; cursor: pointer; color: #fff;
+      flex: 1; min-width: 0; height: 48px; border: none; cursor: pointer; color: #fff;
       font-family: inherit; font-size: clamp(13px, 1.1vw, 15px); font-weight: 700; letter-spacing: .3px;
       white-space: nowrap; transition: background .25s ease;
       clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
@@ -144,9 +157,9 @@ const { id } = Astro.props;
     .msb-d-cart:active, .msb-d-buy:active { background: #e6007e; }
   }
 
-  /* Product page: mobile/tablet par bar ke peeche content na chhupe, purane do buttons chhupe
+  /* Product page: phone / tablet par bar ke peeche content na chhupe, purane do buttons chhupe
      (bar / naye buttons unhi ko click karte hain, is liye wo DOM mein rehte hain) */
-  body.m-product-page { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  body.m-product-page { padding-bottom: calc(var(--msb-total) + var(--msb-row) + 16px + env(safe-area-inset-bottom, 0px)); }
   .m-product-page-wrap .m-buy-now-btn,
   .m-product-page-wrap .m-cart-add-trigger { display: none !important; }
 </style>
@@ -163,7 +176,7 @@ const { id } = Astro.props;
   function doBuy()  { var b = realBtn('.m-buy-now-btn');      if (b) b.click(); }
   function doCart() { var b = realBtn('.m-cart-add-trigger'); if (b) b.click(); }
 
-  /* mobile / tablet bar */
+  /* phone / tablet bar */
   document.getElementById('msbBuy').addEventListener('click', doBuy);
   document.getElementById('msbCart').addEventListener('click', doCart);
   document.getElementById('msbChat').addEventListener('click', function () {
@@ -191,7 +204,7 @@ const { id } = Astro.props;
   window.addEventListener('load', function () { placeDesktop(); setTimeout(placeDesktop, 500); });
   setTimeout(placeDesktop, 300);
 
-  /* ---- TOTAL (mobile bar): .m-final-bill se live sync ---- */
+  /* ---- TOTAL (phone bar): .m-final-bill se live sync ---- */
   var tNew = document.getElementById('msbTNew');
   var tOld = document.getElementById('msbTOld');
   var tSave = document.getElementById('msbTSave');

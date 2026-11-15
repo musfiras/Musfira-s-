@@ -6,6 +6,7 @@ import ReviewTab from '../components/ReviewTab.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 import SupportChat from '../components/SupportChat.astro';
 import Analytics from '../components/Analytics.astro';
+import MetaPixel from '../components/MetaPixel.astro';
 import storeStyles from '../raw/store-styles.html?raw';
 import storeExtra from '../raw/store-extra.html?raw';
 import storeScripts from '../raw/store-scripts.html?raw';
@@ -63,6 +64,9 @@ const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
 
     <!-- Google Analytics: Layout use karne wale har page par auto -->
     <Analytics />
+
+    <!-- Meta Pixel: PageView har page par, ViewContent product page par -->
+    <MetaPixel />
 
     <slot name="head" />
   </head>

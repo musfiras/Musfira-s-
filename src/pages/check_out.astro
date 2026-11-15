@@ -4,6 +4,7 @@
 // Sirf SupportChat component use hota hai (floating icon ke baghair), "Need help?" text button se khulta hai.
 import SupportChat from '../components/SupportChat.astro';
 import Analytics from '../components/Analytics.astro';
+import MetaPixel from '../components/MetaPixel.astro';
 ---
 <!doctype html>
 <html lang="en">
@@ -19,6 +20,9 @@ import Analytics from '../components/Analytics.astro';
 
   <!-- Google Analytics -->
   <Analytics />
+
+  <!-- Meta Pixel (PageView) -->
+  <MetaPixel />
 </head>
 <body>
 
@@ -328,7 +332,7 @@ const SCRIPT_URL = "https://store.musfiras.workers.dev";
 const ORDER_KEY = "4Zr0aVGBeRo0aqIE52k1Jq";
 const THANK_YOU_URL = "https://www.musfiras.com/thank_you";
 const SHOP_URL = "https://www.musfiras.com/store";
-const PAGE_VERSION = "order-page v6 astro + support-chat + email (2026-11-13)";
+const PAGE_VERSION = "order-page v7 astro + support-chat + email + meta-pixel (2026-11-15)";
 
 try { console.log("Musfira's " + PAGE_VERSION); } catch (e) {}
 
@@ -476,6 +480,19 @@ if (products.length > 0) {
     }
     window.__offerDiscount = offerDiscount;
 }
+
+// Meta: checkout shuru hua (sirf jab cart mein items hon)
+try {
+    if (products.length > 0 && typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+            content_type: 'product',
+            content_name: products.map(function (p) { return p.name; }).join(', '),
+            num_items: products.reduce(function (s, p) { return s + p.qty; }, 0),
+            value: totalPayable,
+            currency: 'AED'
+        });
+    }
+} catch (e) {}
 
 // ---------- Need help? -> SupportChat kholo ----------
 document.getElementById('needHelpBtn').addEventListener('click', function () {
@@ -708,7 +725,8 @@ async function sendOrder() {
     const result = await sendWithRetry(payload);
 
     if (result.ok) {
-        window.location.href = THANK_YOU_URL + "?order_id=" + encodeURIComponent(generatedOrderId);
+        // total aur quantity thank_you page ko bhi bhejte hain (Meta Purchase ke liye)
+        window.location.href = THANK_YOU_URL + "?order_id=" + encodeURIComponent(generatedOrderId) + "&v=" + encodeURIComponent(String(totalPayable)) + "&q=" + encodeURIComponent(tQty);
         return;
     }
 

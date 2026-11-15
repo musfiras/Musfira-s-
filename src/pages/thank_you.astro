@@ -5,6 +5,7 @@
 // Jo page site par hai wo aayega, jo nahi hai wo nahi aayega. Naam badlein to
 // yahan kuch change nahi karna, bas agla deploy naya naam utha lega.
 import Analytics from '../components/Analytics.astro';
+import MetaPixel from '../components/MetaPixel.astro';
 
 const SITE = "https://www.musfiras.com";
 
@@ -85,7 +86,8 @@ const year = new Date().getFullYear();
     <!-- Google Analytics -->
     <Analytics />
 
-    <!-- Meta Pixel / Google Ads purchase conversion code yahan paste karein -->
+    <!-- Meta Pixel (PageView). Purchase neeche body ke end mein hai -->
+    <MetaPixel />
   </head>
 
   <body>
@@ -126,6 +128,38 @@ const year = new Date().getFullYear();
       )}
       <p class="copy">© {year} Musfira's. All rights reserved.</p>
     </footer>
+
+    <!-- PURCHASE: Meta + Google Analytics. Sirf asli order par, aur ek order par sirf ek baar -->
+    <script is:inline>
+    (function () {
+      try {
+        var p = new URLSearchParams(location.search);
+        var id = p.get('order_id');
+        var v = parseFloat(p.get('v'));
+        var q = parseInt(p.get('q'), 10) || 1;
+
+        /* sirf asli order: sahi ID format aur sahi total */
+        if (!id || !/^MS-\d{6}-\d{4}$/.test(id)) return;
+        if (!(v > 0 && v < 100000)) return;
+
+        /* refresh par dobara Purchase nahi */
+        var key = 'm_px_purchase_' + id;
+        if (localStorage.getItem(key)) return;
+        if (typeof fbq !== 'function') return;
+
+        fbq('track', 'Purchase',
+          { value: v, currency: 'AED', num_items: q, content_type: 'product' },
+          { eventID: id }
+        );
+        localStorage.setItem(key, '1');
+
+        /* Google Analytics ko bhi order batao (agar GA load hai) */
+        if (typeof gtag === 'function') {
+          gtag('event', 'purchase', { transaction_id: id, value: v, currency: 'AED' });
+        }
+      } catch (e) {}
+    })();
+    </script>
   </body>
 </html>
 

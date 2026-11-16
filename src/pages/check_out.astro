@@ -382,7 +382,7 @@ const SCRIPT_URL = "https://store.musfiras.workers.dev";
 const ORDER_KEY = "4Zr0aVGBeRo0aqIE52k1Jq";
 const THANK_YOU_URL = "https://www.musfiras.com/thank_you";
 const SHOP_URL = "https://www.musfiras.com/store";
-const PAGE_VERSION = "order-page v8 summary-dropdown + thumbs + autoscroll (2026-11-15)";
+const PAGE_VERSION = "order-page v9 amount-fix + summary-dropdown + thumbs + autoscroll (2026-11-16)";
 
 try { console.log("Musfira's " + PAGE_VERSION); } catch (e) {}
 
@@ -486,6 +486,11 @@ function escHtml(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+// [FIX] Amount hamesha English digits mein (5,548). Customer ke phone ki language ka asar nahi hota.
+function fmtN(n) {
+    return Number(n).toLocaleString('en-US');
+}
+
 function nrm(s) { return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, " ").trim(); }
 
 const entryEls = [];
@@ -502,7 +507,7 @@ if (products.length > 0) {
         let itemRowPrice = p.qty * p.price;
         calculatedSubtotal += itemRowPrice;
 
-        const calcDisplay = p.qty > 1 ? `<span class="m-prod-calc-text">AED ${p.price.toLocaleString()} × ${p.qty}</span>` : '';
+        const calcDisplay = p.qty > 1 ? `<span class="m-prod-calc-text">AED ${fmtN(p.price)} × ${p.qty}</span>` : '';
         const initial = escHtml((p.name || "?").trim().charAt(0).toUpperCase() || "?");
 
         const entry = document.createElement('div');
@@ -516,7 +521,7 @@ if (products.length > 0) {
                 ${calcDisplay}
             </div>
             <div class="m-prod-price-block">
-                <div class="m-prod-item-price">AED ${Math.round(itemRowPrice).toLocaleString()}</div>
+                <div class="m-prod-item-price">AED ${fmtN(Math.round(itemRowPrice))}</div>
             </div>
         `;
         wrapper.appendChild(entry);
@@ -532,19 +537,19 @@ if (products.length > 0) {
     subtotalVal = calculatedSubtotal;
 
     document.getElementById('displayQty').innerText = totalQty;
-    document.getElementById('displayTotal').innerText = totalPayable.toLocaleString();
+    document.getElementById('displayTotal').innerText = fmtN(totalPayable);
     document.getElementById('displayDeliveryType').innerText = deliveryType.toUpperCase();
-    document.getElementById('displayDeliveryCharges').innerText = shipping > 0 ? "AED " + shipping.toLocaleString() : "FREE";
-    document.getElementById('displaySubtotal').innerText = subtotalVal.toLocaleString();
+    document.getElementById('displayDeliveryCharges').innerText = shipping > 0 ? "AED " + fmtN(shipping) : "FREE";
+    document.getElementById('displaySubtotal').innerText = fmtN(subtotalVal);
 
     // Dropdown ke header mein chhoti line: "2 items · AED 350"
-    document.getElementById('miniInfo').innerText = totalQty + (totalQty === 1 ? " item" : " items") + " · AED " + totalPayable.toLocaleString();
+    document.getElementById('miniInfo').innerText = totalQty + (totalQty === 1 ? " item" : " items") + " · AED " + fmtN(totalPayable);
 
     if (offerDiscount > 0) {
         document.getElementById('displayDiscountRow').style.display = 'flex';
-        document.getElementById('displayDiscount').innerText = offerDiscount.toLocaleString();
+        document.getElementById('displayDiscount').innerText = fmtN(offerDiscount);
         const oldTot = document.getElementById('displayOldTotal');
-        oldTot.innerText = "AED " + (totalPayable + offerDiscount).toLocaleString();
+        oldTot.innerText = "AED " + fmtN(totalPayable + offerDiscount);
         oldTot.style.display = 'inline';
     }
     window.__offerDiscount = offerDiscount;
@@ -884,9 +889,10 @@ async function sendOrder() {
     btn.innerHTML = "PLACING ORDER... ✨";
     btn.classList.add('is-loading');
 
-    const sTotal = document.getElementById('displaySubtotal').innerText;
+    // [FIX] Amount seedha number se banta hai (screen ke text se nahi), hamesha English digits mein
+    const sTotal = fmtN(subtotalVal);
     const tQty = document.getElementById('displayQty').innerText;
-    const tPayable = document.getElementById('displayTotal').innerText;
+    const tPayable = fmtN(totalPayable);
     let orderDetails = products.map(p => `${p.name} [${p.color}] x${p.qty}`).join(" | ");
 
     const sig = [name, phone, address, city, email, orderDetails, tQty, tPayable, deliveryType, method].join("~");
@@ -894,7 +900,7 @@ async function sendOrder() {
     lastSig = sig;
     lastOrderId = generatedOrderId;
 
-    const offerText = (window.__offerDiscount && window.__offerDiscount > 0) ? ` | Bundle Offer: -AED ${window.__offerDiscount.toLocaleString()}` : "";
+    const offerText = (window.__offerDiscount && window.__offerDiscount > 0) ? ` | Bundle Offer: -AED ${fmtN(window.__offerDiscount)}` : "";
     const emailText = email ? ` | Email: ${email}` : "";
 
     const finalDetails = `OrderID: ${generatedOrderId} | Items: ${orderDetails} | Total Qty: ${tQty} | Subtotal: AED ${sTotal}${offerText} | Shipping: ${deliveryType} | Payment: ${method} | Grand Total: AED ${tPayable}${emailText}`;

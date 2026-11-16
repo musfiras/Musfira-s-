@@ -8,7 +8,8 @@
 @media (max-width: 767px) {
     .m-super-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; padding: 16px 10px 20px; }
 }
-}
+/* [FIX v2] Yahan pehle ek EXTRA "}" thi. Is wajah se agli rule (min-width: 0) browser chup chap ignore kar deta tha.
+   Extra "}" hata di, ab ye rule chalta hai (lambe text se card / grid chauda nahi hota). */
 .m-item-wrapper, .m-item { min-width: 0; }
 
 /* Card ki purani inline style yahan */
@@ -60,4 +61,11 @@ body.m-product-page:has(.m-pop-overlay[style]) {
 .m-page-mode .m-pop-right { overscroll-behavior: auto !important; }
 .m-page-mode .m-pop-box { overflow: clip !important; }
 .m-page-mode .m-pop-right { overflow: visible !important; }
+
+/* ==========================================
+   [FIX v2] LANGUAGE / REGION SAFETY (design ko nahi chhedta)
+   Grid aur product page hamesha left-to-right, kisi bhi zaban / region mein.
+   ========================================== */
+.m-super-grid, .m-product-page-wrap { direction: ltr; }
+.m-back-link { overflow-wrap: break-word; }
 </style>

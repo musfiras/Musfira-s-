@@ -4,6 +4,13 @@
 // Header/footer links build ke waqt live site (/store) se khud uthaye jate hain.
 // Jo page site par hai wo aayega, jo nahi hai wo nahi aayega. Naam badlein to
 // yahan kuch change nahi karna, bas agla deploy naya naam utha lega.
+//
+// [FIX v2] Language / region safety (page ka design aur logic wahi hai):
+//  - Purchase ka total (v) aur qty (q) kisi bhi zaban ke digits aur commas se sahi parhe jate hain.
+//  - localStorage band ho (private mode) to bhi Purchase jata hai (sessionStorage / bina flag).
+//  - Meta Pixel (fbq) thori der se load ho to 5 second tak intezar karke bhejta hai (pehle chup chap miss ho jata tha).
+//  - fbq na ho (ad-blocker) to bhi Google Analytics ko purchase chala jata hai.
+//  - Phone ki dark mode se rang nahi badlenge, page hamesha left-to-right, brand ka naam translate nahi hota.
 import Analytics from '../components/Analytics.astro';
 import MetaPixel from '../components/MetaPixel.astro';
 
@@ -69,12 +76,16 @@ const year = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#FFB6C1" />
+    <!-- Phone ki dark mode se rang na badlein, phone numbers ko link na banayein -->
+    <meta name="color-scheme" content="only light" />
+    <meta name="supported-color-schemes" content="light" />
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
     <title>Order received | Musfira's</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -92,7 +103,7 @@ const year = new Date().getFullYear();
 
   <body>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Musfira's home">
+      <a class="brand" href="/" aria-label="Musfira's home" translate="no">
         <span class="brand-name">Musfira's</span>
         <span class="brand-tag"><i></i>Made to adore<i></i></span>
       </a>
@@ -116,7 +127,7 @@ const year = new Date().getFullYear();
     </main>
 
     <footer class="site-footer">
-      <div class="f-brand">Musfira's <small>Made to adore</small></div>
+      <div class="f-brand" translate="no">Musfira's <small>Made to adore</small></div>
       <nav class="f-links" aria-label="Shop">
         <a href="/">Home</a>
         {collections.map((l) => <a href={l.path}>{l.text}</a>)}
@@ -133,30 +144,63 @@ const year = new Date().getFullYear();
     <script is:inline>
     (function () {
       try {
+        /* Kisi bhi zaban ke digits (Arabic, Urdu, Hindi, Bengali...) -> 0-9 */
+        function digits(s) {
+          return String(s == null ? '' : s)
+            .replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+            .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+            .replace(/[\u0966-\u096F]/g, function (d) { return String(d.charCodeAt(0) - 0x0966); })
+            .replace(/[\u09E6-\u09EF]/g, function (d) { return String(d.charCodeAt(0) - 0x09E6); })
+            .replace(/[\uFF10-\uFF19]/g, function (d) { return String(d.charCodeAt(0) - 0xFF10); });
+        }
+
         var p = new URLSearchParams(location.search);
-        var id = p.get('order_id');
-        var v = parseFloat(p.get('v'));
-        var q = parseInt(p.get('q'), 10) || 1;
+        var id = digits(p.get('order_id')).trim();
+        var v = parseFloat(digits(p.get('v')).replace(/\u066B/g, '.').replace(/[,\u066C\s]/g, ''));
+        var q = parseInt(digits(p.get('q')).replace(/[,\s]/g, ''), 10) || 1;
 
         /* sirf asli order: sahi ID format aur sahi total */
         if (!id || !/^MS-\d{6}-\d{4}$/.test(id)) return;
         if (!(v > 0 && v < 100000)) return;
 
-        /* refresh par dobara Purchase nahi */
+        /* refresh par dobara Purchase nahi (storage band ho to bhi error nahi, event phir bhi jata hai) */
         var key = 'm_px_purchase_' + id;
-        if (localStorage.getItem(key)) return;
-        if (typeof fbq !== 'function') return;
-
-        fbq('track', 'Purchase',
-          { value: v, currency: 'AED', num_items: q, content_type: 'product' },
-          { eventID: id }
-        );
-        localStorage.setItem(key, '1');
-
-        /* Google Analytics ko bhi order batao (agar GA load hai) */
-        if (typeof gtag === 'function') {
-          gtag('event', 'purchase', { transaction_id: id, value: v, currency: 'AED' });
+        function seen() {
+          try { if (localStorage.getItem(key)) return true; } catch (e) {}
+          try { if (sessionStorage.getItem(key)) return true; } catch (e) {}
+          return false;
         }
+        function mark() {
+          try { localStorage.setItem(key, '1'); return; } catch (e) {}
+          try { sessionStorage.setItem(key, '1'); } catch (e) {}
+        }
+        if (seen()) return;
+
+        function send() {
+          var did = false;
+          if (typeof fbq === 'function') {
+            fbq('track', 'Purchase',
+              { value: v, currency: 'AED', num_items: q, content_type: 'product' },
+              { eventID: id }
+            );
+            did = true;
+          }
+          /* Google Analytics ko bhi order batao (agar GA load hai) */
+          if (typeof gtag === 'function') {
+            gtag('event', 'purchase', { transaction_id: id, value: v, currency: 'AED' });
+            did = true;
+          }
+          if (did) mark();
+          return did;
+        }
+
+        /* Pixel thori der se load ho sakta hai: 5 second tak har 0.4 sec dobara koshish */
+        var tries = 0;
+        (function tick() {
+          if (typeof fbq === 'function' || tries >= 12) { send(); return; }
+          tries++;
+          setTimeout(tick, 400);
+        })();
       } catch (e) {}
     })();
     </script>
@@ -172,9 +216,12 @@ const year = new Date().getFullYear();
     --ink: #4a4a4a;
     --serif: "Bodoni Moda", "Bodoni 72", Didot, "Playfair Display", Georgia, serif;
     --sans: "Segoe UI", Roboto, -apple-system, sans-serif;
+    color-scheme: light;
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; direction: ltr; }
+  /* Agar kisi tarah browser translate se page ulta (RTL) ho jaye to bhi seedha rahe */
+  html.translated-rtl, html.translated-rtl body { direction: ltr !important; }
   body {
     margin: 0;
     background: var(--paper);
@@ -184,6 +231,7 @@ const year = new Date().getFullYear();
     display: flex;
     flex-direction: column;
     padding-top: env(safe-area-inset-top, 0px);
+    overflow-wrap: break-word;
   }
   a { color: inherit; text-decoration: none; }
   a:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }

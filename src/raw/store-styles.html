@@ -1,4 +1,3 @@
-
 <!-- Full CSS Of PRODUCT Listing Compelte Process A_Z -->
 
 <style>
@@ -1244,6 +1243,27 @@
         .m-master-box .m-swatch .m-sw-sold b::after { font-size: 10px; }
     }
     @media (prefers-reduced-motion: reduce) { .m-master-box .m-swatch .m-sw-sold { animation: none !important; } }
+
+    /* ==========================================================================
+       [FIX v2] LANGUAGE / REGION / DEVICE SAFETY  (upar ke kisi rule ko nahi badalta, sirf hifazat jodta hai)
+       - Phone ki dark mode se rang nahi badlenge
+       - Popup, card, alert hamesha left-to-right (Arabic / Urdu phone ho tab bhi)
+       - Qeemat, qty, offer ke numbers seedhe dikhte hain, idhar udhar nahi hote
+       - Lambe lafz card, button ya box se bahar nahi nikalte
+       ========================================================================== */
+    :root { color-scheme: light; }
+
+    .m-master-box, .m-pop-overlay, #m-elite-alert, #m-alert-overlay { direction: ltr; }
+
+    .m-new-p, .m-old-p, .m-final-bill, .m-final-old, .m-final-save,
+    .m-ot-new, .m-ot-old, .m-offer-hint, .m-sw-stock, .m-card-offer {
+        direction: ltr; unicode-bidi: isolate;
+    }
+    .m-qty-box, .m-qty-box input { direction: ltr; }
+
+    .m-swatch, .m-delivery-note, .m-info-card, .m-offer-title, .m-offer-hint,
+    #m-elite-alert .m-al-text, .m-add-row-btn, .m-buy-now-btn,
+    .m-add-to-bag-btn, .m-add-to-cart-btn, .m-dn-free, .m-info-free { overflow-wrap: break-word; }
 </style>
 
 <!-- [NEW] PIC HOVER / TOUCH: zoom ruka rahe jab tak page par kahin aur touch/click na ho

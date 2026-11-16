@@ -2727,6 +2727,285 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
   }
 })();
 </script>
+<!-- ======================================================================
+  MUSFIRA DESK ADD-ON
+  1) Har zaroori info ke aage Copy button (+ "Copy all")
+  2) Naye order par "NEW · ACTION REQUIRED" box, touch karte hi "Seen"
+  3) Order card laptop aur mobile dono par chota, zaroori info bold
+  4) Product card landscape, height kam
 
+  Is poore block ko apni file ke sab se aakhri </script> ke BAAD aur
+  </body> se PEHLE paste karein. Kuch aur change karne ki zaroorat nahi.
+====================================================================== -->
+<script>
+(function(){
+  if(window.__dkAddon) return; window.__dkAddon=true;
+  const $=id=>document.getElementById(id);
+  const SEEN_KEY='musfirasSeen_v1', INIT_KEY='musfirasSeenInit_v1';
+
+  /* ---------------- CSS (body ke end mein, taa k purani CSS ko override kare) ---------------- */
+  const st=document.createElement('style');
+  st.textContent=`
+/* ===== COMPACT CARD (laptop) ===== */
+#mDash .orders-list{padding:10px 10px 0}
+#mDash .order-card{margin-bottom:10px;border-radius:12px;border-left-width:5px}
+#mDash .order-card .oc-head{padding:5px 12px;gap:6px}
+#mDash .order-card .oc-body{grid-template-columns:1.3fr 1.5fr 1fr 190px;gap:12px;padding:9px 12px}
+#mDash .order-card .oc-label{margin-bottom:4px;font-size:9px}
+#mDash .order-card .oc-cust > strong{display:none}
+#mDash .order-card .oc-cust .oc-addr{display:none}
+#mDash .order-card .oc-cust .wa-btn{margin-top:0;padding:4px 9px}
+#mDash .order-card .oc-cust .ml-btn{margin:0 0 0 6px;padding:4px 9px}
+#mDash .order-card .oc-cust .ml-line{margin-top:5px}
+#mDash .order-card .oc-sum{gap:6px;margin-bottom:5px}
+#mDash .order-card .sum-box{flex:0 0 auto;min-width:96px;padding:4px 10px;border-radius:9px}
+#mDash .order-card .sum-box .sum-lbl{font-size:8.5px}
+#mDash .order-card .sum-box .sum-val{font-size:17px;margin-top:0}
+#mDash .order-card .sum-total .sum-val{font-size:18px}
+#mDash .order-card .action-group{display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:0}
+#mDash .order-card .btn-action{padding:5px 4px;font-size:10px;border-radius:7px}
+#mDash .order-card .act-box{margin-top:4px;padding:5px 8px;max-width:none}
+#mDash .order-card .act-row{font-size:9.5px;line-height:1.3}
+#mDash .order-card .act-line{font-size:10.5px;margin-bottom:0}
+#mDash .order-card .act-sub{font-size:9.5px;margin-bottom:2px}
+
+/* ===== PRODUCT CARD LANDSCAPE ===== */
+#mDash .order-card .prod-card{display:flex;flex-wrap:wrap;gap:2px 14px;align-items:baseline;padding:5px 10px;max-width:none;font-size:11.5px;line-height:1.3;border-radius:9px;white-space:normal}
+#mDash .order-card .prod-card .pi{display:inline-block;padding:0;border:none!important}
+#mDash .order-card .prod-card .pi + .pi{border-top:none!important}
+#mDash .order-card .prod-card .pm{display:inline-block;padding:0;font-size:10.5px}
+#mDash .order-card .prod-card .pn{font-weight:900;color:#000;font-size:12.5px}
+
+/* ===== ZAMBEEL SKU PANEL LANDSCAPE ===== */
+#mDash .order-card .zsk{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:5px;padding:5px 8px}
+#mDash .order-card .zsk-head{margin:0;gap:6px}
+#mDash .order-card .zsk-title small{display:none}
+#mDash .order-card .zsk-row{border-top:none!important;padding:0;gap:6px;flex:0 1 auto}
+#mDash .order-card .zsk-name{flex:0 1 auto;font-size:11px}
+#mDash .order-card .zsk-code{font-size:11px;padding:4px 9px}
+#mDash .order-card .zsk-none{margin-top:4px}
+
+/* ===== INFO BLOCK + COPY BUTTONS ===== */
+#mDash .dk-kx{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:4px 9px;margin-bottom:6px}
+#mDash .dk-kx-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:1px}
+#mDash .dk-kx-title{font-size:9px;font-weight:800;color:#800000;text-transform:uppercase;letter-spacing:.6px}
+#mDash .dk-copyall{background:#800000;color:#fff;border:none;padding:4px 11px;border-radius:14px;font-size:10px;font-weight:800;cursor:pointer;transition:.2s}
+#mDash .dk-copyall:hover{background:#5d25b2}
+#mDash .dk-copyall.ok{background:#16a34a}
+#mDash .dk-r{display:flex;align-items:flex-start;gap:6px;padding:2px 0;border-top:1px dashed #eef0f4}
+#mDash .dk-grid > .dk-r:first-child{border-top:none}
+#mDash .dk-l{flex:0 0 54px;font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;padding-top:3px}
+#mDash .dk-v{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:800;color:#000;word-break:break-word;line-height:1.3}
+#mDash .dk-c{flex:0 0 auto;width:26px;height:22px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;transition:.15s;padding:0}
+#mDash .dk-c:hover{background:#800000;color:#fff;border-color:#800000}
+#mDash .dk-c.ok{background:#16a34a;color:#fff;border-color:#16a34a}
+
+/* ===== NEW / SEEN ===== */
+#mDash .dk-new{display:inline-block;background:#dc2626;color:#fff;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:800;letter-spacing:.3px;animation:dkPulse 1.4s infinite}
+@keyframes dkPulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.55)}50%{box-shadow:0 0 0 5px rgba(220,38,38,0)}}
+#mDash .dk-seen{display:inline-block;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:700}
+#mDash .order-card.dk-isnew{outline:2px solid rgba(220,38,38,.4);outline-offset:-2px}
+#mDash #dkNewBar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 16px;font-size:12px;font-weight:800;border-bottom:1px solid var(--border-color)}
+#mDash #dkNewBar.has{background:#fef2f2;color:#b91c1c}
+#mDash #dkNewBar.none{background:#f0fdf4;color:#15803d}
+#mDash .dk-markall{background:#dc2626;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:11px;font-weight:800;cursor:pointer}
+#mDash .dk-markall:hover{background:#991b1b}
+
+/* ===== COMPACT CARD (mobile) ===== */
+@media (max-width:768px){
+  #mDash .orders-list{padding:6px 5px 0}
+  #mDash .order-card{margin-bottom:8px;border-left-width:4px}
+  #mDash .order-card .oc-head{padding:4px 8px}
+  #mDash .order-card .oc-body{grid-template-columns:1fr;gap:5px;padding:6px 8px}
+  #mDash .order-card .dk-kx{flex:0 0 100%;width:100%;padding:3px 8px;margin-bottom:3px}
+  #mDash .dk-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+  #mDash .dk-r{display:grid;grid-template-columns:1fr auto;grid-template-areas:"l c" "v c";column-gap:4px;row-gap:0;align-items:center;padding:3px 0}
+  #mDash .dk-grid > .dk-r:nth-child(-n+2){border-top:none}
+  #mDash .dk-r.w{grid-column:1 / -1}
+  #mDash .dk-l{grid-area:l;flex:none;padding:0;font-size:8px}
+  #mDash .dk-v{grid-area:v;font-size:12px}
+  #mDash .dk-c{grid-area:c}
+  #mDash .order-card .oc-cust .wa-btn,#mDash .order-card .oc-cust .ml-btn{padding:4px 9px;font-size:10.5px;margin-top:0}
+  #mDash .order-card .oc-cust .ml-btn{margin-left:0}
+  #mDash .order-card .sum-box{flex:1 1 0;min-width:0;padding:3px 8px}
+  #mDash .order-card .sum-box .sum-val{font-size:15px}
+  #mDash .order-card .sum-total .sum-val{font-size:16px}
+  #mDash .order-card .action-group{grid-template-columns:repeat(3,1fr)}
+  #mDash .order-card .btn-action{padding:6px 1px;font-size:9.5px}
+  #mDash .dk-new{font-size:9px;padding:2px 6px}
+  #mDash .dk-seen{font-size:9px;padding:1px 6px}
+  #mDash #dkNewBar{padding:6px 10px;font-size:11px}
+}
+`;
+  (document.body||document.documentElement).appendChild(st);
+
+  /* ---------------- Seen state (is device ke browser mein save hota hai) ---------------- */
+  let seen={}; try{ seen=JSON.parse(localStorage.getItem(SEEN_KEY)||'{}')||{}; }catch(e){ seen={}; }
+  let inited=false; try{ inited=localStorage.getItem(INIT_KEY)==='1'; }catch(e){}
+  function saveSeen(){ try{ localStorage.setItem(SEEN_KEY,JSON.stringify(seen)); }catch(e){} }
+  function keyOf(r){
+    const id=orderIdOf(r);
+    return id?('id:'+id):('t:'+String(r['date & time']||'')+'|'+String(r['phone: #']||''));
+  }
+  function clock(ms){
+    try{ return new Date(ms).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; }
+  }
+  // Pehli dafa add-on chalne par jo orders pehle se hain unhe "Seen" maan lo, sirf naye wale NEW dikhein
+  function baseline(){
+    if(inited || !allOrders || !allOrders.length) return;
+    allOrders.forEach(r=>{ seen[keyOf(r)]=1; });
+    inited=true;
+    try{ localStorage.setItem(INIT_KEY,'1'); }catch(e){}
+    saveSeen();
+  }
+
+  function tagNode(k){
+    const s=document.createElement('span');
+    if(seen[k]){
+      s.className='dk-tag dk-seen';
+      s.textContent='👁 Seen'+((typeof seen[k]==='number'&&seen[k]>1e11)?' · '+clock(seen[k]):'');
+    } else {
+      s.className='dk-tag dk-new';
+      s.textContent='🔔 NEW · ACTION REQUIRED';
+    }
+    return s;
+  }
+  function paintCard(card){
+    const k=card.dataset.dk; if(!k) return;
+    const nw=tagNode(k);
+    const old=card.querySelector('.dk-tag');
+    if(old) old.replaceWith(nw);
+    else {
+      const num=card.querySelector('.oc-num'), left=card.querySelector('.oc-head-left');
+      if(num) num.after(nw); else if(left) left.prepend(nw);
+    }
+    card.classList.toggle('dk-isnew',!seen[k]);
+  }
+  function updateBar(){
+    const list=$('ordersBody'); if(!list||!list.parentNode) return;
+    let b=$('dkNewBar');
+    if(!b){ b=document.createElement('div'); b.id='dkNewBar'; list.parentNode.insertBefore(b,list); }
+    const n=(allOrders||[]).filter(r=>!seen[keyOf(r)]).length;
+    b.className=n?'has':'none';
+    b.textContent='';
+    const t=document.createElement('span');
+    t.textContent=n
+      ? ('🔔 '+n+' new order'+(n>1?'s':'')+' — action required (order ko touch karte hi "Seen" ho jayega)')
+      : '✅ Sab orders dekh liye gaye (Seen)';
+    b.appendChild(t);
+    if(n){
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='dk-markall'; btn.textContent='Mark all seen';
+      btn.onclick=function(){
+        const now=Date.now();
+        allOrders.forEach(r=>{ const k=keyOf(r); if(!seen[k]) seen[k]=now; });
+        saveSeen(); paintAll();
+      };
+      b.appendChild(btn);
+    }
+    try{ document.title=(n?'('+n+') ':'')+'Musfira Desk'; }catch(e){}
+  }
+  function paintAll(){
+    document.querySelectorAll('#ordersBody .order-card').forEach(paintCard);
+    updateBar();
+  }
+
+  // Card par kuch bhi touch / click ho to Seen
+  function touched(e){
+    const c=e.target && e.target.closest ? e.target.closest('.order-card') : null;
+    if(!c) return;
+    const k=c.dataset.dk;
+    if(!k || seen[k]) return;
+    seen[k]=Date.now(); saveSeen(); paintAll();
+  }
+  const ob=$('ordersBody');
+  if(ob){
+    ob.addEventListener('click',touched,true);
+    ob.addEventListener('focusin',touched,true);
+  }
+
+  /* ---------------- Copy helpers ---------------- */
+  function doCopy(text,label,btn,toast){
+    copyText(text).then(()=>{
+      if(toast) showEliteAlert(label+' copy ho gaya ✅');
+      if(btn){
+        const o=btn.dataset.o||btn.textContent; btn.dataset.o=o;
+        btn.textContent=(btn.classList.contains('dk-copyall')?'✔ Copied':'✔'); btn.classList.add('ok');
+        setTimeout(()=>{ btn.textContent=o; btn.classList.remove('ok'); },1100);
+      }
+    }).catch(()=>showEliteAlert('Copy nahi ho saka. Text select karke copy karein.'));
+  }
+  function skuText(row){
+    try{
+      const i=zmSkuInfo(row), out=[];
+      i.perItem.forEach(s=>{ if(s) out.push(s); });
+      i.extra.forEach(s=>{ if(s) out.push(s); });
+      return out.filter((v,ix,a)=>a.indexOf(v)===ix).join(', ');
+    }catch(e){ return ''; }
+  }
+  function fields(row){
+    return [
+      {l:'Order ID', v:orderIdOf(row)},
+      {l:'Name',     v:String(row['customer: name']||'').trim()},
+      {l:'Phone',    v:String(row['phone: #']||'').trim()},
+      {l:'City',     v:String(row['city']||'').trim()},
+      {l:'Address',  v:String(row['address']||'').trim(), w:1},
+      {l:'ZM SKU',   v:skuText(row), w:1}
+    ];
+  }
+  function buildKx(row){
+    const f=fields(row);
+    const kx=document.createElement('div'); kx.className='dk-kx';
+    const head=document.createElement('div'); head.className='dk-kx-head';
+    const t=document.createElement('span'); t.className='dk-kx-title'; t.textContent='📋 Order info';
+    const ca=document.createElement('button'); ca.type='button'; ca.className='dk-copyall'; ca.textContent='⧉ Copy all';
+    ca.onclick=function(){
+      const txt=f.filter(x=>x.v).map(x=>x.l+': '+x.v).join('\n');
+      doCopy(txt,'Saari details',ca,true);
+    };
+    head.appendChild(t); head.appendChild(ca); kx.appendChild(head);
+    const g=document.createElement('div'); g.className='dk-grid';
+    f.forEach(x=>{
+      const r=document.createElement('div'); r.className='dk-r'+(x.w?' w':'');
+      const l=document.createElement('span'); l.className='dk-l'; l.textContent=x.l;
+      const v=document.createElement('b'); v.className='dk-v'; v.textContent=x.v||'—';
+      r.appendChild(l); r.appendChild(v);
+      if(x.v){
+        const c=document.createElement('button'); c.type='button'; c.className='dk-c';
+        c.title='Copy '+x.l; c.textContent='⧉';
+        c.onclick=function(){ doCopy(x.v,x.l,c,false); };
+        r.appendChild(c);
+      }
+      g.appendChild(r);
+    });
+    kx.appendChild(g);
+    return kx;
+  }
+
+  /* ---------------- Cards ko decorate karna ---------------- */
+  function decorate(){
+    baseline();
+    document.querySelectorAll('#ordersBody .order-card').forEach((card,i)=>{
+      const rn=shownRowNums[i];
+      const row=allOrders.find(x=>x.rowNumber===rn);
+      if(!row) return;
+      card.dataset.dk=keyOf(row);
+      if(!card.querySelector('.dk-kx')){
+        const wrap=card.querySelector('.oc-cust');
+        if(wrap){
+          const kx=buildKx(row);
+          const anchor=wrap.querySelector('.wa-btn');
+          if(anchor) wrap.insertBefore(kx,anchor); else wrap.appendChild(kx);
+        }
+      }
+      paintCard(card);
+    });
+    updateBar();
+  }
+  const _rt2=renderTable;
+  renderTable=function(rows){ _rt2(rows); try{ decorate(); }catch(e){} };
+  try{ if(allOrders&&allOrders.length) renderTable(allOrders); }catch(e){}
+})();
+</script>
 </body>
 </html>

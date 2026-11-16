@@ -11,17 +11,35 @@ import storeStyles from '../raw/store-styles.html?raw';
 import storeExtra from '../raw/store-extra.html?raw';
 import storeScripts from '../raw/store-scripts.html?raw';
 import storeBoot from '../raw/store-boot.html?raw';
+
 const {
   title = "Musfira's Store - Luxury Bags & Backpacks",
   description = "Musfira's: hand-selected ladies' bags, jewellery, wallets, watches and accessories, delivered across the UAE.",
   shop = false,
   pageType = 'store',
   image = '',
+  translate = 'auto',
 } = Astro.props;
+
+// =====================================================================
+//  TRANSLATE: AUTO (aap ko kuch badalna nahi)
+//  - Store / product / cart wale pages (shop = true): translate BAND. Yahan order ka paisa aur stock hai,
+//    isliye nqsha, cart aur order kabhi nahi hilte.
+//  - Baqi pages (contact, about, policy waghera): customer translate kar sakta hai,
+//    lekin cart, price, buttons aur chat par translate phir bhi khud band rehta hai.
+//  Kisi ek page ko zabardasti badalna ho to wahan <Layout translate="no"> ya translate="yes" likh dein.
+// =====================================================================
+const ALLOW_TRANSLATE = translate === 'yes' ? true : translate === 'no' ? false : !shop;
 const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
 ---
 <!doctype html>
-<html lang="en" class={pageClass}>
+<html
+  lang="en"
+  dir="ltr"
+  translate={ALLOW_TRANSLATE ? undefined : 'no'}
+  data-allow-translate={ALLOW_TRANSLATE ? 'true' : 'false'}
+  class:list={[pageClass, !ALLOW_TRANSLATE && 'notranslate']}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -30,6 +48,15 @@ const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {image && <meta property="og:image" content={image} />}
+
+    <!-- LANGUAGE / REGION SAFETY -->
+    <meta http-equiv="Content-Language" content="en" />
+    {!ALLOW_TRANSLATE && <meta name="google" content="notranslate" />}
+    <!-- Phone ki dark mode / force-dark se rang na badlein (Samsung, Opera, Chrome force dark) -->
+    <meta name="color-scheme" content="only light" />
+    <meta name="supported-color-schemes" content="light" />
+    <!-- iPhone / Android khud phone numbers ya dates ko link bana kar design na badlein -->
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
 
     <!-- BROWSER BAR COLOR (dark pink): mobile Chrome, Safari aur installed app par upar ki bar ka rang.
          Dark rang hone par domain / URL ka text browser khud white kar deta hai.
@@ -46,17 +73,174 @@ const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Arabic / Hindi huroof ke liye (sirf tab download hote hain jab customer ne wo huroof likhe hon) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- =================================================================
+         SAFETY SCRIPT: sab se pehle chalta hai (is liye head mein hai, kuch aur load hone se pehle).
+         1) Har customer ke phone ki language / region se numbers hamesha English (0-9) mein
+         2) Browser translate se "removeChild" crash na ho
+         3) Phone / address / qty mein Arabic, Urdu, Hindi digits likhe jayen to khud 0-9 ban jayen
+         4) (sirf ALLOW_TRANSLATE = true par) cart, price, buttons par translate band
+         ================================================================= -->
+    <script is:inline>
+    (function () {
+      'use strict';
+      var root = document.documentElement;
+      var allowTranslate = root.getAttribute('data-allow-translate') === 'true';
+      var EN = 'en-US';
+
+      // ---------- 1) LOCALE: koi bhi script locale na de to English use ho ----------
+      try {
+        var nTL = Number.prototype.toLocaleString;
+        Number.prototype.toLocaleString = function (l, o) { return nTL.call(this, l || EN, o); };
+        var dTL = Date.prototype.toLocaleString;
+        var dTD = Date.prototype.toLocaleDateString;
+        var dTT = Date.prototype.toLocaleTimeString;
+        Date.prototype.toLocaleString = function (l, o) { return dTL.call(this, l || EN, o); };
+        Date.prototype.toLocaleDateString = function (l, o) { return dTD.call(this, l || EN, o); };
+        Date.prototype.toLocaleTimeString = function (l, o) { return dTT.call(this, l || EN, o); };
+        if (typeof Proxy === 'function' && typeof Reflect === 'object' && window.Intl) {
+          ['NumberFormat', 'DateTimeFormat'].forEach(function (name) {
+            var Orig = Intl[name];
+            if (typeof Orig !== 'function') return;
+            Intl[name] = new Proxy(Orig, {
+              construct: function (t, a, nt) {
+                var args = Array.prototype.slice.call(a);
+                if (!args[0]) args[0] = EN;
+                return Reflect.construct(t, args, nt);
+              },
+              apply: function (t, th, a) {
+                var args = Array.prototype.slice.call(a);
+                if (!args[0]) args[0] = EN;
+                return t.apply(th, args);
+              }
+            });
+          });
+        }
+      } catch (e) {}
+
+      // ---------- 2) Translate se removeChild / insertBefore crash fix ----------
+      try {
+        if (typeof Node === 'function' && Node.prototype) {
+          var origRemove = Node.prototype.removeChild;
+          Node.prototype.removeChild = function (child) {
+            if (child && child.parentNode !== this) { return child; }
+            return origRemove.apply(this, arguments);
+          };
+          var origInsert = Node.prototype.insertBefore;
+          Node.prototype.insertBefore = function (newNode, refNode) {
+            if (refNode && refNode.parentNode !== this) { return newNode; }
+            return origInsert.apply(this, arguments);
+          };
+        }
+      } catch (e) {}
+
+      // ---------- 3) DIGITS: duniya ki kisi bhi zaban ke digits -> 0-9 ----------
+      var STARTS = [0x0660, 0x06F0, 0x07C0, 0x0966, 0x09E6, 0x0A66, 0x0AE6, 0x0B66, 0x0BE6, 0x0C66, 0x0CE6, 0x0D66, 0x0E50, 0x0ED0, 0x0F20, 0x1040, 0xFF10];
+      var DIGIT_RE = /[\u0660-\u0669\u06F0-\u06F9\u07C0-\u07C9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F\u0E50-\u0E59\u0ED0-\u0ED9\u0F20-\u0F29\u1040-\u1049\uFF10-\uFF19]/g;
+      function latinDigits(s) {
+        return String(s == null ? '' : s).replace(DIGIT_RE, function (d) {
+          var c = d.charCodeAt(0);
+          for (var i = 0; i < STARTS.length; i++) {
+            if (c >= STARTS[i] && c <= STARTS[i] + 9) return String(c - STARTS[i]);
+          }
+          return d;
+        });
+      }
+      // dusre scripts chahein to window.__mx.digits(...) use kar sakte hain
+      window.__mx = window.__mx || {};
+      window.__mx.digits = latinDigits;
+
+      function fixField(e) {
+        try {
+          if (e.isComposing) return;               // Hindi / Arabic likhte waqt typing na tootay
+          var el = e.target;
+          if (!el || typeof el.value !== 'string') return;
+          var tag = el.tagName;
+          if (tag !== 'INPUT' && tag !== 'TEXTAREA') return;
+          var type = (el.type || '').toLowerCase();
+          if (type === 'password' || type === 'file' || type === 'checkbox' || type === 'radio') return;
+          var fixed = latinDigits(el.value);
+          if (fixed === el.value) return;
+          var pos = null;
+          try { pos = el.selectionStart; } catch (err) {}
+          el.value = fixed;
+          try { if (pos !== null) el.setSelectionRange(pos, pos); } catch (err) {}
+        } catch (err) {}
+      }
+      document.addEventListener('input', fixField, true);
+      document.addEventListener('change', fixField, true);
+
+      // ---------- 4) Sirf ALLOW_TRANSLATE = true par: zaroori hisse translate se bachao ----------
+      if (!allowTranslate) return;
+      var SEL = 'button, input, select, textarea, [data-pname], [data-stock], ' +
+                '[class*="cart"], [id*="cart"], [class*="checkout"], [id*="checkout"], ' +
+                '[class*="price"], [class*="qty"], [class*="stock"], [class*="drawer"], ' +
+                '[class*="popup"], [class*="support"], [class*="chat"]';
+      function mark(n) {
+        n.setAttribute('translate', 'no');
+        n.classList.add('notranslate');
+      }
+      function protect(node) {
+        if (!node || node.nodeType !== 1) return;
+        try {
+          if (node.matches && node.matches(SEL)) mark(node);
+          var list = node.querySelectorAll ? node.querySelectorAll(SEL) : [];
+          for (var i = 0; i < list.length; i++) mark(list[i]);
+        } catch (err) {}
+      }
+      var queue = [], scheduled = false;
+      function flush() {
+        scheduled = false;
+        var q = queue; queue = [];
+        for (var i = 0; i < q.length; i++) protect(q[i]);
+      }
+      function start() {
+        protect(document.body);
+        new MutationObserver(function (list) {
+          for (var i = 0; i < list.length; i++) {
+            var add = list[i].addedNodes;
+            for (var j = 0; j < add.length; j++) if (add[j].nodeType === 1) queue.push(add[j]);
+          }
+          if (queue.length && !scheduled) {
+            scheduled = true;
+            (window.requestAnimationFrame || setTimeout)(flush);
+          }
+        }).observe(document.documentElement, { childList: true, subtree: true });
+      }
+      if (document.body) start();
+      else document.addEventListener('DOMContentLoaded', start);
+    })();
+    </script>
 
     <style is:global>
       /* System.io ke footer CSS mein ye global reset tha, poori site par lagta tha, wahi rakha hai */
       /* ORANGY MAROON: poori site ka maroon yahin se aata hai. Tone badalni ho to sirf ye ek rang badlo. */
-      :root { --orange-maroon: #a3301f; }
+      :root { --orange-maroon: #a3301f; color-scheme: light; }
       *, *::before, *::after { box-sizing: border-box; }
       html { margin: 0; width: 100%; height: 100%; }
       /* FOOTER FIX: body ab kam se kam poori screen jitna lamba hai aur footer hamesha sabse neeche rehta hai.
          Pehle height:100% tha, is wajah se chhote page par footer beech mein reh jata tha (khaaskar mobile par). */
       body { margin: 0; width: 100%; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
       body > footer { margin-top: auto; }
+
+      /* ---------- LANGUAGE / REGION SAFETY ---------- */
+      /* Phone ka font-size inflate (barha dena) na kare */
+      html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; direction: ltr; }
+      /* Site ki apni styling ko override nahi karta (specificity 0), sirf khali jagah par kaam aata hai */
+      :where(body) { font-family: 'Montserrat', 'Noto Sans Arabic', 'Noto Sans Devanagari', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+      /* Lambe lafz (German, Russian) card se bahar na niklein; screen se bahar scroll na ho */
+      body { overflow-wrap: break-word; overflow-x: clip; }
+      img, video { max-width: 100%; }
+      /* Qeemat, phone, qty hamesha seedhe (left to right) aur English digits ke andaz mein */
+      [class*="price"], [class*="total"], [class*="qty"], input[type="tel"], input[type="number"] {
+        direction: ltr; unicode-bidi: isolate;
+      }
+      /* Agar kisi tarah browser translate ho bhi jaye to page ulta (RTL) na ho */
+      html.translated-rtl, html.translated-rtl body { direction: ltr !important; }
+      /* Translate widget ki upar wali bar chhupao (body ka top yahan se nahi chheda jata, cart drawer isay use karta hai) */
+      .goog-te-banner-frame, .goog-te-balloon-frame, #goog-gt-tt, .skiptranslate > iframe { display: none !important; }
     </style>
 
     {shop && <Fragment set:html={storeStyles} />}
@@ -70,7 +254,7 @@ const pageClass = shop && pageType === 'product' ? 'm-product-page' : undefined;
 
     <slot name="head" />
   </head>
-  <body class={pageClass}>
+  <body class:list={[pageClass, !ALLOW_TRANSLATE && 'notranslate']} translate={ALLOW_TRANSLATE ? undefined : 'no'}>
     <Header />
     <slot />
     <!-- Footer mein ab WhatsApp button nahi hai (WhatsApp sirf Contact page aur SupportChat ke live agent button mein) -->

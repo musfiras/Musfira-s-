@@ -2,13 +2,22 @@
 /* CartDrawer.astro
    Layout me SIRF EK BAAR lagana hai. Har page par khud chalega.
    Sab kuch is file me hai: HTML + CSS + Script (live stock check bhi).
-   "Need help?" button HelpLinks.astro se aata hai (checkout button ke neeche). */
+   "Need help?" button HelpLinks.astro se aata hai (checkout button ke neeche).
+
+   [FIX v2] Language / region / safety:
+   - Qty, price aur offer ab kisi bhi zaban ke digits (Arabic, Urdu, Hindi...) se sahi parhe jate hain.
+   - Drawer par translate band (translate="no"), taa ke naam / color / qeemat kabhi na badlein.
+   - localStorage band ho (private mode) to bhi Add to Cart aur drawer kaam karte hain.
+   - Cart ka naam / color screen par dikhane se pehle escape hota hai (HTML safe).
+   - Cart data (qty, price, id) check hota hai, ghalat / kharab entries hat jati hain.
+   - Checkout link mein naam ya color mein "|" ho to order kharab na ho.
+*/
 import HelpLinks from './HelpLinks.astro';
 ---
 
 <!-- CART Drawer (side drawer, right se) -->
-<div id="m-cart-drawer-overlay" class="m-cart-overlay" onclick="closeDrawer()"></div>
-<div id="m-cart-drawer" class="m-cart-drawer" role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden="true">
+<div id="m-cart-drawer-overlay" class="m-cart-overlay notranslate" translate="no" onclick="closeDrawer()"></div>
+<div id="m-cart-drawer" class="m-cart-drawer notranslate" translate="no" role="dialog" aria-modal="true" aria-label="Shopping bag" aria-hidden="true">
     <div class="m-drawer-top">
         <div class="m-drawer-header">
             <span class="m-drawer-title">MY SHOPPING BAG</span>
@@ -72,6 +81,7 @@ import HelpLinks from './HelpLinks.astro';
         overscroll-behavior: contain;
         touch-action: pan-y;
         -webkit-tap-highlight-color: transparent;
+        direction: ltr;
     }
     .m-cart-drawer.active {
         transform: translate3d(0, 0, 0);
@@ -237,6 +247,27 @@ import HelpLinks from './HelpLinks.astro';
 var CURRENCY = 'AED';
 
 /* ==========================================================
+   [FIX] HELPERS: digits (kisi bhi zaban ke), HTML escape, mehfooz storage
+   ========================================================== */
+// Arabic / Urdu / Hindi waghera ke digits -> 0-9. Layout ka helper maujood ho to wahi, warna apna.
+function cDigits(s) {
+    s = String(s == null ? '' : s);
+    if (window.__mx && typeof window.__mx.digits === 'function') return window.__mx.digits(s);
+    return s.replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+            .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+            .replace(/[\u0966-\u096F]/g, function (d) { return String(d.charCodeAt(0) - 0x0966); });
+}
+// parseInt jo hamesha sahi chale (commas, spaces, kisi bhi zaban ke digits). Na samajh aaye to 0.
+function cInt(v) {
+    var n = parseInt(cDigits(v).replace(/[,\s\u066B\u066C\u00a0\u202f]/g, ''), 10);
+    return isNaN(n) ? 0 : n;
+}
+function cEsc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function cStoreSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+
+/* ==========================================================
    LIVE STOCK (auto-pilot)
    Har page load par, drawer khulte hi, har 15 sec (drawer khula ho to),
    tab wapas aane par, aur checkout dabane par: stock khud check hota hai.
@@ -261,7 +292,7 @@ function cartStockClean(items) {
         if (!cols || typeof cols !== 'object') return;
         var np = cNorm(p), o = {};
         Object.keys(cols).forEach(function (c) {
-            var q = parseInt(cols[c], 10);
+            var q = cInt(cols[c]);
             if (isNaN(q) || q < 0) q = 0;
             o[cNorm(c)] = q; count++;
         });
@@ -307,7 +338,7 @@ function syncCartStock() {
             if (!wasSold) notes.push(i.name + " (" + i.color + ") is sold out");
         } else {
             i.soldOut = false;
-            var q = parseInt(i.qty) || 0;
+            var q = cInt(i.qty);
             if (q > left) {
                 i.qty = left; i.adjusted = left; qtyChanged = true;
                 notes.push(i.name + " (" + i.color + "): only " + left + " left");
@@ -374,6 +405,8 @@ function cartPersistList() {
     });
 }
 
+// [FIX] Cart data ki jaanch: id, naam, qty aur price sahi na hon to wo item hat jata hai.
+// Price 0 ya ghalat ho to checkout page ka fallback price lag jata, isliye wo item allow nahi.
 function validateCartData() {
     try {
         if (localStorage.getItem('musfiras_cart_currency') !== CURRENCY) {
@@ -381,17 +414,25 @@ function validateCartData() {
             localStorage.setItem('musfiras_cart_currency', CURRENCY);
             return [];
         }
-        let raw = localStorage.getItem('musfiras_cart');
+        var raw = localStorage.getItem('musfiras_cart');
         if (!raw) return [];
-        let data = JSON.parse(raw);
+        var data = JSON.parse(raw);
         if (!Array.isArray(data)) return [];
-        return data.filter(item =>
-            item.id &&
-            typeof item.id === 'string' &&
-            item.id.startsWith('ID_') &&
-            !isNaN(item.price) &&
-            !isNaN(item.qty)
-        );
+        var out = [];
+        data.forEach(function (item) {
+            if (!item || typeof item !== 'object') return;
+            if (typeof item.id !== 'string' || !/^ID_[A-Za-z0-9]+$/.test(item.id)) return;
+            if (typeof item.name !== 'string' || !item.name.trim()) return;
+            var price = cInt(item.price), qty = cInt(item.qty);
+            if (price < 1 || qty < 1) return;
+            item.price = price;
+            item.qty = Math.min(qty, 999);
+            item.offer2 = cInt(item.offer2);
+            item.offer3 = cInt(item.offer3);
+            item.color = (typeof item.color === 'string' && item.color.trim()) ? item.color : 'Default';
+            out.push(item);
+        });
+        return out;
     } catch (e) {
         return [];
     }
@@ -405,10 +446,10 @@ var MUSFIRAS_CART = validateCartData();
 function cartOfferGroups(items) {
     var map = {}, order = [];
     items.forEach(function (i) {
-        var q = parseInt(i.qty) || 0, p = parseInt(i.price) || 0;
+        var q = cInt(i.qty), p = cInt(i.price);
         if (q <= 0) return;
         if (!map[i.name]) {
-            map[i.name] = { name: i.name, qty: 0, price: p, o2: parseInt(i.offer2) || 0, o3: parseInt(i.offer3) || 0 };
+            map[i.name] = { name: i.name, qty: 0, price: p, o2: cInt(i.offer2), o3: cInt(i.offer3) };
             order.push(i.name);
         }
         map[i.name].qty += q;
@@ -433,29 +474,31 @@ function addToCartTrigger(prodId) {
     if (!root) return;
 
     const itemName = root.getAttribute('data-pname');
-    const basePrice = parseInt(root.getAttribute('data-base')) || 0;
-    const offer2 = parseInt(root.getAttribute('data-offer2')) || 0;
-    const offer3 = parseInt(root.getAttribute('data-offer3')) || 0;
+    const basePrice = cInt(root.getAttribute('data-base'));
+    const offer2 = cInt(root.getAttribute('data-offer2'));
+    const offer3 = cInt(root.getAttribute('data-offer3'));
     const rows = root.querySelectorAll('.m-row-item');
 
     let addedAny = false;
     let totalQtySelected = 0;
 
     rows.forEach(row => {
-        const color = row.querySelector('.m-color-select').value;
+        const sel = row.querySelector('.m-color-select');
         const qtyInput = row.querySelector('input');
-        const qty = parseInt(qtyInput.value) || 0;
+        if (!sel || !qtyInput) return;
+        const color = sel.value;
+        const qty = Math.min(cInt(qtyInput.value), 999);   // [FIX] Arabic / Hindi digits bhi chalte hain
 
-        if (qty > 0 && basePrice > 0) {
+        if (qty > 0 && basePrice > 0 && itemName) {
             addedAny = true;
             totalQtySelected += qty;
             const existingIdx = MUSFIRAS_CART.findIndex(i => i.name === itemName && i.color === color);
 
             if (existingIdx > -1) {
-                MUSFIRAS_CART[existingIdx].qty += qty;
+                MUSFIRAS_CART[existingIdx].qty = Math.min(MUSFIRAS_CART[existingIdx].qty + qty, 999);
             } else {
                 MUSFIRAS_CART.push({
-                    id: 'ID_' + Math.random().toString(36).substr(2, 9),
+                    id: 'ID_' + Math.random().toString(36).slice(2, 11).replace(/[^A-Za-z0-9]/g, 'x'),
                     name: itemName,
                     color: color,
                     qty: qty,
@@ -471,15 +514,17 @@ function addToCartTrigger(prodId) {
             if (i.name === itemName) { i.offer2 = offer2; i.offer3 = offer3; }
         });
 
-        if (typeof fbq !== 'undefined') {
-            fbq('track', 'AddToCart', {
-                content_name: itemName,
-                content_category: 'Handbags',
-                value: basePrice * totalQtySelected,
-                currency: CURRENCY,
-                content_type: 'product'
-            });
-        }
+        try {
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'AddToCart', {
+                    content_name: itemName,
+                    content_category: 'Handbags',
+                    value: basePrice * totalQtySelected,
+                    currency: CURRENCY,
+                    content_type: 'product'
+                });
+            }
+        } catch (e) {}
 
         saveAndUpdate();
         if (typeof closeElitePop === 'function') closeElitePop(prodId);
@@ -490,15 +535,16 @@ function addToCartTrigger(prodId) {
     }
 }
 
+// [FIX] localStorage band / full ho to bhi drawer aur cart kaam karte hain (is page ke liye)
 function saveAndUpdate() {
-    localStorage.setItem('musfiras_cart', JSON.stringify(cartPersistList()));
+    cStoreSet('musfiras_cart', JSON.stringify(cartPersistList()));
     renderCart();
     updateGlobalIcon();
 }
 
 function renderCart() {
     if (syncCartStock()) {
-        try { localStorage.setItem('musfiras_cart', JSON.stringify(cartPersistList())); } catch (e) {}
+        cStoreSet('musfiras_cart', JSON.stringify(cartPersistList()));
     }
 
     const container = document.getElementById('m-cart-items-container');
@@ -514,9 +560,9 @@ function renderCart() {
 
         let stockLine = "";
         if (!dis && item.adjusted) {
-            stockLine = `<div style="font-size:10.5px; color:#c0182b; font-weight:700; margin-top:3px;">Only ${item.adjusted} left, quantity updated</div>`;
+            stockLine = `<div style="font-size:10.5px; color:#c0182b; font-weight:700; margin-top:3px;">Only ${cInt(item.adjusted)} left, quantity updated</div>`;
         } else if (!dis && item.left !== null && item.left !== undefined && item.left <= 3) {
-            stockLine = `<div style="font-size:10.5px; color:#c0182b; font-weight:700; margin-top:3px;">Only ${item.left} left</div>`;
+            stockLine = `<div style="font-size:10.5px; color:#c0182b; font-weight:700; margin-top:3px;">Only ${cInt(item.left)} left</div>`;
         }
         const priceLine = dis
             ? `<div class="m-item-price" style="color:#c0182b; letter-spacing:1px;">SOLD OUT</div>`
@@ -527,8 +573,8 @@ function renderCart() {
                 <input type="checkbox" class="m-item-check" ${(item.selected && !dis) ? 'checked' : ''} ${dis ? 'disabled' : ''}
                     onchange="toggleSelect('${item.id}')">
                 <div class="m-item-info">
-                    <div class="m-item-name">${item.name}</div>
-                    <div class="m-item-meta">Color: ${item.color} | Qty: ${item.qty}</div>
+                    <div class="m-item-name">${cEsc(item.name)}</div>
+                    <div class="m-item-meta">Color: ${cEsc(item.color)} | Qty: ${item.qty}</div>
                     ${priceLine}
                     ${stockLine}
                     <span class="m-remove-text" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#e6007e; font-weight:800; font-size:10px;">REMOVE</span>
@@ -545,18 +591,18 @@ function renderCart() {
         totalDiscount += g.discount;
         let lines = "";
         if (g.discount > 0) {
-            lines += `<div style="color:#1e8e4e;">&#10003; Bundle offer on ${g.name}: you save <b>${CURRENCY} ${g.discount}</b></div>`;
+            lines += `<div style="color:#1e8e4e;">&#10003; Bundle offer on ${cEsc(g.name)}: you save <b>${CURRENCY} ${g.discount}</b></div>`;
         }
         if (g.next) {
             const need = g.next.n - g.qty;
-            lines += `<div>Add <b style="color:#e6007e;">${need} more</b> ${g.name} to get ${g.next.n} for <b style="color:#e6007e;">${CURRENCY} ${g.next.p}</b></div>`;
+            lines += `<div>Add <b style="color:#e6007e;">${need} more</b> ${cEsc(g.name)} to get ${g.next.n} for <b style="color:#e6007e;">${CURRENCY} ${g.next.p}</b></div>`;
         }
         if (lines) offerHtml += `<div class="m-cart-offer-line" style="${boxStyle}">${lines}</div>`;
     });
     if (html) html += offerHtml;
 
     if (html && _cartNotice) {
-        html = `<div class="m-cart-notice" style="margin:0 0 12px; padding:10px 12px; background:#fff5f9; border:1px solid #f6b3d4; border-radius:12px; font-size:11.5px; font-weight:700; color:#800000; line-height:1.5;">&#9888; ${_cartNotice}</div>` + html;
+        html = `<div class="m-cart-notice" style="margin:0 0 12px; padding:10px 12px; background:#fff5f9; border:1px solid #f6b3d4; border-radius:12px; font-size:11.5px; font-weight:700; color:#800000; line-height:1.5;">&#9888; ${cEsc(_cartNotice)}</div>` + html;
     }
 
     container.innerHTML = html || "<div class='m-cart-empty'><b>&#9670;</b><span>Your bag is waiting</span><span>Fill it with something you will adore</span></div>";
@@ -582,10 +628,10 @@ function removeFromCart(id) {
 }
 
 function updateGlobalIcon() {
-    const count = MUSFIRAS_CART.reduce((acc, i) => acc + (i.soldOut ? 0 : (parseInt(i.qty) || 0)), 0);
+    const count = MUSFIRAS_CART.reduce((acc, i) => acc + (i.soldOut ? 0 : cInt(i.qty)), 0);
     const badge = document.getElementById('m-global-count');
     if (badge) {
-        badge.innerText = count;
+        badge.innerText = String(count);
         badge.style.display = count > 0 ? 'flex' : 'none';
     }
 }
@@ -729,6 +775,11 @@ function proceedToCheckout() {
     setTimeout(go, 7000);
 }
 
+// [FIX] "|" aur "||" order link ke separator hain, naam / color mein hon to order kharab ho jata hai
+function cLinkSafe(s) {
+    return String(s == null ? '' : s).replace(/\|/g, '/').replace(/\s+/g, ' ').trim();
+}
+
 function proceedToCheckoutNow() {
     const selectedItems = MUSFIRAS_CART.filter(i => i.selected && !i.soldOut);
     if (selectedItems.length === 0) {
@@ -736,9 +787,9 @@ function proceedToCheckoutNow() {
     }
 
     const dataString = selectedItems.map(i => {
-        const o2 = parseInt(i.offer2) || 0, o3 = parseInt(i.offer3) || 0;
+        const o2 = cInt(i.offer2), o3 = cInt(i.offer3);
         const offerPart = (o2 || o3) ? `|${o2}|${o3}` : '';
-        return `${i.name}|${i.color}|${i.qty}|${i.price}${offerPart}`;
+        return `${cLinkSafe(i.name)}|${cLinkSafe(i.color)}|${cInt(i.qty)}|${cInt(i.price)}${offerPart}`;
     }).join('||');
     const baseSubtotal = selectedItems.reduce((acc, i) => acc + (i.price * i.qty), 0);
     const discount = cartOfferGroups(selectedItems).reduce((acc, g) => acc + g.discount, 0);

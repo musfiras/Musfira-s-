@@ -1,28 +1,71 @@
 ---
 // Ye code System.io ke footer wale script mein tha, lekin ye FOOTER ka nahi, PRODUCT CARDS ka hai
 // (features popup khulna/band hona aur star rating bharna). Product cards wale step mein iski CSS aayegi.
+//
+// [FIX v2] Language / region safety:
+//  - Card na mile (ya popup ka HTML na ho) to error nahi aata, page chalta rahta hai.
+//  - Rating kisi bhi zaban ke digits aur "4,5" (comma) dono se sahi parhi jati hai, hamesha "4.5" (English digits) dikhti hai.
+//  - Rating 0 se 5 ke bahar ho to bhi stars theek rehte hain.
+//  - Esc dabane par features popup band ho jata hai, aur scroll lock hamesha khul jata hai.
 ---
 <script is:inline>
+  /* Digits: Layout ka helper maujood ho to wahi, warna apna (Arabic / Urdu / Hindi -> 0-9) */
+  function m_digits(s) {
+    s = String(s == null ? '' : s);
+    if (window.__mx && typeof window.__mx.digits === 'function') return window.__mx.digits(s);
+    return s.replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+            .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+            .replace(/[\u0966-\u096F]/g, function (d) { return String(d.charCodeAt(0) - 0x0966); });
+  }
+
   function m_open_features(el) {
-    var card = el.closest('.m-elite-contain-card');
-    card.querySelector('.m-features-overlay').classList.add('m-open');
-    document.body.classList.add('m-scroll-lock');
+    try {
+      var card = el && el.closest ? el.closest('.m-elite-contain-card') : null;
+      if (!card) return;
+      var ov = card.querySelector('.m-features-overlay');
+      if (!ov) return;
+      ov.classList.add('m-open');
+      document.body.classList.add('m-scroll-lock');
+    } catch (e) {}
   }
+
   function m_close_features(el) {
-    var card = el.closest('.m-elite-contain-card');
-    card.querySelector('.m-features-overlay').classList.remove('m-open');
-    document.body.classList.remove('m-scroll-lock');
+    try {
+      var card = el && el.closest ? el.closest('.m-elite-contain-card') : null;
+      if (card) {
+        var ov = card.querySelector('.m-features-overlay');
+        if (ov) ov.classList.remove('m-open');
+      }
+      // scroll lock sirf tab hatao jab koi aur features popup khula na ho
+      if (!document.querySelector('.m-features-overlay.m-open')) {
+        document.body.classList.remove('m-scroll-lock');
+      }
+    } catch (e) {
+      document.body.classList.remove('m-scroll-lock');
+    }
   }
+
+  // Esc dabane par khula hua features popup band
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var open = document.querySelectorAll('.m-features-overlay.m-open');
+    for (var i = 0; i < open.length; i++) open[i].classList.remove('m-open');
+    if (open.length) document.body.classList.remove('m-scroll-lock');
+  });
+
   (function () {
     function initRatings() {
       document.querySelectorAll('.m-elite-contain-card[data-rating]').forEach(function (card) {
         if (card.dataset.ratingInit === 'true') return;
-        var rating = parseFloat(card.getAttribute('data-rating')) || 0;
-        var pct = Math.max(0, Math.min(100, (rating / 5) * 100));
+        var raw = m_digits(card.getAttribute('data-rating')).replace(',', '.');
+        var rating = parseFloat(raw);
+        if (isNaN(rating)) rating = 0;
+        rating = Math.max(0, Math.min(5, rating));
+        var pct = (rating / 5) * 100;
         var fillEl = card.querySelector('.m-stars-fill');
         var numEl = card.querySelector('.m-rating-num');
         if (fillEl) fillEl.style.width = pct + '%';
-        if (numEl) numEl.textContent = rating.toFixed(1);
+        if (numEl) numEl.textContent = rating.toFixed(1);   // hamesha English digits: 4.5
         card.dataset.ratingInit = 'true';
       });
     }

@@ -1,4 +1,3 @@
-
 <!-- Full "SCRIPT" Of PRODUCT Listing Compelte Process A_Z -->
 
 <!-- ======================================================================
@@ -7,18 +6,49 @@
             -> D (info bubbles + auto scroll) -> E (card auto stock) -> F (desktop left column)
             -> G (LIVE STOCK Account B se) -> H (SOLD BAG ICON, real sale ke baad)
 
-     [UPDATED v2]
-     1) A aur B ke delivery fix mein "change" event ab sirf tab chalta hai jab recalcTotal ban chuki ho
-        (pehle console mein "recalcTotal is not defined" error aata tha).
-     2) G mein diagnostics: console mein  __mLiveStockInfo  likh kar dekhein ke kitne products match hue.
+     [UPDATED v2] A aur B ke delivery fix mein "change" event ab sirf tab chalta hai jab recalcTotal ban chuki ho.
+     [UPDATED v3] G mein asli qty data-stock-orig mein; H (naya): color box ke neeche sold icon.
 
-     [UPDATED v3]
-     3) G mein asli (HTML wali) qty data-stock-orig mein yaad rakhi jati hai.
-     4) H (naya): har color box ke neeche chota bag icon + sold qty, sirf real sale ke baad.
-        Sold = data-stock-orig minus data-stock (B ki live qty). Fresh product par kuch nahi aata.
+     [FIX v4]  Language / region / order safety (design ya logic mein koi tabdeeli nahi):
+       1) Script 0 mein 3 helper: __mInt (kisi bhi zaban ke digits se sahi number), __mEsc (HTML safe), __mLink (order link safe).
+       2) Checkout link: naam / color mein "|" ho to order kharab na ho. data-checkout na ho to default /check_out.
+          Price 0 ya ghalat ho to checkout nahi jata (purana fallback price na lage).
+       3) Delivery hamesha FREE (0). Express option translate ya kisi bhi wajah se select ho to bhi total nahi badalta.
+       4) Color option ki value escape hoti hai (naam mein " ya ' ho to dropdown nahi tootta).
+       5) Alert / popup mein color ka naam escape hota hai. Alert box na mile to browser alert chalta hai (kuch silent nahi).
+       6) Info card ka "Fast Delivery" pill ab text se nahi, bubble ke key (data-k) se tay hota hai (translate se nahi hilta).
+       7) Return ka text seedha 30 din likha hai (pehle 7 likha tha aur baad mein script badalti thi).
+       8) Popup / row / stock JSON mein kuch na mile to error nahi aata, page chalta rahta hai.
      ====================================================================== -->
 
 <!-- ========================= 0 (HELPER - sab se pehle) ========================= -->
+<script>
+/* [FIX v4] Shared helpers: dusre scripts yehi use karte hain */
+(function () {
+  if (window.__mInt) return;
+  function digits(s) {
+    s = String(s == null ? '' : s);
+    if (window.__mx && typeof window.__mx.digits === 'function') return window.__mx.digits(s);   /* Layout ka helper */
+    return s.replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+            .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+            .replace(/[\u0966-\u096F]/g, function (d) { return String(d.charCodeAt(0) - 0x0966); })
+            .replace(/[\u09E6-\u09EF]/g, function (d) { return String(d.charCodeAt(0) - 0x09E6); });
+  }
+  /* parseInt jo kisi bhi zaban ke digits, commas aur spaces ke saath sahi chalta hai. Na samajh aaye to 0. */
+  window.__mInt = function (v) {
+    var n = parseInt(digits(v).replace(/[,\s\u066B\u066C\u00a0\u202f]/g, ''), 10);
+    return isNaN(n) ? 0 : n;
+  };
+  window.__mEsc = function (s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+  /* "|" aur "||" order link ke separator hain, naam / color mein hon to order kharab ho jata hai */
+  window.__mLink = function (s) {
+    return String(s == null ? '' : s).replace(/\|/g, '/').replace(/\s+/g, ' ').trim();
+  };
+})();
+</script>
+
 <script>
 /* Popup khulte waqt baqi scripts ke observers thori der ruk jate hain (0.6 sec), taake popup ki
    slide animation ke dauran page par bhaari kaam na ho aur animation jhatke ke bagair chale.
@@ -219,7 +249,10 @@
       var card = cards[i];
       var chip = card.querySelector('.m-info-free');
       var t = card.querySelector('.m-info-title');
-      var isDel = /deliver/i.test(t ? t.textContent : (card.textContent || '').replace(chip ? chip.textContent : '', ''));
+      /* [FIX v4] bubble ka key (data-k) pehle; text sirf purane card ke liye backup */
+      var k = card.getAttribute('data-k');
+      var isDel = k ? (k === 'delivery')
+                    : /deliver/i.test(t ? t.textContent : (card.textContent || '').replace(chip ? chip.textContent : '', ''));
       if (isDel && !chip) {
         var c = document.createElement('div');
         c.className = 'm-info-free';
@@ -251,15 +284,26 @@
 <!-- ========================= B ========================= -->
 <script>
 (function() {
+    /* [FIX v4] data-stock ko mehfooz tareeqe se parho: kharab ho ya na ho to khali object, error nahi */
+    function stockOf(root) {
+        try {
+            var o = JSON.parse(root.getAttribute('data-stock') || '{}');
+            return (o && typeof o === 'object') ? o : {};
+        } catch (e) { return {}; }
+    }
+
     // 1. Popup Open Logic
     window.openElitePop = function(id) {
         const root = document.getElementById(id);
+        if (!root) return;
         const overlay = root.querySelector('.m-pop-overlay');
+        if (!overlay) return;
         if (window.__mBusyFor) window.__mBusyFor(650);   // baqi scripts animation ke dauran ruk jayen
 
         // sari tayyari popup chhupa hone par (jhatke ke bagair)
         setupDots(id);
-        if(root.querySelector('.m-config-rows').children.length === 0) addDynamicRow(id);
+        const cfgRows = root.querySelector('.m-config-rows');
+        if (cfgRows && cfgRows.children.length === 0) addDynamicRow(id);
         refreshSwatches(root); // popup khulte hi stock labels taaza
         if (window.__mFixDelivery) window.__mFixDelivery();
         if (window.recalcTotal) window.recalcTotal(id);   // offer box / total pehle hi tayyar, khulte waqt hilta nahi
@@ -284,20 +328,25 @@
         } catch (e) {}
     };
 
-    window.closeElitePop = function(id) { 
-        document.getElementById(id).querySelector('.m-pop-overlay').style.display = 'none'; 
+    window.closeElitePop = function(id) {
+        const root = document.getElementById(id);
+        if (!root) return;
+        const ov = root.querySelector('.m-pop-overlay');
+        if (ov) ov.style.display = 'none';
         document.body.style.overflow = '';
         document.documentElement.style.overflow = '';
-        if (window.__mCloseInfo) window.__mCloseInfo(document.getElementById(id));
+        if (window.__mCloseInfo) window.__mCloseInfo(root);
     };
 
     // 2. Dynamic Row with Duplicate Color Blocking
     window.addDynamicRow = function(id) {
         const root = document.getElementById(id);
-        const stock = JSON.parse(root.getAttribute('data-stock'));
+        if (!root) return;
+        const stock = stockOf(root);
         const container = root.querySelector('.m-config-rows');
+        if (!container) return;
         const availableColors = Object.keys(stock);
-        
+
         const usedColors = Array.from(container.querySelectorAll('.m-color-select')).map(s => s.value);
         const trulyAvailable = availableColors.filter(c => !usedColors.includes(c));
 
@@ -316,15 +365,15 @@
 
         const row = document.createElement('div');
         row.className = 'm-row-item';
-        let opts = ''; 
+        let opts = '';
         availableColors.forEach(c => {
-            const isSold = stock[c] <= 0 ? ' (SOLD OUT)' : '';
-            opts += `<option value="${c}">${c}${isSold}</option>`;
+            const isSold = (Number(stock[c]) || 0) <= 0 ? ' (SOLD OUT)' : '';
+            opts += '<option value="' + __mEsc(c) + '">' + __mEsc(c) + isSold + '</option>';   // [FIX v4] escape
         });
 
         // pehle wo color jo stock mein ho
         const nextColor = inStockLeft.length ? inStockLeft[0] : trulyAvailable[0];
-        const initialQty = stock[nextColor] <= 0 ? 0 : 1;
+        const initialQty = (Number(stock[nextColor]) || 0) <= 0 ? 0 : 1;
 
         row.innerHTML = `
             <div class="m-pink-popup" style="display:none;">⚠️ COLOR ALREADY SELECTED!</div>
@@ -337,7 +386,7 @@
             ${container.children.length > 0 ? `<span class="m-remove-btn" onclick="this.parentElement.remove();recalcTotal('${id}')">REMOVE</span>` : ''}
             <div class="m-alert-anchor"></div>
         `;
-        
+
         container.appendChild(row);
         row.querySelector('.m-color-select').value = nextColor;
         refreshSwatches(root);
@@ -346,7 +395,8 @@
 
     window.checkDuplicateAndStock = function(select, id) {
         const root = document.getElementById(id);
-        const stock = JSON.parse(root.getAttribute('data-stock'));
+        if (!root) return;
+        const stock = stockOf(root);
         const container = root.querySelector('.m-config-rows');
         const selectedColor = select.value;
         const currentId = select.parentElement;
@@ -372,23 +422,28 @@
 
         const finalColor = select.value;
         const inp = currentId.querySelector('input');
-        inp.value = (stock[finalColor] <= 0) ? 0 : 1;
+        inp.value = ((Number(stock[finalColor]) || 0) <= 0) ? 0 : 1;
         recalcTotal(id);
     };
 
     window.qtyStep = function(btn, d, id) {
         const row = btn.closest('.m-row-item');
+        const root = document.getElementById(id);
+        if (!row || !root) return;
         const inp = row.querySelector('input');
-        const color = row.querySelector('.m-color-select').value;
-        const max = JSON.parse(document.getElementById(id).getAttribute('data-stock'))[color];
+        const sel = row.querySelector('.m-color-select');
+        if (!inp || !sel) return;
+        const color = sel.value;
+        let max = Number(stockOf(root)[color]);
+        if (isNaN(max)) max = 0;
         const pinkPopup = row.querySelector('.m-pink-popup');
 
         if (max <= 0) { showEliteAlert("This product/color/piece is currently out of stock!"); return; }
-        
-        let val = parseInt(inp.value) + d;
-        if(val >= 1 && val <= max) { 
-            inp.value = val; 
-            recalcTotal(id); 
+
+        let val = __mInt(inp.value) + d;   // [FIX v4] kisi bhi zaban ke digits chalte hain
+        if(val >= 1 && val <= max) {
+            inp.value = val;
+            recalcTotal(id);
         } else if(val > max) {
             if(pinkPopup) {
                 pinkPopup.innerText = "⚠️ STOCK LIMIT REACHED!";
@@ -423,7 +478,7 @@
     function colorHex(root, name) {
         try {
             var o = JSON.parse(root.getAttribute('data-colors') || '{}');
-            if (o && o[name]) return o[name];
+            if (o && o[name]) return String(o[name]).replace(/[^#0-9a-zA-Z(),.% ]/g, '');   // [FIX v4] style mein sirf safe huroof
         } catch (e) {}
         var n = String(name).toLowerCase();
         for (var i = 0; i < COLOR_MAP.length; i++) { if (n.indexOf(COLOR_MAP[i][0]) > -1) return COLOR_MAP[i][1]; }
@@ -439,18 +494,18 @@
 
     function pickColor(root, row, c) {
         var sel = row.querySelector('.m-color-select');
-        var stock = JSON.parse(root.getAttribute('data-stock'));
+        var stock = stockOf(root);
         if (!sel || sel.value === c) {
             // jo color pehle se selected hai wo bhi sold out ho to alert
             if (sel && (Number(stock[c]) || 0) <= 0) {
-                showEliteAlert("<span class='m-al-title'>COLOR UNAVAILABLE</span><span class='m-al-text'>" + c + " is currently sold out.</span>");
+                showEliteAlert("<span class='m-al-title'>COLOR UNAVAILABLE</span><span class='m-al-text'>" + __mEsc(c) + " is currently sold out.</span>");
             }
             return;
         }
         // sold out color: select hi nahi hota, soft alert aata hai
         if ((Number(stock[c]) || 0) <= 0) {
             if (typeof showEliteAlert === 'function' && document.getElementById('m-elite-alert')) {
-                showEliteAlert("<span class='m-al-title'>COLOR UNAVAILABLE</span><span class='m-al-text'>" + c + " is currently sold out. Please choose another color.</span>");
+                showEliteAlert("<span class='m-al-title'>COLOR UNAVAILABLE</span><span class='m-al-text'>" + __mEsc(c) + " is currently sold out. Please choose another color.</span>");
             } else {
                 flashPop(row, '\u26A0\uFE0F SOLD OUT!');
             }
@@ -466,6 +521,7 @@
     function refreshSwatches(root) {
         var stock;
         try { stock = JSON.parse(root.getAttribute('data-stock')); } catch (e) { return; }
+        if (!stock || typeof stock !== 'object') return;
         var names = Object.keys(stock);
         var rows = root.querySelectorAll('.m-row-item');
         var chosen = [];
@@ -525,8 +581,8 @@
     // Offer qeemat normal total se sasti honi chahiye, warna ignore.
     // ==========================================================
     function offerInfo(root, q, price) {
-        var o2 = parseInt(root.getAttribute('data-offer2')) || 0;
-        var o3 = parseInt(root.getAttribute('data-offer3')) || 0;
+        var o2 = __mInt(root.getAttribute('data-offer2'));
+        var o3 = __mInt(root.getAttribute('data-offer3'));
         if (!(o2 > 0 && o2 < price * 2)) o2 = 0;
         if (!(o3 > 0 && o3 < price * 3)) o3 = 0;
         var full = price * q, offered = full;
@@ -629,14 +685,14 @@
         const root = document.getElementById(id);
         if (!root) return;
         let qTotal = 0;
-        root.querySelectorAll('.m-row-item input').forEach(i => { qTotal += (parseInt(i.value) || 0); });
-        const price = parseInt(root.getAttribute('data-base')) || 0;
-        const shipSelect = root.querySelector('.m-delivery-select');
-        let ship = (shipSelect && shipSelect.value) ? parseInt(shipSelect.value) || 0 : 0;
+        root.querySelectorAll('.m-row-item input').forEach(i => { qTotal += __mInt(i.value); });
+        const price = __mInt(root.getAttribute('data-base'));
+        // [FIX v4] Delivery hamesha FREE (checkout page bhi yahi karta hai). Dropdown ki kisi bhi value ka total par asar nahi.
+        const ship = 0;
         const info = offerInfo(root, qTotal, price);
         const finalValue = (price * qTotal) - info.discount + ship;
         const display = root.querySelector('.m-final-bill span');
-        if (display) display.innerText = finalValue;
+        if (display) display.innerText = String(finalValue);
         refreshSwatches(root);
         updateOfferUI(root, qTotal, price, ship, info);
     };
@@ -644,53 +700,65 @@
     // goCheckout: delivery select karna zaroori nahi
     window.goCheckout = function(id) {
         const root = document.getElementById(id);
-        const shipSelect = root.querySelector('.m-delivery-select');
-        const shipValue = (shipSelect && shipSelect.value) ? (parseInt(shipSelect.value) || 0) : 0;
-        const shipText = (shipSelect && shipSelect.selectedIndex >= 0 && shipSelect.options[shipSelect.selectedIndex])
-            ? shipSelect.options[shipSelect.selectedIndex].text.split(' ')[0]
-            : 'Standard';
+        if (!root) return;
 
-        const itemName = root.getAttribute('data-pname');
-        const basePrice = parseInt(root.getAttribute('data-base'));
-        const checkoutURL = root.getAttribute('data-checkout');
+        const itemName = __mLink(root.getAttribute('data-pname'));          // [FIX v4] "|" order link ko na tore
+        const basePrice = __mInt(root.getAttribute('data-base'));
+        const checkoutURL = root.getAttribute('data-checkout') || 'https://www.musfiras.com/check_out';
+        if (!itemName || basePrice < 1) {
+            showEliteAlert("Sorry, this product cannot be ordered right now. Please refresh the page and try again.");
+            return;
+        }
+
         const rows = root.querySelectorAll('.m-row-item');
         let orderData = []; let totalQty = 0;
         const info = offerInfo(root, 0, basePrice);
         const offerPart = (info.o2 || info.o3) ? `|${info.o2}|${info.o3}` : '';
         rows.forEach(row => {
-            const color = row.querySelector('.m-color-select').value;
-            const qty = parseInt(row.querySelector('input').value) || 0;
+            const sel = row.querySelector('.m-color-select');
+            const inp = row.querySelector('input');
+            if (!sel || !inp) return;
+            const color = __mLink(sel.value) || 'Default';
+            const qty = Math.min(__mInt(inp.value), 999);
             if (qty > 0) { totalQty += qty; orderData.push(`${itemName}|${color}|${qty}|${basePrice}${offerPart}`); }
         });
         if (totalQty === 0) { showEliteAlert("Please select at least one available color!"); return; }
 
         const discount = offerInfo(root, totalQty, basePrice).discount;
         const discSubtotal = (basePrice * totalQty) - discount;
-        
-        window.location.href = `${checkoutURL}?data=${encodeURIComponent(orderData.join('||'))}&delivery=${encodeURIComponent(shipText)}&subtotal=${discSubtotal}&total=${discSubtotal + shipValue}`;
+
+        // delivery hamesha Standard + FREE
+        window.location.href = `${checkoutURL}?data=${encodeURIComponent(orderData.join('||'))}&delivery=Standard&subtotal=${discSubtotal}&total=${discSubtotal}`;
     };
 
     window.showEliteAlert = function(msg) {
         const alertBox = document.getElementById('m-elite-alert');
         const alertOverlay = document.getElementById('m-alert-overlay');
-        if(alertBox) {
-            alertBox.querySelector('p').innerHTML = msg; 
+        if(alertBox && alertOverlay) {
+            alertBox.querySelector('p').innerHTML = msg;
             alertBox.style.display = 'block';
             alertOverlay.style.display = 'block';
-            alertBox.style.zIndex = "2147483647"; 
+            alertBox.style.zIndex = "2147483647";
             alertOverlay.style.zIndex = "2147483646";
+        } else {
+            // [FIX v4] alert box page par na ho to bhi customer ko message milay
+            try { alert(String(msg).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()); } catch (e) {}
         }
     };
 
     window.closeEliteAlert = function() {
-        document.getElementById('m-elite-alert').style.display = 'none';
-        document.getElementById('m-alert-overlay').style.display = 'none';
+        const a = document.getElementById('m-elite-alert');
+        const o = document.getElementById('m-alert-overlay');
+        if (a) a.style.display = 'none';
+        if (o) o.style.display = 'none';
     };
 
     function setupDots(id) {
         const root = document.getElementById(id);
+        if (!root) return;
         const imgs = root.querySelectorAll('.m-track img');
         const wrapper = root.querySelector('.m-dots-wrapper');
+        if (!wrapper) return;
         wrapper.innerHTML = '';
         imgs.forEach((_, i) => {
             const d = document.createElement('div');
@@ -701,6 +769,7 @@
 
     window.goNext = function(btn) {
         const t = btn.parentElement.querySelector('.m-track');
+        if (!t) return;
         if (t.scrollLeft + t.clientWidth >= t.scrollWidth - 15) t.scrollTo({left: 0, behavior: 'smooth'});
         else t.scrollBy({left: t.clientWidth, behavior: 'smooth'});
     };
@@ -785,9 +854,9 @@
   var GAP = 6; /* button aur pill ke beech ka gap (px) */
 
   function offerText(root) {
-    var price = parseInt(root.getAttribute('data-base')) || 0;
-    var o2 = parseInt(root.getAttribute('data-offer2')) || 0;
-    var o3 = parseInt(root.getAttribute('data-offer3')) || 0;
+    var price = __mInt(root.getAttribute('data-base'));
+    var o2 = __mInt(root.getAttribute('data-offer2'));
+    var o3 = __mInt(root.getAttribute('data-offer3'));
     if (!(o2 > 0 && o2 < price * 2)) o2 = 0;
     if (!(o3 > 0 && o3 < price * 3)) o3 = 0;
     if (o2) return 'Buy 2 \u00b7 Save AED ' + (price * 2 - o2);
@@ -886,7 +955,7 @@
   });
 
   /* ---- 3) INFO BUBBLES ---- */
-  /* TEXT YAHAN SE BADLO (chhota rakho). Return ke din (7 / 15) apni policy ke hisaab se likho. */
+  /* TEXT YAHAN SE BADLO (chhota rakho). Return ke din apni policy ke hisaab se likho. */
   var INFO = {
     delivery: {
       label: 'Fast Delivery', title: 'Fast Delivery',
@@ -895,7 +964,7 @@
     },
     returns: {
       label: 'Easy Returns', title: 'Return & Replacement',
-      text: 'Return or replacement within 7 days of delivery if your item arrives damaged, defective or incorrect. Just contact us and we will help.',
+      text: 'Return or replacement within 30 days of delivery if your item arrives damaged, defective or incorrect. Just contact us and we will help.',
       icon: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.5"/><path d="M4 20v-4.5h4.5"/></svg>'
     },
     support: {
@@ -946,6 +1015,7 @@
     if (!card || !bubble) return;
     if (bubble.classList.contains('is-open')) { closeInfo(wrap); return; }   /* dobara click = band */
     wrap.querySelectorAll('.m-ib').forEach(function (b) { b.classList.toggle('is-open', b === bubble); });
+    card.setAttribute('data-k', key);   /* [FIX v4] konsa card hai, text se nahi key se pehchana jata hai */
     card.querySelector('.m-info-title').textContent = INFO[key].title;
     card.querySelector('.m-info-text').textContent = INFO[key].text;
     card.classList.add('is-open');
@@ -1163,8 +1233,8 @@
       if (!cols || typeof cols !== 'object') return;
       var np = norm(p), o = {};
       Object.keys(cols).forEach(function (c) {
-        var q = parseInt(cols[c], 10);
-        if (isNaN(q) || q < 0) q = 0;
+        var q = __mInt(cols[c]);
+        if (q < 0) q = 0;
         o[norm(c)] = q; count++;
       });
       if (np) lk[np] = o;
@@ -1181,8 +1251,8 @@
       if (!cols || typeof cols !== 'object') return;
       var np = norm(p), o = {}, any = false;
       Object.keys(cols).forEach(function (c) {
-        var q = parseInt(cols[c], 10);
-        if (!isNaN(q) && q > 0) { o[norm(c)] = q; any = true; }
+        var q = __mInt(cols[c]);
+        if (q > 0) { o[norm(c)] = q; any = true; }
       });
       if (np && any) lk[np] = o;
     });
@@ -1211,7 +1281,7 @@
       if (!sel || !inp) continue;
       var max = Number(next[sel.value]);
       if (isNaN(max)) continue;
-      var v = parseInt(inp.value, 10) || 0;
+      var v = __mInt(inp.value);
       if (max <= 0) { if (v !== 0) inp.value = 0; }
       else if (v > max) { inp.value = max; }
     }
@@ -1371,4 +1441,3 @@
   });
 })();
 </script>
-

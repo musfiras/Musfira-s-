@@ -13,6 +13,7 @@ import MetaPixel from '../components/MetaPixel.astro';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#FFB6C1" />
+  <meta name="google" content="notranslate" />
   <title>Secure Checkout | Musfira's</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -382,7 +383,7 @@ const SCRIPT_URL = "https://store.musfiras.workers.dev";
 const ORDER_KEY = "4Zr0aVGBeRo0aqIE52k1Jq";
 const THANK_YOU_URL = "https://www.musfiras.com/thank_you";
 const SHOP_URL = "https://www.musfiras.com/store";
-const PAGE_VERSION = "order-page v9 amount-fix + summary-dropdown + thumbs + autoscroll (2026-11-16)";
+const PAGE_VERSION = "order-page v11 free-delivery + per-item-price + any-language-digits (2026-11-16)";
 
 try { console.log("Musfira's " + PAGE_VERSION); } catch (e) {}
 
@@ -393,24 +394,31 @@ try {
     document.head.appendChild(pc);
 } catch (e) {}
 
+// =====================================================================
+//  DIGITS: Arabic-Indic (٠١٢٣) aur Persian (۰۱۲۳) digits ko hamesha English (0123) bana do.
+//  Is se customer ke phone / keyboard / language ka koi asar nahi parta.
+// =====================================================================
+function latinDigits(s) {
+    return String(s == null ? "" : s)
+        .replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+        .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); });
+}
+// URL ya kisi bhi text se poora number nikalna (commas / spaces / Arabic digits sab theek)
+function numParam(v) {
+    const s = latinDigits(v).replace(/[,\s\u066B\u066C\u00a0\u202f]/g, "");
+    const n = parseInt(s, 10);
+    return isNaN(n) ? 0 : n;
+}
+
 const urlParams = new URLSearchParams(window.location.search);
 let products = [];
-let deliveryType = urlParams.get('delivery') || "Standard";
-let totalPayable = parseInt(urlParams.get('total')) || 0;
-let subtotalVal = parseInt(urlParams.get('subtotal')) || 0;
+let deliveryType = "Standard";   // sirf COD + free delivery: link mein delivery=express bhi ho to ignore
+let totalPayable = numParam(urlParams.get('total'));
+let subtotalVal = numParam(urlParams.get('subtotal'));
 let stockBlocked = false;
 
+// Delivery hamesha FREE (koi shipping charge nahi)
 let shipping = 0;
-if (deliveryType.toLowerCase().includes("express")) {
-    if (totalPayable > 0 && subtotalVal > 0) {
-        shipping = totalPayable - subtotalVal;
-    }
-    if (shipping <= 0) {
-        shipping = parseInt(urlParams.get('shipping')) || 250;
-    }
-} else {
-    shipping = 0;
-}
 
 // Image link: sirf safe (http/https ya / se shuru hone wala) link hi chalta hai
 function safeImg(u) {
@@ -434,17 +442,16 @@ if (urlParams.has('data')) {
         if (parts.length >= 3) {
             let pName = parts[0] ? parts[0].trim() : "Premium Item";
             let pColor = parts[1] ? parts[1].trim() : "Default";
-            let pQty = (parts[2] && !isNaN(parts[2]) && parseInt(parts[2]) > 0) ? parseInt(parts[2]) : 1;
+            let pQty = numParam(parts[2]);
+            if (pQty < 1) pQty = 1;
 
-            let pPrice = 2699;
-            if (parts[3] && !isNaN(parts[3])) {
-                pPrice = parseInt(parts[3]);
-            } else {
+            let pPrice = numParam(parts[3]);
+            if (pPrice <= 0) {
                 pPrice = (subtotalVal % 2799 === 0 && subtotalVal > 0) ? 2799 : 2699;
             }
 
-            let pOffer2 = (parts[4] && !isNaN(parts[4])) ? parseInt(parts[4]) : 0;
-            let pOffer3 = (parts[5] && !isNaN(parts[5])) ? parseInt(parts[5]) : 0;
+            let pOffer2 = numParam(parts[4]);
+            let pOffer3 = numParam(parts[5]);
             let pImg = safeImg(parts[6] || '');
 
             products.push({ name: pName, color: pColor, qty: pQty, price: pPrice, offer2: pOffer2, offer3: pOffer3, img: pImg });
@@ -486,7 +493,7 @@ function escHtml(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-// [FIX] Amount hamesha English digits mein (5,548). Customer ke phone ki language ka asar nahi hota.
+// Amount hamesha English digits mein (5,548). Customer ke phone ki language ka asar nahi hota.
 function fmtN(n) {
     return Number(n).toLocaleString('en-US');
 }
@@ -531,9 +538,8 @@ if (products.length > 0) {
 
     const offerDiscount = calcBundleDiscount(products);
 
-    if (totalPayable === 0 || urlParams.has('data')) {
-        totalPayable = calculatedSubtotal - offerDiscount + shipping;
-    }
+    // Total hamesha items se hisaab hota hai (URL ke purane total / 250 ka asar nahi)
+    totalPayable = calculatedSubtotal - offerDiscount + shipping;
     subtotalVal = calculatedSubtotal;
 
     document.getElementById('displayQty').innerText = totalQty;
@@ -553,6 +559,8 @@ if (products.length > 0) {
         oldTot.style.display = 'inline';
     }
     window.__offerDiscount = offerDiscount;
+    // Quantity screen ke text se nahi, seedha number se (browser translate se digits na badlein)
+    window.__totalQty = totalQty;
 }
 
 // =====================================================================
@@ -867,9 +875,11 @@ async function sendOrder() {
 
     if (products.length === 0) { showEliteAlert("Your cart is empty. Please add items first.", 5000); return; }
     if (stockBlocked) { showEliteAlert("Some items are no longer available. Please go back to your bag.", 6000); return; }
+    if (!(totalPayable > 0)) { showEliteAlert("Order total could not be calculated. Please go back to your bag and try again.", 6000); return; }
 
     const name = document.getElementById('custName').value.trim();
-    let phone = document.getElementById('custPhone').value.replace(/[\s\-()]/g, "");
+    // Phone: Arabic / Persian digits bhi theek ho jate hain
+    let phone = latinDigits(document.getElementById('custPhone').value).replace(/[\s\-()]/g, "");
     const address = document.getElementById('custAddress').value.trim();
     const city = document.getElementById('custCity').value.trim();
     const email = document.getElementById('custEmail').value.trim();
@@ -889,11 +899,12 @@ async function sendOrder() {
     btn.innerHTML = "PLACING ORDER... ✨";
     btn.classList.add('is-loading');
 
-    // [FIX] Amount seedha number se banta hai (screen ke text se nahi), hamesha English digits mein
+    // Amount seedha number se banta hai (screen ke text se nahi), hamesha English digits mein
     const sTotal = fmtN(subtotalVal);
-    const tQty = document.getElementById('displayQty').innerText;
+    const tQty = String(window.__totalQty || products.reduce((s, p) => s + p.qty, 0));
     const tPayable = fmtN(totalPayable);
-    let orderDetails = products.map(p => `${p.name} [${p.color}] x${p.qty}`).join(" | ");
+    // Har product ki apni qeemat: "Name [Color] x2 @2699" (@ ke baad ek piece ki qeemat)
+    let orderDetails = products.map(p => `${p.name} [${p.color}] x${p.qty} @${p.price}`).join(" | ");
 
     const sig = [name, phone, address, city, email, orderDetails, tQty, tPayable, deliveryType, method].join("~");
     const generatedOrderId = (sig === lastSig && lastOrderId) ? lastOrderId : generateUniqueOrderId();
@@ -961,6 +972,15 @@ document.getElementById('orderBtn').addEventListener('click', sendOrder);
         });
     });
 
+    // Phone box mein Arabic digits likhe jayen to usi waqt English ban jayen
+    const ph = document.getElementById('custPhone');
+    if (ph) {
+        ph.addEventListener('input', function () {
+            const fixed = latinDigits(ph.value);
+            if (fixed !== ph.value) ph.value = fixed;
+        });
+    }
+
     const btn = document.getElementById('orderBtn');
     const vv = window.visualViewport;
     if (!btn || !vv) return;
@@ -1006,7 +1026,7 @@ document.getElementById('orderBtn').addEventListener('click', sendOrder);
     let timer = 0;
 
     function complete() {
-        const ph = phoneEl.value.replace(/[\s\-()]/g, "");
+        const ph = latinDigits(phoneEl.value).replace(/[\s\-()]/g, "");
         return nameEl.value.trim().length >= 2 &&
                /^0?\d{9}$/.test(ph) &&
                addrEl.value.trim().length >= 3 &&

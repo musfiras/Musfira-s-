@@ -83,12 +83,6 @@
 #mDash .m-table-el th {background: #f8fafc; padding: 11px 16px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 10px; letter-spacing: .6px; border-bottom: 1px solid var(--border-color); text-align: left; }
 #mDash .m-table-el td {padding: 14px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; position: relative; }
 #mDash .m-table-el tr:hover td {background: #fafbfd; }
-#mDash .status-row-indicator {position: absolute; top: 10px; left: 6px; width: 7px; height: 22px; border-radius: 4px; }
-#mDash .sign-pending {background: var(--color-pending); box-shadow: 0 0 6px var(--color-pending); }
-#mDash .sign-dispatched {background: var(--color-dispatched); box-shadow: 0 0 6px var(--color-dispatched); }
-#mDash .sign-delivered {background: var(--color-delivered); box-shadow: 0 0 6px var(--color-delivered); }
-#mDash .sign-cancelled {background: var(--color-cancelled); box-shadow: 0 0 6px var(--color-cancelled); }
-#mDash .prod-card {background: #fff8fa; padding: 11px; border-radius: 10px; border: 1px solid #fbcfe8; font-size: 12px; color: #374151; max-width: 460px; white-space: pre-line; word-break: break-word; }
 #mDash .order-id-tag {display: inline-block; background: var(--maroon); color: #fff; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; margin-bottom: 5px; }
 #mDash .advance-tag {display: inline-block; background: #ea580c; color: #fff; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; margin-bottom: 5px; margin-left: 4px; }
 #mDash .cod-tag {display: inline-block; background: #0369a1; color: #fff; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; margin-bottom: 5px; margin-left: 4px; }
@@ -115,12 +109,9 @@
 #mDash .btn-action.is-active.btn-deliver {background: #16a34a; border-color: #16a34a; }
 #mDash .btn-action.is-active.btn-cancel {background: #dc2626; border-color: #dc2626; }
 #mDash .act-box {margin-top: 8px; padding: 8px 10px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; max-width: 240px; text-align: left; }
-#mDash .act-title {font-size: 9px; font-weight: 800; color: var(--text-muted); letter-spacing: .6px; text-transform: uppercase; margin-bottom: 3px; }
 #mDash .act-line {font-size: 11px; font-weight: 700; color: #334155; line-height: 1.4; margin-bottom: 2px; }
 #mDash .act-line.none {color: #94a3b8; font-weight: 500; }
-#mDash .act-sub {font-size: 10px; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
-#mDash .act-row {font-size: 10px; font-weight: 600; color: #94a3b8; line-height: 1.5; text-transform: none; text-align: left; }
-#mDash .act-row.sent {color: #16a34a; }
+#mDash .act-sub {font-size: 10px; font-weight: 500; color: var(--text-muted); }
 #mDash .orders-list {padding: 16px 16px 2px; }
 #mDash .order-card {--oc: var(--maroon); background: #fff; border: 1px solid var(--border-color); border-left: 6px solid var(--oc); border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(15,23,42,.05), 0 10px 28px rgba(15,23,42,.08); overflow: hidden; }
 #mDash .order-card.oc-pending {--oc: var(--color-pending); }
@@ -138,11 +129,7 @@
 #mDash .oc-time {text-align: right; }
 #mDash .oc-date {font-size: 13px; font-weight: 800; color: var(--text-main); }
 #mDash .oc-clock {font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 1px; }
-#mDash .oc-body {display: grid; grid-template-columns: 1.1fr 1.5fr 1.1fr 130px; gap: 18px; padding: 16px; align-items: start; }
 #mDash .oc-col {min-width: 0; }
-#mDash .oc-label {font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 7px; }
-#mDash .oc-cust strong {font-size: 14px; display: block; }
-#mDash .oc-addr {font-size: 11px; color: var(--text-muted); display: block; margin-top: 6px; }
 #mDash .oc-empty {text-align: center; color: var(--text-muted); font-weight: 600; padding: 24px 0 30px; }
 #mDash .paginator {padding: 16px; text-align: center; background: #fff; border-top: 1px solid var(--border-color); }
 #mDash .showmore-btn {background: #fff; color: var(--purple-postex); border: 2px solid var(--purple-postex); padding: 10px 28px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; transition: .2s; }
@@ -313,63 +300,6 @@
 #mDash .al-chip.al-red{background:#fef2f2;color:#dc2626;border-color:#fecaca}
 #mDash .al-chip.al-low{background:#fff7ed;color:#ea580c;border-color:#fed7aa}
 
-/* ===== COMPACT ORDER CARD (MOBILE) ===== */
-@media (max-width: 768px) {
-#mDash .orders-list {padding: 8px 6px 0; }
-#mDash .order-card {border-left-width: 4px; border-radius: 12px; margin-bottom: 9px; }
-#mDash .oc-head {padding: 5px 8px; gap: 2px 6px; }
-#mDash .oc-head-left {gap: 4px; }
-#mDash .oc-num {font-size: 9.5px; padding: 2px 6px; }
-#mDash .oc-sel input {width: 16px; height: 16px; }
-#mDash .oc-head .order-id-tag, #mDash .oc-head .advance-tag, #mDash .oc-head .cod-tag, #mDash .oc-head .express-tag, #mDash .oc-head .standard-tag {font-size: 9px; padding: 2px 6px; }
-#mDash .oc-time {text-align: right; display: flex; gap: 2px 6px; align-items: baseline; flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
-#mDash .oc-date {font-size: 10px; }
-#mDash .oc-clock {font-size: 9px; margin-top: 0; }
-#mDash .oc-body {grid-template-columns: 1fr; gap: 5px; padding: 7px 8px; }
-#mDash .oc-body > .oc-col:not(.oc-status) > .oc-label {display: none; }
-#mDash .oc-cust {display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; }
-#mDash .oc-cust strong {display: inline; font-size: 12px; }
-#mDash .oc-cust .wa-btn {margin-top: 0; padding: 4px 9px; font-size: 10.5px; }
-#mDash .oc-addr {flex: 0 0 100%; margin-top: 0; font-size: 10px; line-height: 1.25; }
-#mDash .prod-card {max-width: none; padding: 5px 8px; font-size: 11px; line-height: 1.3; border-radius: 8px; }
-#mDash .oc-status {display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-#mDash .oc-status .oc-label {flex: 0 0 100%; margin-bottom: 0; font-size: 8.5px; }
-#mDash .oc-status .m-badge {padding: 2px 8px; min-width: 0; font-size: 9px; }
-#mDash .act-box {margin-top: 0; flex: 1 1 100%; max-width: none; padding: 4px 6px; border-radius: 7px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
-#mDash .act-box > .act-title, #mDash .act-box > .act-line, #mDash .act-box > .act-sub, #mDash .act-box > .act-wide {grid-column: 1 / -1; }
-#mDash .act-title {margin-bottom: 1px; font-size: 8.5px; }
-#mDash .act-line {font-size: 10px; margin-bottom: 0; line-height: 1.3; }
-#mDash .act-sub {font-size: 9px; margin-bottom: 1px; }
-#mDash .act-row {font-size: 8.5px; line-height: 1.25; }
-#mDash .oc-actions .oc-label {display: none; }
-#mDash .action-group {display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; min-width: 0; max-width: 100%; }
-#mDash .btn-action {min-width: 0; padding: 6px 1px; font-size: 9.5px; line-height: 1.2; border-radius: 8px; }
-#mDash .bulk-bar {padding: 8px 10px; gap: 6px; }
-#mDash .stock-sec-title, #mDash .stock-rest-toggle {padding-left: 22px; }
-#mDash .stock-alertline {padding-left: 22px; padding-right: 14px; } }
-
-/* ===== ORDER SUMMARY ===== */
-#mDash .oc-sum {display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-#mDash .sum-box {flex: 1 1 120px; border-radius: 12px; padding: 8px 12px; line-height: 1.15; }
-#mDash .sum-box .sum-lbl {display: block; font-size: 10px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; opacity: .85; }
-#mDash .sum-box .sum-val {display: block; font-size: 24px; font-weight: 900; letter-spacing: -.5px; margin-top: 2px; }
-#mDash .sum-qty {background: #0f172a; color: #fff; }
-#mDash .sum-total {background: linear-gradient(135deg, #800000, #5d25b2); color: #fff; box-shadow: 0 6px 16px rgba(128,0,0,.25); }
-#mDash .sum-total .sum-val {font-size: 26px; }
-#mDash .prod-card .pn {font-weight: 900; color: #000; font-size: 13.5px; }
-#mDash .prod-card .pi {display: block; padding: 3px 0; }
-#mDash .prod-card .pi + .pi {border-top: 1px dashed #fbcfe8; }
-#mDash .prod-card .pm {display: block; font-size: 11px; font-weight: 600; color: #64748b; padding-top: 3px; }
-@media (max-width: 768px) {
-#mDash .oc-sum {gap: 6px; margin-bottom: 5px; }
-#mDash .sum-box {flex: 1 1 0; padding: 5px 9px; border-radius: 9px; }
-#mDash .sum-box .sum-lbl {font-size: 8.5px; }
-#mDash .sum-box .sum-val {font-size: 19px; margin-top: 1px; }
-#mDash .sum-total .sum-val {font-size: 20px; }
-#mDash .prod-card .pn {font-size: 12.5px; }
-#mDash .prod-card .pi {padding: 2px 0; }
-#mDash .prod-card .pm {font-size: 10px; padding-top: 2px; } }
-
 /* ===== ELITE DROPDOWNS ===== */
 #mDash .urg-toggle{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 14px 6px 22px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,#fef2f2,#fff7ed);border:1px solid #fecaca;border-left:5px solid #dc2626;font-size:12px;font-weight:800;color:#991b1b;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(220,38,38,.08)}
 #mDash .urg-toggle:hover{filter:brightness(.97)}
@@ -412,29 +342,103 @@
 #mDash .zm-opt.zm-opt-dl:hover{border-color:#7c3aed;background:#faf5ff}
 #mDash .zm-opt.zm-opt-done:hover{border-color:#16a34a;background:#f0fdf4}
 #mDash .zm-opt.zm-opt-undo:hover{border-color:#ea580c;background:#fff7ed}
-@media (max-width:768px){#mDash .oc-head .zm-tag{font-size:9px;padding:2px 6px}}
 
-/* ===== ZAMBEEL SKU PANEL ===== */
-#mDash .zsk{margin-top:8px;border-radius:12px;border:1px solid #ddd6fe;background:linear-gradient(135deg,#faf5ff,#f5f3ff);padding:8px 10px;box-shadow:0 2px 8px rgba(124,58,237,.08)}
-#mDash .zsk-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-#mDash .zsk-title{font-size:10px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:#6d28d9;line-height:1.2}
-#mDash .zsk-title small{display:block;font-size:9px;font-weight:700;letter-spacing:0;text-transform:none;color:#8b5cf6;opacity:.9;margin-top:1px}
-#mDash .zsk-copyall{background:#fff;color:#6d28d9;border:1px solid #ddd6fe;padding:4px 10px;border-radius:14px;font-size:10px;font-weight:800;cursor:pointer;transition:.2s}
-#mDash .zsk-copyall:hover{background:#7c3aed;color:#fff;border-color:#7c3aed}
-#mDash .zsk-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 0;border-top:1px dashed #ddd6fe}
-#mDash .zsk-head + .zsk-row{border-top:none}
-#mDash .zsk-name{font-size:11.5px;font-weight:800;color:#1e1b4b;min-width:0;word-break:break-word;flex:1 1 140px}
-#mDash .zsk-name em{font-style:normal;font-weight:700;color:#64748b}
-#mDash .zsk-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:800;letter-spacing:.4px;background:#1e1b4b;color:#fff;border:none;padding:6px 11px;border-radius:9px;cursor:pointer;transition:.2s;word-break:break-all;text-align:left;box-shadow:0 3px 8px rgba(30,27,75,.25)}
-#mDash .zsk-code:hover{background:#7c3aed}
-#mDash .zsk-code i{font-style:normal;opacity:.75;margin-left:7px;font-size:11px}
-#mDash .zsk-none{margin-top:8px;font-size:10.5px;font-weight:600;color:#94a3b8}
+/* =====================================================================
+   ORDER CARD v5  —  chhota, left-right (laptop + mobile dono)
+   Laptop : 3 hisse: [Customer] [Items + qeematein] [Status + Actions]
+   Mobile : sab ek ke neeche lekin bohat compact
+   ===================================================================== */
+#mDash .orders-list{padding:10px 10px 0}
+#mDash .order-card{margin-bottom:10px;border-radius:12px;border-left-width:5px}
+#mDash .order-card .oc-head{padding:5px 12px;gap:4px 8px}
+#mDash .order-card .oc-body{display:grid;grid-template-columns:minmax(230px,1fr) minmax(340px,2.1fr) minmax(230px,1fr);grid-template-areas:"cust items status" "cust items actions";gap:8px 14px;padding:9px 12px;align-items:start}
+#mDash .order-card .oc-cust{grid-area:cust;display:block}
+#mDash .order-card .oc-itemscol{grid-area:items}
+#mDash .order-card .oc-status{grid-area:status}
+#mDash .order-card .oc-actions{grid-area:actions}
+#mDash .order-card .oc-label{display:none}
+#mDash .order-card .oc-cust > strong,#mDash .order-card .oc-cust .oc-addr{display:none}
+#mDash .order-card .oc-cust .wa-btn,#mDash .order-card .oc-cust .ml-btn{margin:0 6px 0 0;padding:4px 9px;font-size:10.5px}
+#mDash .order-card .oc-cust .ml-line{display:block;margin-top:5px;font-size:11px}
+
+/* --- summary chips (ek line) --- */
+#mDash .oc-sum{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;align-items:center}
+#mDash .sum-chip{display:inline-flex;align-items:baseline;gap:5px;padding:4px 10px;border-radius:9px;background:#f1f5f9;font-size:10.5px;font-weight:700;color:#475569;line-height:1.2;white-space:nowrap}
+#mDash .sum-chip b{font-size:13px;font-weight:900;color:#0f172a}
+#mDash .sum-chip.sc-qty{background:#0f172a;color:#cbd5e1}
+#mDash .sum-chip.sc-qty b{color:#fff}
+#mDash .sum-chip.sc-offer b{color:#16a34a}
+#mDash .sum-chip.sc-free b{color:#0369a1}
+#mDash .sum-chip.sc-grand{background:linear-gradient(135deg,#800000,#5d25b2);color:#e9d5ff;margin-left:auto;box-shadow:0 4px 12px rgba(128,0,0,.22)}
+#mDash .sum-chip.sc-grand b{color:#fff;font-size:15px}
+#mDash .sum-copy{background:#fff;color:#6d28d9;border:1px solid #ddd6fe;padding:4px 10px;border-radius:9px;font-size:10px;font-weight:800;cursor:pointer}
+#mDash .sum-copy:hover{background:#7c3aed;color:#fff;border-color:#7c3aed}
+
+/* --- items list: har product / color ki apni qeemat --- */
+#mDash .itm-list{background:#fff8fa;border:1px solid #fbcfe8;border-radius:10px;padding:1px 9px}
+#mDash .itm-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto auto;align-items:center;gap:2px 10px;padding:5px 0;border-top:1px dashed #fbcfe8}
+#mDash .itm-list > :first-child{border-top:none}
+#mDash .itm-name{min-width:0;font-size:12.5px;line-height:1.25;word-break:break-word}
+#mDash .itm-name .pn{font-weight:900;color:#000;font-size:13px}
+#mDash .itm-var{font-weight:800;color:#C11C84;font-size:11.5px}
+#mDash .itm-qty{font-weight:900;font-size:12px;color:#0f172a;background:#fff;border:1px solid #fbcfe8;border-radius:6px;padding:1px 7px;justify-self:start}
+#mDash .itm-unit{font-size:11px;font-weight:700;color:#64748b;white-space:nowrap;min-width:78px;text-align:right}
+#mDash .itm-line{font-size:13px;font-weight:900;color:#800000;white-space:nowrap;min-width:84px;text-align:right}
+#mDash .itm-grp{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;padding:6px 0 1px;border-top:1px dashed #fbcfe8}
+#mDash .itm-grp .pn{font-weight:900;color:#000;font-size:13px}
+#mDash .itm-gtot{font-size:11px;font-weight:900;color:#800000;background:#fff;border:1px solid #fbcfe8;border-radius:8px;padding:1px 8px}
+#mDash .itm-sub{padding-left:10px;border-top:none;padding-top:2px;padding-bottom:3px}
+#mDash .itm-sku{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;font-weight:800;letter-spacing:.2px;background:#1e1b4b;color:#fff;border:none;padding:3px 8px;border-radius:7px;cursor:pointer;white-space:nowrap}
+#mDash .itm-sku:hover{background:#7c3aed}
+#mDash .itm-sku.none{background:#f1f5f9;color:#94a3b8;cursor:default;font-family:inherit;font-weight:700}
+
+/* --- status + WA chips (ek line) --- */
+#mDash .order-card .oc-status{display:block}
+#mDash .st-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
+#mDash .st-row .m-badge{min-width:0;padding:3px 10px}
+#mDash .wa-chips{display:inline-flex;gap:4px;flex-wrap:wrap}
+#mDash .wa-chip{font-size:10px;font-weight:800;padding:2px 7px;border-radius:9px;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;white-space:nowrap}
+#mDash .wa-chip.sent{background:#f0fdf4;color:#16a34a;border-color:#bbf7d0}
+#mDash .order-card .act-box{margin-top:5px;padding:4px 8px;max-width:none}
+#mDash .order-card .act-line{font-size:10.5px;margin-bottom:0}
+
+/* --- actions: 3 x 2 --- */
+#mDash .order-card .action-group{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-width:0}
+#mDash .order-card .btn-action{padding:5px 2px;font-size:10px;border-radius:7px;white-space:nowrap;min-width:0}
+
+/* --- laptop chhoti screen: 2 hisse --- */
+@media (min-width:769px) and (max-width:1000px){
+#mDash .order-card .oc-body{grid-template-columns:1fr 1.7fr;grid-template-areas:"cust items" "status actions"}
+}
+
+/* --- mobile --- */
 @media (max-width:768px){
-#mDash .zsk{margin-top:5px;padding:6px 8px;border-radius:9px}
-#mDash .zsk-row{padding:4px 0}
-#mDash .zsk-name{font-size:10.5px}
-#mDash .zsk-code{font-size:11px;padding:5px 9px}
-#mDash .zsk-none{margin-top:5px;font-size:9.5px}
+#mDash .orders-list{padding:6px 5px 0}
+#mDash .order-card{margin-bottom:8px;border-left-width:4px;border-radius:11px}
+#mDash .order-card .oc-head{padding:4px 8px;gap:2px 6px}
+#mDash .oc-head-left{gap:4px}
+#mDash .oc-num{font-size:9.5px;padding:2px 6px}
+#mDash .oc-sel input{width:16px;height:16px}
+#mDash .oc-head .order-id-tag,#mDash .oc-head .advance-tag,#mDash .oc-head .cod-tag,#mDash .oc-head .express-tag,#mDash .oc-head .standard-tag{font-size:9px;padding:2px 6px}
+#mDash .oc-head .standard-tag{display:none}
+#mDash .oc-time{display:flex;gap:2px 6px;align-items:baseline;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
+#mDash .oc-date{font-size:10px}
+#mDash .oc-clock{font-size:9px;margin-top:0}
+#mDash .order-card .oc-body{grid-template-columns:1fr;grid-template-areas:"cust" "items" "status" "actions";gap:6px;padding:6px 8px}
+#mDash .sum-chip{padding:3px 8px;font-size:9.5px}
+#mDash .sum-chip b{font-size:12px}
+#mDash .sum-chip.sc-grand b{font-size:14px}
+#mDash .itm-row{grid-template-columns:auto auto 1fr auto;gap:2px 8px}
+#mDash .itm-row .itm-name{grid-column:1 / -1}
+#mDash .itm-unit{min-width:0;text-align:left}
+#mDash .itm-line{min-width:0;justify-self:end}
+#mDash .itm-sub{padding-left:8px}
+#mDash .itm-sub .itm-name{grid-column:1 / -1}
+#mDash .order-card .btn-action{padding:6px 1px;font-size:9.5px}
+#mDash .bulk-bar{padding:8px 10px;gap:6px}
+#mDash .stock-sec-title,#mDash .stock-rest-toggle{padding-left:22px}
+#mDash .stock-alertline{padding-left:22px;padding-right:14px}
+#mDash .oc-head .zm-tag{font-size:9px;padding:2px 6px}
 }
 </style>
 
@@ -492,7 +496,7 @@
     <div id="zmStateLine" class="zm-state">⏳ ZM Pending</div>
 
     <button type="button" class="zm-opt zm-opt-dl" onclick="zmDownload()">⬇️ Download CSV
-      <small>Is order ka poora data (customer info, items, ZM SKU, amount) download hoga, aur button khud green "ZM Done" ho jayega.</small>
+      <small>Is order ka poora data (customer info, items, ZM SKU, har item ki qeemat, amount) download hoga, aur button khud green "ZM Done" ho jayega.</small>
     </button>
     <button type="button" class="zm-opt zm-opt-done" onclick="zmMarkDone()">✅ Manual Done
       <small>Agar aap ne Zambeel par order khud daal diya ho to sirf green "ZM Done" mark kar dein (CSV download nahi hogi).</small>
@@ -736,6 +740,18 @@
 <script>
 const BASE_URL = "https://store.musfiras.workers.dev";
 
+// Saari numbers hamesha English digits mein (admin ke phone ki language kuch bhi ho)
+(function(){ const o=Number.prototype.toLocaleString; Number.prototype.toLocaleString=function(l,op){ return o.call(this,l||'en-US',op); }; })();
+// Kisi bhi zaban ke digits (Arabic, Urdu, Hindi, Bengali, Thai...) -> 0-9
+function nd(s){
+  return String(s==null?"":s).replace(/\u066B/g,'.').replace(/\u066C/g,',').replace(/[\u0660-\u0669\u06F0-\u06F9\u07C0-\u07C9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F\u0E50-\u0E59\u0ED0-\u0ED9\u0F20-\u0F29\u1040-\u1049\uFF10-\uFF19]/g,function(d){
+    const c=d.charCodeAt(0), st=[0x0660,0x06F0,0x07C0,0x0966,0x09E6,0x0A66,0x0AE6,0x0B66,0x0BE6,0x0C66,0x0CE6,0x0D66,0x0E50,0x0ED0,0x0F20,0x1040,0xFF10];
+    for(let i=0;i<st.length;i++){ if(c>=st[i]&&c<=st[i]+9) return String(c-st[i]); }
+    return d;
+  });
+}
+function fmtN(n){ return Number(n).toLocaleString('en-US'); }
+
 // ADMIN KEY code mein NAHI likhi. Dashboard kholne par aap type karte hain.
 const KEY_STORE = 'musfirasAdminKey_v2';
 let ADMIN_KEY = "";
@@ -933,8 +949,14 @@ function setScope(s){
   renderTable(allOrders);
 }
 
+// Order ka Grand Total: seedha "Grand Total:" se parhta hai (purane orders ke liye puraana tareeqa fallback)
 function getPriceFromRow(row){
-  let s=stripZm(row["product details"]||"").toString().toLowerCase();
+  const raw=nd(stripZm(row["product details"]||""));
+  let m=raw.match(/Grand Total:\s*(?:AED\s*)?(\d[\d,]*)/i);
+  if(m) return parseInt(m[1].replace(/,/g,''),10)||0;
+  m=raw.match(/Subtotal:\s*(?:AED\s*)?(\d[\d,]*)/i);
+  if(m) return parseInt(m[1].replace(/,/g,''),10)||0;
+  let s=raw.toLowerCase();
   if(s.includes("total:")){
     let seg=s.split("total:");
     let n=seg[seg.length-1].trim().match(/[\d,]+/);
@@ -945,15 +967,33 @@ function getPriceFromRow(row){
   return 0;
 }
 
+// Subtotal / Bundle Offer / Delivery / Grand Total alag alag
+function orderMoney(details){
+  const s=nd(stripZm(details||""));
+  const g=re=>{ const m=s.match(re); return m?(parseInt(m[1].replace(/,/g,''),10)||0):null; };
+  const sub=g(/Subtotal:\s*(?:AED\s*)?(\d[\d,]*)/i);
+  const off=g(/Bundle Offer:\s*-?\s*(?:AED\s*)?(\d[\d,]*)/i);
+  const fee=g(/Delivery Fee:\s*(?:AED\s*)?(\d[\d,]*)/i);
+  const grand=g(/Grand Total:\s*(?:AED\s*)?(\d[\d,]*)/i);
+  let del=fee;
+  if(del===null && sub!==null && grand!==null) del=Math.max(0, grand-(sub-(off||0)));
+  return {sub:sub, off:off, del:del, grand:grand};
+}
+
+// Payment / Delivery ab sirf "Payment:" aur "Shipping:" field se (product ke naam se dhoka nahi khayega)
 function detectPayment(details){
-  let t=stripZm(details||"").toLowerCase();
-  if(t.includes("advance")||t.includes("paid")||t.includes("bank transfer")||t.includes("online paid")) return "PAID";
+  const t=stripZm(details||"");
+  const m=t.match(/Payment:\s*([^|]+)/i);
+  const v=(m?m[1]:t).toLowerCase();
+  if(v.includes("advance")||v.includes("paid")||v.includes("bank transfer")||v.includes("online paid")) return "PAID";
   return "COD";
 }
 
 function detectDelivery(details){
-  let t=stripZm(details||"").toLowerCase();
-  if(t.includes("express")||t.includes("urgent")||t.includes("fast")) return "EXPRESS";
+  const t=stripZm(details||"");
+  const m=t.match(/Shipping:\s*([^|]+)/i);
+  const v=(m?m[1]:t).toLowerCase();
+  if(v.includes("express")||v.includes("urgent")||v.includes("fast")) return "EXPRESS";
   return "STANDARD";
 }
 
@@ -1113,7 +1153,7 @@ function matchesFilter(row, f){
 
 function getSearchTerm(){
   const el=document.getElementById('searchInput');
-  return el?el.value.toLowerCase().trim():"";
+  return el?nd(el.value).toLowerCase().trim():"";
 }
 
 function matchesSearch(row, term){
@@ -1139,32 +1179,7 @@ function setFilter(f){
   renderTable(allOrders);
 }
 
-// Order details: product naam bold + dark black. Email line yahan nahi dikhti (card par alag dikhti hai).
-function detailsHTML(visualDetails){
-  const parts=stripZm(visualDetails||"").split(" | ").map(x=>x.trim()).filter(Boolean).filter(x=>!/^Email:/i.test(x));
-  if(!parts.length) return escHtml(stripZm(visualDetails));
-  return parts.map(p=>{
-    const isItem=/[\[\(][^\]\)]+[\]\)]\s*[x×*]\s*\d+/i.test(p) || /\s[x×*]\s*\d+\s*$/i.test(p);
-    if(!isItem) return `<span class="pm">${escHtml(p)}</span>`;
-    let m=p.match(/^(.*?)(\s*[\[\(][^\]\)]+[\]\)]\s*[x×*]\s*\d+.*)$/i) || p.match(/^(.*?)(\s*[x×*]\s*\d+\s*)$/i);
-    if(m && m[1].trim()) return `<span class="pi"><span class="pn">${escHtml(m[1].trim())}</span>${escHtml(m[2])}</span>`;
-    return `<span class="pi"><span class="pn">${escHtml(p)}</span></span>`;
-  }).join("");
-}
-function summaryHTML(details){
-  let qty=0;
-  const mq=String(details||"").match(/Total Qty:\s*(\d+)/i);
-  if(mq) qty=parseInt(mq[1],10)||0;
-  else qty=parseOrderItems(details).reduce((a,it)=>a+it.qty,0);
-  const price=getPriceFromRow({"product details":details});
-  const priceTxt=price>0?('AED '+price.toLocaleString()):'To be confirmed';
-  return `<div class="oc-sum">`+
-    `<div class="sum-box sum-qty"><span class="sum-lbl">🛒 Total Qty</span><span class="sum-val">${qty||'—'}</span></div>`+
-    `<div class="sum-box sum-total"><span class="sum-lbl">💰 Grand Total</span><span class="sum-val">${escHtml(priceTxt)}</span></div>`+
-    `</div>`;
-}
-
-// ===== ZAMBEEL SKU panel (order card par) =====
+// ===== ZAMBEEL SKU info (order ke har item ka SKU) =====
 function zmSkuInfo(row){
   const details=String((row&&row["product details"])||"");
   const items=parseOrderItems(details);
@@ -1176,23 +1191,6 @@ function zmSkuInfo(row){
   else if(col.length && items.length && col.length===items.length) perItem=col.slice();
   else if(col.length) extra=col.slice();
   return {items:items, perItem:perItem, extra:extra};
-}
-function zmSkuHTML(row){
-  const info=zmSkuInfo(row);
-  const codes=[]; let rowsHTML="";
-  info.items.forEach((it,i)=>{
-    const sk=info.perItem[i]; if(!sk) return;
-    codes.push(sk);
-    const colr=(it.color&&it.color!=='-')?` <em>— ${escHtml(it.color)}</em>`:'';
-    rowsHTML+=`<div class="zsk-row"><div class="zsk-name">${escHtml(it.product)}${colr} <em>×${Number(it.qty)||1}</em></div><button type="button" class="zsk-code" title="Copy" data-c="${escHtml(sk)}" onclick="copySku(this)">${escHtml(sk)}<i>⧉</i></button></div>`;
-  });
-  info.extra.forEach(sk=>{
-    codes.push(sk);
-    rowsHTML+=`<div class="zsk-row"><div class="zsk-name">Order SKU</div><button type="button" class="zsk-code" title="Copy" data-c="${escHtml(sk)}" onclick="copySku(this)">${escHtml(sk)}<i>⧉</i></button></div>`;
-  });
-  if(!codes.length) return `<div class="zsk-none">🔐 ZM SKU: — (is order mein nahi aaya)</div>`;
-  const all=codes.length>1?`<button type="button" class="zsk-copyall" data-c="${escHtml(codes.join('\n'))}" onclick="copySku(this)">⧉ Copy all (${codes.length})</button>`:'';
-  return `<div class="zsk"><div class="zsk-head"><div class="zsk-title">🔐 Zambeel SKU<small>sirf aap ko nazar aata hai</small></div>${all}</div>${rowsHTML}</div>`;
 }
 function copyText(t){
   if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t);
@@ -1212,6 +1210,75 @@ function copySku(btn){
   const n=c.split('\n').filter(Boolean).length;
   copyText(c).then(()=>showEliteAlert(n>1?(n+" SKU copy ho gaye ✅"):("SKU copy ho gaya: "+c+" ✅")))
              .catch(()=>showEliteAlert("Copy nahi ho saka. SKU ko select karke copy karein."));
+}
+
+// ===== ORDER CARD: summary chips + items (har product / color ki apni qeemat) =====
+function summaryHTML(details, row){
+  const m=orderMoney(details);
+  const clean=nd(details||"");
+  let qty=0;
+  const mq=clean.match(/Total Qty:\s*(\d+)/i);
+  if(mq) qty=parseInt(mq[1],10)||0;
+  else qty=parseOrderItems(details).reduce((a,it)=>a+it.qty,0);
+  const price=getPriceFromRow({"product details":details});
+  const chip=(cls,label,val)=>`<span class="sum-chip ${cls}">${label} <b>${escHtml(val)}</b></span>`;
+  let h='<div class="oc-sum">';
+  h+=chip('sc-qty','🛒 Qty',qty?String(qty):'—');
+  if(m.sub!==null) h+=chip('sc-sub','Subtotal','AED '+fmtN(m.sub));
+  if(m.off) h+=chip('sc-offer','🎁 Offer','−AED '+fmtN(m.off));
+  if(m.del!==null) h+=chip('sc-free','🚚 Delivery', m.del>0?('AED '+fmtN(m.del)):'FREE');
+  h+=chip('sc-grand','💰 Total', price>0?('AED '+fmtN(price)):'To be confirmed');
+  try{
+    const info=zmSkuInfo(row), codes=[];
+    info.perItem.forEach(s=>{ if(s) codes.push(s); });
+    info.extra.forEach(s=>{ if(s) codes.push(s); });
+    if(codes.length>1) h+=`<button type="button" class="sum-copy" data-c="${escHtml(codes.join('\n'))}" onclick="copySku(this)">⧉ Copy all SKU (${codes.length})</button>`;
+  }catch(e){}
+  h+='</div>';
+  return h;
+}
+function skuChip(sk){
+  return sk
+    ? `<button type="button" class="itm-sku" title="Copy ZM SKU" data-c="${escHtml(sk)}" onclick="copySku(this)">${escHtml(sk)} ⧉</button>`
+    : `<span class="itm-sku none">no SKU</span>`;
+}
+function itemRowHTML(r, single){
+  const it=r.it, q=Number(it.qty)||1;
+  const col=(it.color&&it.color!=='-')?escHtml(it.color):'';
+  const nm=single
+    ? `<span class="itm-name"><span class="pn">${escHtml(it.product)}</span>${col?` <span class="itm-var">· ${col}</span>`:''}</span>`
+    : `<span class="itm-name"><span class="itm-var">↳ ${col||'(no color)'}</span></span>`;
+  const unit=it.price>0?`<span class="itm-unit">AED ${fmtN(it.price)}${q>1?' each':''}</span>`:`<span class="itm-unit"></span>`;
+  const line=it.price>0?`<span class="itm-line">AED ${fmtN(it.price*q)}</span>`:`<span class="itm-line"></span>`;
+  return `<div class="itm-row${single?'':' itm-sub'}">${nm}<span class="itm-qty">×${q}</span>${unit}${line}${skuChip(r.sku)}</div>`;
+}
+function itemsHTML(row){
+  const details=String((row&&row["product details"])||"");
+  const info=zmSkuInfo(row);
+  if(!info.items.length){
+    const raw=cleanItems(details).replace(/\n/g,' ; ')||stripZm(details);
+    return `<div class="itm-list"><div class="itm-row"><span class="itm-name">${escHtml(raw)}</span><span></span><span></span><span></span><span></span></div></div>`;
+  }
+  const groups=[], idx={};
+  info.items.forEach((it,i)=>{
+    const k=sNorm(it.product);
+    if(idx[k]===undefined){ idx[k]=groups.length; groups.push({name:it.product, rows:[]}); }
+    groups[idx[k]].rows.push({it:it, sku:info.perItem[i]||""});
+  });
+  let h='<div class="itm-list">';
+  groups.forEach(g=>{
+    if(g.rows.length===1){ h+=itemRowHTML(g.rows[0], true); return; }
+    const gq=g.rows.reduce((a,r)=>a+(Number(r.it.qty)||1),0);
+    const priced=g.rows.every(r=>r.it.price>0);
+    const gt=g.rows.reduce((a,r)=>a+(r.it.price*(Number(r.it.qty)||1)),0);
+    h+=`<div class="itm-grp"><span class="pn">${escHtml(g.name)}</span><span class="itm-gtot">${gq} pcs${priced?(' · AED '+fmtN(gt)):''}</span></div>`;
+    g.rows.forEach(r=>{ h+=itemRowHTML(r, false); });
+  });
+  info.extra.forEach(sk=>{
+    h+=`<div class="itm-row"><span class="itm-name"><span class="itm-var">Order SKU</span></span><span></span><span></span><span></span>${skuChip(sk)}</div>`;
+  });
+  h+='</div>';
+  return h;
 }
 
 function renderTable(rows){
@@ -1280,12 +1347,11 @@ function renderTable(rows){
     if(stLow.includes("deliver")){ badgeClass="delivered"; signClass="sign-delivered"; }
     if(stLow.includes("cancel")){ badgeClass="cancelled"; signClass="sign-cancelled"; }
 
-    let orderId="",orderIdHTML="",visualDetails=details;
+    let orderId="",orderIdHTML="";
     if(String(details).includes("OrderID:")){
       let segs=String(details).split(" | Items: ");
       orderId=segs[0].replace("OrderID:","").trim();
       orderIdHTML=`<span class="order-id-tag">🆔 ${escHtml(orderId)}</span>`;
-      visualDetails=segs[1]||details;
     }
 
     let payMethod=detectPayment(details);
@@ -1299,18 +1365,16 @@ function renderTable(rows){
     const actCls=k=>stLow.includes(k)?' is-active':'';
     const actMark=k=>stLow.includes(k)?'✔ ':'';
 
+    // Status + WA: ek line ke chips (4 alag lines nahi)
     let lg=getRowLog(row);
+    const waIcons={pending:"⏳",dispatched:"🚚",delivered:"✅",cancelled:"❌"};
+    let chipsHTML=["pending","dispatched","delivered","cancelled"].map(t=>lg.wa[t]
+      ? `<span class="wa-chip sent" title="${escHtml(WA_LABELS[t]+' msg sent · '+lg.wa[t])}">${waIcons[t]} ✔</span>`
+      : `<span class="wa-chip" title="${escHtml(WA_LABELS[t]+' msg not sent')}">${waIcons[t]} ✖</span>`).join("");
     let lastHTML=lg.last
-      ? `<div class="act-line">${escHtml(lg.last.text)}</div>${lg.last.time?`<div class="act-sub">🕒 ${escHtml(lg.last.time)}</div>`:''}`
+      ? `<div class="act-line">${escHtml(lg.last.text)}${lg.last.time?` <span class="act-sub">🕒 ${escHtml(lg.last.time)}</span>`:''}</div>`
       : `<div class="act-line none">No action yet</div>`;
-    let rowsHTML=["pending","dispatched","delivered","cancelled"].map(t=>{
-      let icon={pending:"⏳",dispatched:"🚚",delivered:"✅",cancelled:"❌"}[t];
-      return lg.wa[t]
-        ? `<div class="act-row sent">${icon} ${WA_LABELS[t]} msg: ✔ sent · ${escHtml(lg.wa[t])}</div>`
-        : `<div class="act-row">${icon} ${WA_LABELS[t]} msg: ✖ not sent</div>`;
-    }).join("");
-    let stChangeHTML=lg.statusTxt?`<div class="act-row sent act-wide">🔄 Status set: ${escHtml(lg.statusTxt)}</div>`:"";
-    let activityHTML=`<div class="act-box"><div class="act-title">Last Action</div>${lastHTML}${stChangeHTML}${rowsHTML}</div>`;
+    let activityHTML=`<div class="act-box" title="${escHtml(lg.statusTxt?('Status set: '+lg.statusTxt):'')}">${lastHTML}</div>`;
 
     let tinfo=formatOrderTime(ts);
     let timeHTML=tinfo
@@ -1331,18 +1395,14 @@ function renderTable(rows){
           <button class="wa-btn" onclick="handleWAClick('${esc(stLow)}','${esc(name)}','${esc(phone)}','${esc(orderId)}','${esc(details)}','${esc(address)}','${esc(city)}','${esc(row.rowNumber)}')">🟢 WA Message</button>
           <span class="oc-addr">📍 ${escHtml(address)}, <strong style="display:inline;font-size:11px;">${escHtml(city)}</strong></span>
         </div>
-        <div class="oc-col">
-          <div class="oc-label">Order Details</div>
-          ${summaryHTML(details)}
-          <div class="prod-card">${detailsHTML(visualDetails)}</div>
-          ${zmSkuHTML(row)}
+        <div class="oc-col oc-itemscol">
+          ${summaryHTML(details,row)}
+          ${itemsHTML(row)}
         </div>
         <div class="oc-col oc-status">
-          <div class="oc-label">Status</div>
-          <span class="m-badge ${badgeClass}">${escHtml(status)}</span>${activityHTML}
+          <div class="st-row"><span class="m-badge ${badgeClass}">${escHtml(status)}</span><div class="wa-chips">${chipsHTML}</div></div>${activityHTML}
         </div>
         <div class="oc-col oc-actions">
-          <div class="oc-label">Actions</div>
           <div class="action-group">
             <button onclick="tryUpdate(${Number(row.rowNumber)},'${esc(status)}','Pending','${esc(orderId)}','${esc(phone)}')" class="btn-action btn-pending${actCls('pending')}">${actMark('pending')}⏳ Pending</button>
             <button onclick="tryUpdate(${Number(row.rowNumber)},'${esc(status)}','Dispatched','${esc(orderId)}','${esc(phone)}')" class="btn-action btn-dispatch${actCls('dispatch')}">${actMark('dispatch')}🚚 Dispatch</button>
@@ -1448,24 +1508,26 @@ function zmBuildCsv(row){
   let items = info.items.slice();
   let perItem = info.perItem.slice();
   if(!items.length){
-    items = [{product: cleanItems(details).replace(/\n/g, ' ; ') || stripZm(details), color: "-", qty: ""}];
+    items = [{product: cleanItems(details).replace(/\n/g, ' ; ') || stripZm(details), color: "-", qty: "", price: 0}];
     perItem = [info.extra.join(' / ')];
   } else if(info.extra.length){
     perItem[0] = (perItem[0] ? perItem[0] + ' / ' : '') + info.extra.join(' / ');
   }
   let totalQty = 0;
-  const mq = details.match(/Total Qty:\s*(\d+)/i);
+  const mq = nd(details).match(/Total Qty:\s*(\d+)/i);
   if(mq) totalQty = parseInt(mq[1], 10) || 0;
   else totalQty = items.reduce((a,it)=>a + (parseInt(it.qty,10)||0), 0);
 
   const head = ["Order ID","Order Date","Order Time","Customer Name","Phone","WhatsApp Number","Email","Address","City","Country",
-                "Item No","Product Name","Color / Variant","Zambeel SKU","Quantity","Total Qty","Order Total (AED)","Payment Method","COD Amount (AED)","Delivery Type","Order Status","Full Order Details"];
+                "Item No","Product Name","Color / Variant","Zambeel SKU","Quantity","Unit Price (AED)","Line Total (AED)","Total Qty","Order Total (AED)","Payment Method","COD Amount (AED)","Delivery Type","Order Status","Full Order Details"];
   const lines = [head.map(h=>csvCell(h, true)).join(',')];
   items.forEach((it, i)=>{
+    const q = parseInt(it.qty,10) || 0;
     lines.push([
       csvCell(orderId), csvCell(oDate), csvCell(oTime), csvCell(name), csvCell(phone, true), csvCell(wa, true), csvCell(email),
       csvCell(address), csvCell(city), csvCell(country),
       csvCell(i + 1, true), csvCell(it.product), csvCell(it.color === "-" ? "" : it.color), csvCell(perItem[i] || ""), csvCell(it.qty, true),
+      csvCell(it.price || "", true), csvCell((it.price && q) ? it.price * q : "", true),
       csvCell(totalQty || "", true), csvCell(total || "", true), csvCell(pay === "PAID" ? "Paid" : "Cash on Delivery"),
       csvCell(cod, true), csvCell(del === "EXPRESS" ? "Express" : "Standard"), csvCell(status),
       csvCell(i === 0 ? stripZm(details) : "")
@@ -1547,7 +1609,7 @@ function bulkDelete(){
 function sNorm(s){ return String(s==null?"":s).toLowerCase().replace(/\s+/g," ").trim(); }
 function sKey(p,c){ return sNorm(p)+"||"+sNorm(c); }
 
-// "Name [Color] x2 {ZM:CODE} | Name2 [Color2] x1 | Total Qty: 3 | ..."
+// "Name [Color] x2 @2699 {ZM:CODE} | Name2 [Color2] x1 @1999 | Total Qty: 3 | ..."  (@ = ek piece ki qeemat)
 function parseOrderItems(details){
   let s=String(details||"");
   if(s.indexOf(" | Items: ")>-1) s=s.split(" | Items: ")[1]||"";
@@ -1558,10 +1620,12 @@ function parseOrderItems(details){
     const sku=zmSkuOf(part);
     part=stripZm(part);
     if(!part) return;
+    const pm=nd(part).match(/@\s*(?:AED\s*)?(\d[\d,]*)/i);
+    const price=pm?(parseInt(pm[1].replace(/,/g,''),10)||0):0;
     let m=part.match(/^(.*?)\s*[\[\(]([^\]\)]+)[\]\)]\s*[x×*]\s*(\d+)/i);
-    if(m && m[1].trim()){ items.push({product:m[1].trim(), color:(m[2].trim()||"-"), qty:parseInt(m[3],10)||1, sku:sku}); return; }
-    m=part.match(/^(.*?)\s*[x×*]\s*(\d+)\s*$/i);
-    if(m && m[1].trim()){ items.push({product:m[1].trim(), color:"-", qty:parseInt(m[2],10)||1, sku:sku}); return; }
+    if(m && m[1].trim()){ items.push({product:m[1].trim(), color:(m[2].trim()||"-"), qty:parseInt(m[3],10)||1, sku:sku, price:price}); return; }
+    m=part.match(/^(.*?)\s*[x×*]\s*(\d+)\s*(?:@.*)?$/i);
+    if(m && m[1].trim()){ items.push({product:m[1].trim(), color:"-", qty:parseInt(m[2],10)||1, sku:sku, price:price}); return; }
   });
   return items;
 }
@@ -2064,7 +2128,7 @@ function submitStockPopup(){
   const mode=stockPopup.mode;
   const pEl=document.getElementById('spProduct'), cEl=document.getElementById('spColor'), qEl=document.getElementById('spQty');
   [pEl,qEl].forEach(el=>el.classList.remove('input-error'));
-  const qty=parseInt(qEl.value,10);
+  const qty=parseInt(nd(qEl.value),10);
   let payload;
 
   if(mode==='add' || mode==='track'){
@@ -2076,7 +2140,7 @@ function submitStockPopup(){
     const payloads=[], seen={};
     for(const r of rowEls){
       const cIn=r.querySelector('.sp-rc'), qIn=r.querySelector('.sp-rq');
-      const color=cIn.value.trim(), qRaw=qIn.value.trim();
+      const color=cIn.value.trim(), qRaw=nd(qIn.value).trim();
       if(!color && !qRaw) continue;
       const q=parseInt(qRaw,10);
       if(qRaw==="" || isNaN(q) || q<0){ qIn.classList.add('input-error'); showEliteAlert("Har color ki valid quantity likhein (0 ya zyada)."); qIn.focus(); return; }
@@ -2243,7 +2307,7 @@ function impCount(){
 }
 
 function impSubmit(){
-  const dq=document.getElementById('impQty').value.trim();
+  const dq=nd(document.getElementById('impQty').value).trim();
   const dnum=parseInt(dq,10);
   const countOld=document.getElementById('impOld').checked;
   const jobs=[];
@@ -2253,7 +2317,7 @@ function impSubmit(){
     const list=items.length?items:[''];
     const seen={};
     for(const it of list){
-      const m=it.match(/^(.*?)\s*=\s*(\d+)$/);
+      const m=nd(it).match(/^(.*?)\s*=\s*(\d+)$/);
       const color=m?m[1].trim():it;
       const q=m?parseInt(m[2],10):dnum;
       if(isNaN(q)||q<0){ showEliteAlert('"'+p.name+(color?' — '+color:'')+'" ki qty nahi hai. Default qty likhein ya Color=5 likhein.'); return; }
@@ -2341,7 +2405,7 @@ function confirmAndSendDispatchWA(){
 
 // Phone -> WhatsApp international number
 function toWaNumber(phone){
-  let p=String(phone||"").replace(/[^0-9]/g,'');
+  let p=nd(phone).replace(/[^0-9]/g,'');
   if(!p) return "";
   if(p.length>=11 && (p.startsWith("971")||p.startsWith("92"))) return p;
   if(/^03\d{9}$/.test(p)) return "92"+p.substring(1);
@@ -2349,12 +2413,19 @@ function toWaNumber(phone){
   return "971"+p;
 }
 
-// Items only, one per line. ZM SKU aur Email yahan se hamesha hat jate hain: customer ko WhatsApp par nahi jate.
+// Items only, one per line, har item ki qeemat ke saath. ZM SKU aur Email customer ko WhatsApp par nahi jate.
 function cleanItems(details){
   let s=stripZm(details||"");
   if(s.includes(" | Items: ")) s=s.split(" | Items: ")[1]||s;
   s=s.split(" | Total Qty:")[0];
-  return s.split(" | ").map(x=>x.trim()).filter(Boolean).filter(x=>!/^Email:/i.test(x)).map(x=>"• "+x).join("\n");
+  return s.split(" | ").map(x=>x.trim()).filter(Boolean).filter(x=>!/^Email:/i.test(x)).map(x=>{
+    const it=parseOrderItems(x)[0];
+    if(!it) return "• "+x;
+    const col=(it.color&&it.color!=='-')?" ["+it.color+"]":"";
+    let line="• "+it.product+col+" x"+it.qty;
+    if(it.price>0) line+=" — AED "+fmtN(it.price)+(it.qty>1?" each = AED "+fmtN(it.price*it.qty):"");
+    return line;
+  }).join("\n");
 }
 
 function sendStatusWA(statusLow, name, phone, orderId, details, address, city, trackingId, courierName, trackingLink, rowNum){
@@ -2530,7 +2601,7 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
 #mDash .ml-sku-row:last-child{border-bottom:none}
 #mDash .ml-sku-row.bad{background:#fef2f2;color:#dc2626}
 #mDash .ml-sku-row code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px}
-@media (max-width:768px){#mDash .oc-cust .ml-line{flex:0 0 100%;margin-top:0}#mDash .oc-cust .ml-btn{margin:0;padding:4px 9px;font-size:10.5px}}
+#mDash .ml-sku-row small{display:block;font-size:10px;font-weight:600;color:var(--text-muted);margin-top:2px}
 `;
   document.head.appendChild(st);
 
@@ -2588,7 +2659,7 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
   sk.id='mlSkuBg'; sk.className='tracking-popup-bg';
   sk.innerHTML=`
   <div class="tracking-popup ml-pop">
-    <h3>🔐 Zambeel SKU Check</h3>
+    <h3>🔐 Zambeel SKU &amp; Price Check</h3>
     <div id="mlSkuBody"></div>
     <button type="button" class="popup-cancel-btn" style="width:100%;" onclick="document.getElementById('mlSkuBg').style.display='none'">Close</button>
   </div>`;
@@ -2703,7 +2774,7 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
   renderTable=function(rows){ _rt(rows); try{ decorate(); }catch(e){} };
   try{ if(allOrders&&allOrders.length) renderTable(allOrders); }catch(e){}
 
-  /* ---------- SKU Check ---------- */
+  /* ---------- SKU + Price Check ---------- */
   function skuRun(){
     showLoader(true);
     api({action:'skuReport'}).then(res=>{
@@ -2712,7 +2783,11 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
       if(!res||res.status!=='success'){ showEliteAlert('SKU report nahi aayi. Worker ka naya code deploy karein.'); return; }
       const miss=res.lines.filter(l=>!l.sku);
       let h=`<div class="zm-state ${miss.length?'':'is-done'}">${miss.length?('⚠️ '+miss.length+' product/color ka ZM SKU worker ki list mein nahi mila'):'✅ Sab products/colors ka ZM SKU mil gaya'} (${res.lines.length} lines check hui)</div>`;
-      h+='<div class="ml-sku-list">'+res.lines.map(l=>`<div class="ml-sku-row ${l.sku?'':'bad'}"><span>${escHtml(l.product)}${l.color&&l.color!=='-'?' — '+escHtml(l.color):''}</span>${l.sku?'<code>'+escHtml(l.sku)+'</code>':'<span>MISSING</span>'}</div>`).join('')+'</div>';
+      if(typeof res.missingPrice==='number' && res.missingPrice>0) h+=`<div class="ml-hint">ℹ️ ${res.missingPrice} line ki asli qeemat worker ki SKU_LINES mein nahi likhi (un par qeemat ka check nahi hota).</div>`;
+      h+='<div class="ml-sku-list">'+res.lines.map(l=>{
+        const pr=l.price?`<small>AED ${fmtN(l.price)}${l.offer2?' · 2 pcs AED '+fmtN(l.offer2):''}${l.offer3?' · 3 pcs AED '+fmtN(l.offer3):''}</small>`:'';
+        return `<div class="ml-sku-row ${l.sku?'':'bad'}"><span>${escHtml(l.product)}${l.color&&l.color!=='-'?' — '+escHtml(l.color):''}${pr}</span>${l.sku?'<code>'+escHtml(l.sku)+'</code>':'<span>MISSING</span>'}</div>`;
+      }).join('')+'</div>';
       if(res.unusedInMap&&res.unusedInMap.length) h+=`<div class="ml-hint">ℹ️ Worker ki list mein ye naam hain par stock/orders mein nahi mile (spelling check karein): ${res.unusedInMap.map(escHtml).join(', ')}</div>`;
       $('mlSkuBody').innerHTML=h;
       sk.style.display='flex';
@@ -2727,76 +2802,29 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
   }
 })();
 </script>
-<!-- ======================================================================
-  MUSFIRA DESK ADD-ON
-  1) Har zaroori info ke aage Copy button (+ "Copy all")
-  2) Naye order par "NEW · ACTION REQUIRED" box, touch karte hi "Seen"
-  3) Order card laptop aur mobile dono par chota, zaroori info bold
-  4) Product card landscape, height kam
-
-  Is poore block ko apni file ke sab se aakhri </script> ke BAAD aur
-  </body> se PEHLE paste karein. Kuch aur change karne ki zaroorat nahi.
-====================================================================== -->
 <script>
 (function(){
   if(window.__dkAddon) return; window.__dkAddon=true;
   const $=id=>document.getElementById(id);
   const SEEN_KEY='musfirasSeen_v1', INIT_KEY='musfirasSeenInit_v1';
 
-  /* ---------------- CSS (body ke end mein, taa k purani CSS ko override kare) ---------------- */
+  /* ---------------- CSS: info block + copy buttons + NEW / SEEN ---------------- */
   const st=document.createElement('style');
   st.textContent=`
-/* ===== COMPACT CARD (laptop) ===== */
-#mDash .orders-list{padding:10px 10px 0}
-#mDash .order-card{margin-bottom:10px;border-radius:12px;border-left-width:5px}
-#mDash .order-card .oc-head{padding:5px 12px;gap:6px}
-#mDash .order-card .oc-body{grid-template-columns:1.3fr 1.5fr 1fr 190px;gap:12px;padding:9px 12px}
-#mDash .order-card .oc-label{margin-bottom:4px;font-size:9px}
-#mDash .order-card .oc-cust > strong{display:none}
-#mDash .order-card .oc-cust .oc-addr{display:none}
-#mDash .order-card .oc-cust .wa-btn{margin-top:0;padding:4px 9px}
-#mDash .order-card .oc-cust .ml-btn{margin:0 0 0 6px;padding:4px 9px}
-#mDash .order-card .oc-cust .ml-line{margin-top:5px}
-#mDash .order-card .oc-sum{gap:6px;margin-bottom:5px}
-#mDash .order-card .sum-box{flex:0 0 auto;min-width:96px;padding:4px 10px;border-radius:9px}
-#mDash .order-card .sum-box .sum-lbl{font-size:8.5px}
-#mDash .order-card .sum-box .sum-val{font-size:17px;margin-top:0}
-#mDash .order-card .sum-total .sum-val{font-size:18px}
-#mDash .order-card .action-group{display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:0}
-#mDash .order-card .btn-action{padding:5px 4px;font-size:10px;border-radius:7px}
-#mDash .order-card .act-box{margin-top:4px;padding:5px 8px;max-width:none}
-#mDash .order-card .act-row{font-size:9.5px;line-height:1.3}
-#mDash .order-card .act-line{font-size:10.5px;margin-bottom:0}
-#mDash .order-card .act-sub{font-size:9.5px;margin-bottom:2px}
-
-/* ===== PRODUCT CARD LANDSCAPE ===== */
-#mDash .order-card .prod-card{display:flex;flex-wrap:wrap;gap:2px 14px;align-items:baseline;padding:5px 10px;max-width:none;font-size:11.5px;line-height:1.3;border-radius:9px;white-space:normal}
-#mDash .order-card .prod-card .pi{display:inline-block;padding:0;border:none!important}
-#mDash .order-card .prod-card .pi + .pi{border-top:none!important}
-#mDash .order-card .prod-card .pm{display:inline-block;padding:0;font-size:10.5px}
-#mDash .order-card .prod-card .pn{font-weight:900;color:#000;font-size:12.5px}
-
-/* ===== ZAMBEEL SKU PANEL LANDSCAPE ===== */
-#mDash .order-card .zsk{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:5px;padding:5px 8px}
-#mDash .order-card .zsk-head{margin:0;gap:6px}
-#mDash .order-card .zsk-title small{display:none}
-#mDash .order-card .zsk-row{border-top:none!important;padding:0;gap:6px;flex:0 1 auto}
-#mDash .order-card .zsk-name{flex:0 1 auto;font-size:11px}
-#mDash .order-card .zsk-code{font-size:11px;padding:4px 9px}
-#mDash .order-card .zsk-none{margin-top:4px}
-
 /* ===== INFO BLOCK + COPY BUTTONS ===== */
-#mDash .dk-kx{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:4px 9px;margin-bottom:6px}
+#mDash .dk-kx{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:3px 9px;margin-bottom:6px}
 #mDash .dk-kx-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:1px}
 #mDash .dk-kx-title{font-size:9px;font-weight:800;color:#800000;text-transform:uppercase;letter-spacing:.6px}
-#mDash .dk-copyall{background:#800000;color:#fff;border:none;padding:4px 11px;border-radius:14px;font-size:10px;font-weight:800;cursor:pointer;transition:.2s}
+#mDash .dk-copyall{background:#800000;color:#fff;border:none;padding:3px 10px;border-radius:14px;font-size:10px;font-weight:800;cursor:pointer;transition:.2s}
 #mDash .dk-copyall:hover{background:#5d25b2}
 #mDash .dk-copyall.ok{background:#16a34a}
-#mDash .dk-r{display:flex;align-items:flex-start;gap:6px;padding:2px 0;border-top:1px dashed #eef0f4}
-#mDash .dk-grid > .dk-r:first-child{border-top:none}
-#mDash .dk-l{flex:0 0 54px;font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;padding-top:3px}
-#mDash .dk-v{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:800;color:#000;word-break:break-word;line-height:1.3}
-#mDash .dk-c{flex:0 0 auto;width:26px;height:22px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;transition:.15s;padding:0}
+#mDash .dk-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+#mDash .dk-r{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l c" "v c";column-gap:4px;row-gap:0;align-items:center;padding:2px 0;border-top:1px dashed #eef0f4}
+#mDash .dk-grid > .dk-r:nth-child(-n+2){border-top:none}
+#mDash .dk-r.w{grid-column:1 / -1}
+#mDash .dk-l{grid-area:l;font-size:8.5px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px}
+#mDash .dk-v{grid-area:v;min-width:0;font-size:12.5px;font-weight:800;color:#000;word-break:break-word;line-height:1.25}
+#mDash .dk-c{grid-area:c;width:26px;height:22px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;transition:.15s;padding:0}
 #mDash .dk-c:hover{background:#800000;color:#fff;border-color:#800000}
 #mDash .dk-c.ok{background:#16a34a;color:#fff;border-color:#16a34a}
 
@@ -2810,28 +2838,9 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
 #mDash #dkNewBar.none{background:#f0fdf4;color:#15803d}
 #mDash .dk-markall{background:#dc2626;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:11px;font-weight:800;cursor:pointer}
 #mDash .dk-markall:hover{background:#991b1b}
-
-/* ===== COMPACT CARD (mobile) ===== */
 @media (max-width:768px){
-  #mDash .orders-list{padding:6px 5px 0}
-  #mDash .order-card{margin-bottom:8px;border-left-width:4px}
-  #mDash .order-card .oc-head{padding:4px 8px}
-  #mDash .order-card .oc-body{grid-template-columns:1fr;gap:5px;padding:6px 8px}
-  #mDash .order-card .dk-kx{flex:0 0 100%;width:100%;padding:3px 8px;margin-bottom:3px}
-  #mDash .dk-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
-  #mDash .dk-r{display:grid;grid-template-columns:1fr auto;grid-template-areas:"l c" "v c";column-gap:4px;row-gap:0;align-items:center;padding:3px 0}
-  #mDash .dk-grid > .dk-r:nth-child(-n+2){border-top:none}
-  #mDash .dk-r.w{grid-column:1 / -1}
-  #mDash .dk-l{grid-area:l;flex:none;padding:0;font-size:8px}
-  #mDash .dk-v{grid-area:v;font-size:12px}
-  #mDash .dk-c{grid-area:c}
-  #mDash .order-card .oc-cust .wa-btn,#mDash .order-card .oc-cust .ml-btn{padding:4px 9px;font-size:10.5px;margin-top:0}
-  #mDash .order-card .oc-cust .ml-btn{margin-left:0}
-  #mDash .order-card .sum-box{flex:1 1 0;min-width:0;padding:3px 8px}
-  #mDash .order-card .sum-box .sum-val{font-size:15px}
-  #mDash .order-card .sum-total .sum-val{font-size:16px}
-  #mDash .order-card .action-group{grid-template-columns:repeat(3,1fr)}
-  #mDash .order-card .btn-action{padding:6px 1px;font-size:9.5px}
+  #mDash .order-card .dk-kx{padding:3px 8px;margin-bottom:4px}
+  #mDash .dk-v{font-size:12px}
   #mDash .dk-new{font-size:9px;padding:2px 6px}
   #mDash .dk-seen{font-size:9px;padding:1px 6px}
   #mDash #dkNewBar{padding:6px 10px;font-size:11px}
@@ -2848,7 +2857,7 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
     return id?('id:'+id):('t:'+String(r['date & time']||'')+'|'+String(r['phone: #']||''));
   }
   function clock(ms){
-    try{ return new Date(ms).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; }
+    try{ return new Date(ms).toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; }
   }
   // Pehli dafa add-on chalne par jo orders pehle se hain unhe "Seen" maan lo, sirf naye wale NEW dikhein
   function baseline(){
@@ -2943,14 +2952,15 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
       return out.filter((v,ix,a)=>a.indexOf(v)===ix).join(', ');
     }catch(e){ return ''; }
   }
+  // hide:1 = card par nazar nahi aata (jagah bachane ke liye) lekin "Copy all" mein shamil hota hai
   function fields(row){
     return [
-      {l:'Order ID', v:orderIdOf(row)},
       {l:'Name',     v:String(row['customer: name']||'').trim()},
       {l:'Phone',    v:String(row['phone: #']||'').trim()},
       {l:'City',     v:String(row['city']||'').trim()},
+      {l:'Order ID', v:orderIdOf(row)},
       {l:'Address',  v:String(row['address']||'').trim(), w:1},
-      {l:'ZM SKU',   v:skuText(row), w:1}
+      {l:'ZM SKU',   v:skuText(row), hide:1}
     ];
   }
   function buildKx(row){
@@ -2966,6 +2976,7 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
     head.appendChild(t); head.appendChild(ca); kx.appendChild(head);
     const g=document.createElement('div'); g.className='dk-grid';
     f.forEach(x=>{
+      if(x.hide) return;
       const r=document.createElement('div'); r.className='dk-r'+(x.w?' w':'');
       const l=document.createElement('span'); l.className='dk-l'; l.textContent=x.l;
       const v=document.createElement('b'); v.className='dk-v'; v.textContent=x.v||'—';

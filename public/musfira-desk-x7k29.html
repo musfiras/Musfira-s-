@@ -3018,5 +3018,452 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
   try{ if(allOrders&&allOrders.length) renderTable(allOrders); }catch(e){}
 })();
 </script>
+<!-- =====================================================================
+     MUSFIRA DESK: ELITE ANALYTICS ADD-ON
+     Kahan paste karna hai: dashboard ke bilkul END mein, aakhri </script> ke baad
+     aur </body> se pehle. Baqi poora code bilkul same rehta hai.
+     ===================================================================== -->
+<script>
+(function(){
+  if(window.__anxAddon) return; window.__anxAddon=true;
+  const $=id=>document.getElementById(id);
+  const REDUCE=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const CR=2*Math.PI*46;
+  // Brand colors: pink / maroon / orange / green  [dark, light]
+  const PAL={tot:['#e6007e','#ff6fb5'],pen:['#ea580c','#fdba74'],dsp:['#9b1c31','#f0617a'],dlv:['#16a34a','#86efac'],can:['#6b4553','#c79aae']};
+  const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const SCOPE_TXT={daily:'Daily view','monthly':'Monthly view','6months':'6-month view',annual:'Annual view'};
+
+  /* ---------------- CSS ---------------- */
+  const st=document.createElement('style');
+  st.textContent=`
+#mDash .m-stats-grid,#mDash .chart-section{display:none!important}
+#mDash .anx{position:relative;margin-bottom:18px;padding:18px;border-radius:24px;color:#fff;overflow:hidden;
+ background:radial-gradient(900px 340px at 0% 0%,rgba(230,0,126,.24),transparent 60%),radial-gradient(700px 320px at 100% 100%,rgba(249,115,22,.17),transparent 60%),linear-gradient(145deg,#1c0a14,#2b0e1d 60%,#1a0912);
+ border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 60px rgba(60,0,25,.35),inset 0 1px 0 rgba(255,255,255,.06)}
+#mDash .anx::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 25%,transparent 80%);mask-image:radial-gradient(ellipse at 50% 0%,#000 25%,transparent 80%)}
+#mDash .anx>*{position:relative}
+#mDash .anx-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+#mDash .anx-title{font-size:13px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#ffd6ea;display:flex;align-items:center;gap:9px}
+#mDash .anx-live{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:anxLive 1.8s infinite}
+@keyframes anxLive{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 9px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+#mDash .anx-scope{font-size:11px;font-weight:700;color:#f9a8d4;background:rgba(230,0,126,.14);border:1px solid rgba(230,0,126,.35);padding:5px 12px;border-radius:20px}
+#mDash .anx-card{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);min-width:0}
+#mDash .anx-ct{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#ffc2dd;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+#mDash .anx-ct small{font-size:10px;font-weight:700;color:#fdba74;letter-spacing:.3px;text-transform:none}
+#mDash .anx-rings{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+#mDash .anx-ring{text-align:center;padding:14px 8px 12px;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);transition:transform .25s,border-color .25s,box-shadow .25s}
+#mDash .anx-ring:hover{transform:translateY(-3px);border-color:var(--b);box-shadow:0 12px 30px rgba(0,0,0,.35),0 0 24px -6px var(--b)}
+#mDash .anx-ring-wrap{position:relative;width:100%;max-width:132px;margin:0 auto}
+#mDash .anx-ring-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+#mDash .anx-ticks{fill:none;stroke:rgba(255,255,255,.26);stroke-width:3;stroke-dasharray:1.1 4.9}
+#mDash .anx-scan{fill:none;stroke:var(--b);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:46 312;filter:drop-shadow(0 0 4px var(--b))}
+#mDash .anx-track{fill:none;stroke:rgba(255,255,255,.09);stroke-width:9}
+#mDash .anx-prog{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1.7s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 0 6px var(--b))}
+@keyframes anxSpin{to{transform:rotate(360deg)}}
+#mDash .anx-spin{transform-origin:60px 60px;animation:anxSpin 4.5s linear infinite}
+#mDash .anx-spin-slow{transform-origin:60px 60px;animation:anxSpin 40s linear infinite reverse}
+#mDash .anx-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#mDash .anx-num{font-size:27px;font-weight:800;letter-spacing:-.5px;line-height:1;text-shadow:0 0 16px var(--b)}
+#mDash .anx-pct{font-size:10px;font-weight:700;color:var(--b);margin-top:4px;letter-spacing:.4px}
+#mDash .anx-ring-lbl{margin-top:9px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff}
+#mDash .anx-ring-amt{display:inline-block;margin-top:5px;font-size:11px;font-weight:800;color:var(--b);background:rgba(255,255,255,.07);padding:3px 10px;border-radius:12px}
+#mDash .anx-row{display:grid;gap:12px;margin-top:12px}
+#mDash .anx-r2{grid-template-columns:2fr 1fr}
+#mDash .anx-r3{grid-template-columns:1fr 1fr 1.3fr}
+#mDash .anx-chartbox{position:relative;height:220px}
+#mDash .anx-leg{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+#mDash .anx-leg-r{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#f3e8ee}
+#mDash .anx-leg-r i{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+#mDash .anx-leg-r span{flex:1}
+#mDash .anx-leg-r b{font-weight:800;color:#fff}
+#mDash .anx-leg-r em{font-style:normal;font-size:10px;color:#c4a3b4;min-width:36px;text-align:right}
+#mDash .anx-dn{position:relative;width:100%;max-width:170px;margin:0 auto}
+#mDash .anx-dn svg{display:block;width:100%;height:auto}
+#mDash .anx-dtrack{fill:none;stroke:rgba(255,255,255,.08);stroke-width:14}
+#mDash .anx-dseg{fill:none;stroke-width:14;stroke-linecap:butt;transition:stroke-dasharray 1.5s cubic-bezier(.22,1,.36,1),stroke-dashoffset 1.5s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 0 5px rgba(255,255,255,.18))}
+#mDash .anx-dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+#mDash .anx-dc b{font-size:24px;font-weight:800;line-height:1;text-shadow:0 0 14px rgba(230,0,126,.7)}
+#mDash .anx-dc span{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d9b3c6;margin-top:3px}
+#mDash .anx-gwrap{position:relative;max-width:260px;margin:0 auto}
+#mDash .anx-gwrap svg{display:block;width:100%;height:auto;overflow:visible}
+#mDash .anx-gtrack{fill:none;stroke:rgba(255,255,255,.09);stroke-width:13;stroke-linecap:round}
+#mDash .anx-gprog{fill:none;stroke-width:13;stroke-linecap:round;transition:stroke-dasharray 1.8s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 0 7px rgba(249,115,22,.55))}
+#mDash .anx-gt line{stroke:rgba(255,255,255,.35);stroke-width:1.4}
+#mDash .anx-gtx{fill:#d9b3c6;font-size:8px;font-weight:700;font-family:inherit}
+#mDash .anx-needle{transform-origin:90px 90px;transform:rotate(-90deg);transition:transform 2s cubic-bezier(.34,1.45,.5,1)}
+#mDash .anx-needle line{stroke:#fff;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 4px #e6007e)}
+#mDash .anx-needle circle{fill:#e6007e;stroke:#fff;stroke-width:2}
+#mDash .anx-gnum{text-align:center;margin-top:-4px}
+#mDash .anx-gnum b{font-size:30px;font-weight:800;text-shadow:0 0 18px rgba(34,197,94,.55)}
+#mDash .anx-gnum span{display:block;font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#d9b3c6;margin-top:2px}
+#mDash .anx-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+#mDash .anx-mini div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;text-align:center}
+#mDash .anx-mini b{display:block;font-size:14px;font-weight:800;color:#fff}
+#mDash .anx-mini span{font-size:9.5px;font-weight:700;color:#d9b3c6;text-transform:uppercase;letter-spacing:.6px}
+#mDash .anx-split{margin-top:12px}
+#mDash .anx-split-bar{display:flex;height:9px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.08)}
+#mDash .anx-split-bar i{display:block;height:100%;transition:width 1.5s cubic-bezier(.22,1,.36,1)}
+#mDash .anx-split-t{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:#e8d3de;margin-top:6px}
+#mDash .anx-prod{display:flex;flex-direction:column;gap:11px}
+#mDash .anx-prow{display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:center}
+#mDash .anx-pn{font-size:12px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mDash .anx-pv{font-size:11px;font-weight:800;color:#fdba74}
+#mDash .anx-pbar{grid-column:1/-1;height:8px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}
+#mDash .anx-pbar i{display:block;height:100%;width:var(--w);border-radius:5px;background:linear-gradient(90deg,#9b1c31,#e6007e,#f97316);box-shadow:0 0 10px rgba(230,0,126,.5);animation:anxGrow 1.4s cubic-bezier(.22,1,.36,1)}
+@keyframes anxGrow{from{width:0}}
+#mDash .anx-empty{font-size:12px;font-weight:600;color:#c4a3b4;text-align:center;padding:18px 0}
+#mDash .anx-plist{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding-right:4px;scrollbar-width:thin;scrollbar-color:#e6007e transparent}
+#mDash .anx-pr{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:4px 10px;align-items:center;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)}
+#mDash .anx-pr.anx-ph{background:none;border:none;padding:0 12px 2px;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#c4a3b4}
+#mDash .anx-pl{font-size:12px;font-weight:800;color:#fff}
+#mDash .anx-pc{font-size:11px;font-weight:800;color:#fff;background:rgba(230,0,126,.22);border:1px solid rgba(230,0,126,.4);padding:2px 9px;border-radius:10px;justify-self:start}
+#mDash .anx-prv{font-size:12px;font-weight:800;color:#86efac}
+#mDash .anx-pa{font-size:11px;font-weight:700;color:#fdba74}
+#mDash .anx-pbr{grid-column:1/-1;height:4px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+#mDash .anx-pbr i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#e6007e,#f97316)}
+@media (max-width:980px){
+ #mDash .anx-rings{grid-template-columns:repeat(3,1fr)}
+ #mDash .anx-r2,#mDash .anx-r3{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+ #mDash .anx{padding:12px;border-radius:18px}
+ #mDash .anx-rings{grid-template-columns:repeat(2,1fr);gap:9px}
+ #mDash .anx-rings .anx-ring:first-child{grid-column:span 2}
+ #mDash .anx-num{font-size:24px}
+ #mDash .anx-chartbox{height:190px}
+ #mDash .anx-pr{grid-template-columns:1fr 1fr;padding:9px 10px}
+ #mDash .anx-pr.anx-ph{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+ #mDash .anx-spin,#mDash .anx-spin-slow,#mDash .anx-live{animation:none}
+ #mDash .anx-prog,#mDash .anx-dseg,#mDash .anx-gprog,#mDash .anx-needle{transition:none}
+}`;
+  document.head.appendChild(st);
+
+  /* ---------------- HTML pieces ---------------- */
+  function ring(k,icon,label){
+    const a=PAL[k][0], b=PAL[k][1];
+    return `<div class="anx-ring" data-k="${k}" style="--a:${a};--b:${b}">
+      <div class="anx-ring-wrap">
+        <svg viewBox="0 0 120 120">
+          <defs><linearGradient id="anxg-${k}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+          <circle class="anx-ticks anx-spin-slow" cx="60" cy="60" r="57"/>
+          <circle class="anx-scan anx-spin" cx="60" cy="60" r="57"/>
+          <circle class="anx-track" cx="60" cy="60" r="46"/>
+          <circle class="anx-prog" cx="60" cy="60" r="46" stroke="url(#anxg-${k})" stroke-dasharray="${CR}" stroke-dashoffset="${CR}" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="anx-ring-in"><div class="anx-num" data-n>0</div><div class="anx-pct" data-p>0%</div></div>
+      </div>
+      <div class="anx-ring-lbl">${icon} ${label}</div>
+      <div class="anx-ring-amt" data-a>AED 0</div>
+    </div>`;
+  }
+  function donut(id,colors){
+    const defs=colors.map((c,i)=>`<linearGradient id="${id}g${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>`).join('');
+    const segs=colors.map((c,i)=>`<circle class="anx-dseg" data-i="${i}" cx="60" cy="60" r="38" pathLength="100" stroke="url(#${id}g${i})" stroke-dasharray="0 100" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>`).join('');
+    return `<div class="anx-dn" id="${id}"><svg viewBox="0 0 120 120"><defs>${defs}</defs><circle class="anx-dtrack" cx="60" cy="60" r="38"/>${segs}</svg><div class="anx-dc"><b data-n>0</b><span data-l></span></div></div>`;
+  }
+  function gaugeTicks(){
+    let h='';
+    for(let i=0;i<=10;i++){
+      const t=(180+i*18)*Math.PI/180, c=Math.cos(t), s=Math.sin(t);
+      h+=`<line x1="${(90+75*c).toFixed(2)}" y1="${(90+75*s).toFixed(2)}" x2="${(90+82*c).toFixed(2)}" y2="${(90+82*s).toFixed(2)}"/>`;
+    }
+    return h;
+  }
+  const panel=document.createElement('div');
+  panel.className='anx'; panel.id='anx';
+  panel.innerHTML=`
+    <div class="anx-head">
+      <div class="anx-title"><span class="anx-live"></span>Analytics Command Center</div>
+      <div class="anx-scope" id="anxScope">Daily view</div>
+    </div>
+    <div class="anx-rings">
+      ${ring('tot','🛍️','Total Orders')}${ring('pen','⏳','Pending')}${ring('dsp','🚚','Dispatched')}${ring('dlv','✅','Delivered')}${ring('can','❌','Cancelled')}
+    </div>
+    <div class="anx-row anx-r2">
+      <div class="anx-card">
+        <div class="anx-ct"><span>📈 Order Volume &amp; Revenue Trend</span><small id="anxBest"></small></div>
+        <div class="anx-chartbox"><canvas id="anxTrend"></canvas></div>
+      </div>
+      <div class="anx-card">
+        <div class="anx-ct"><span>🎯 Order Status Split</span></div>
+        ${donut('anxDS',[PAL.pen,PAL.dsp,PAL.dlv,PAL.can])}
+        <div class="anx-leg" id="anxDSleg"></div>
+      </div>
+    </div>
+    <div class="anx-row anx-r3">
+      <div class="anx-card">
+        <div class="anx-ct"><span>⭐ Delivery Rate</span></div>
+        <div class="anx-gwrap">
+          <svg viewBox="0 0 180 112">
+            <defs><linearGradient id="anxgg" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="160" y2="0"><stop offset="0" stop-color="#9b1c31"/><stop offset=".5" stop-color="#f97316"/><stop offset="1" stop-color="#22c55e"/></linearGradient></defs>
+            <path class="anx-gtrack" d="M20 90 A70 70 0 0 1 160 90" pathLength="100"/>
+            <path class="anx-gprog" id="anxGP" d="M20 90 A70 70 0 0 1 160 90" pathLength="100" stroke="url(#anxgg)" stroke-dasharray="0 100"/>
+            <g class="anx-gt">${gaugeTicks()}</g>
+            <text class="anx-gtx" x="14" y="106">0</text><text class="anx-gtx" x="156" y="106">100</text>
+            <g class="anx-needle" id="anxNeedle"><line x1="90" y1="90" x2="90" y2="36"/><circle cx="90" cy="90" r="6"/></g>
+          </svg>
+        </div>
+        <div class="anx-gnum"><b id="anxGnum">0%</b><span>Delivered of all orders</span></div>
+        <div class="anx-mini"><div><b id="anxCxr">0%</b><span>Cancel rate</span></div><div><b id="anxAvg">AED 0</b><span>Avg basket</span></div></div>
+      </div>
+      <div class="anx-card">
+        <div class="anx-ct"><span>💳 Payment &amp; Delivery</span></div>
+        ${donut('anxDP',[PAL.dsp,PAL.dlv])}
+        <div class="anx-leg" id="anxDPleg"></div>
+        <div class="anx-split">
+          <div class="anx-split-bar"><i id="anxExp" style="width:0;background:linear-gradient(90deg,#e6007e,#ff6fb5)"></i><i id="anxStd" style="width:0;background:linear-gradient(90deg,#f97316,#fdba74)"></i></div>
+          <div class="anx-split-t"><span id="anxExpT">⚡ Express 0</span><span id="anxStdT">📦 Standard 0</span></div>
+        </div>
+      </div>
+      <div class="anx-card">
+        <div class="anx-ct"><span>🏆 Top Selling Products</span><small>by pieces sold</small></div>
+        <div class="anx-prod" id="anxProd"><div class="anx-empty">Awaiting data...</div></div>
+      </div>
+    </div>
+    <div class="anx-row">
+      <div class="anx-card">
+        <div class="anx-ct"><span id="anxPTitle">📊 Daily Orders Breakdown</span></div>
+        <div class="anx-plist" id="anxPlist"><div class="anx-empty">Awaiting data...</div></div>
+      </div>
+    </div>`;
+  const sg=document.querySelector('#mDash .m-stats-grid');
+  (sg&&sg.parentNode?sg.parentNode:$('secureArea')).insertBefore(panel,sg||null);
+  const oldTbl=$('analyticsBody'); if(oldTbl){ const c=oldTbl.closest('.m-table-card'); if(c) c.style.display='none'; }
+
+  /* ---------------- helpers ---------------- */
+  const nf=n=>Number(n).toLocaleString('en-US');
+  const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function tween(el,to,fmt,dur){
+    const from=el._v||0; el._v=to; cancelAnimationFrame(el._r);
+    if(REDUCE||from===to){ el.textContent=fmt(to); return; }
+    const t0=performance.now(); dur=dur||1200;
+    (function step(t){
+      const p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3);
+      el.textContent=fmt(Math.round(from+(to-from)*e));
+      if(p<1) el._r=requestAnimationFrame(step);
+    })(t0);
+  }
+  function setRing(k,count,amt,pct,pctTxt){
+    const el=panel.querySelector('.anx-ring[data-k="'+k+'"]'); if(!el) return;
+    el.querySelector('.anx-prog').style.strokeDashoffset=String(CR*(1-Math.max(0,Math.min(1,pct))));
+    tween(el.querySelector('[data-n]'),count,v=>nf(v));
+    el.querySelector('[data-p]').textContent=pctTxt;
+    tween(el.querySelector('[data-a]'),amt,v=>'AED '+nf(v));
+  }
+  function setDonut(id,vals,cNum,cLbl){
+    const root=$(id); if(!root) return;
+    const segs=root.querySelectorAll('.anx-dseg');
+    const total=vals.reduce((a,b)=>a+b,0);
+    const live=vals.filter(v=>v>0).length;
+    let cum=0;
+    segs.forEach((c,i)=>{
+      const pct=total?vals[i]/total*100:0;
+      const len=Math.max(0,pct-(pct>0&&live>1?1.6:0));
+      c.style.strokeDasharray=len+' 100';
+      c.style.strokeDashoffset=String(-cum);
+      cum+=pct;
+    });
+    tween(root.querySelector('[data-n]'),cNum,v=>nf(v));
+    root.querySelector('[data-l]').textContent=cLbl;
+  }
+  function legend(id,items,total){
+    const box=$(id); if(!box) return;
+    box.innerHTML=items.map(x=>`<div class="anx-leg-r"><i style="background:${x.c};color:${x.c}"></i><span>${esc(x.l)}</span><b>${nf(x.v)}</b><em>${total?Math.round(x.v/total*100):0}%</em></div>`).join('');
+  }
+
+  /* ---------------- data ---------------- */
+  function groups(rows){
+    const g={};
+    rows.forEach(row=>{
+      const s=String(row['status']||'Pending').toLowerCase();
+      const d=parseDate(row['date & time']);
+      let key='Unknown', ts=0;
+      if(d&&!isNaN(d.getTime())){
+        ts=d.getTime();
+        if(scope==='daily') key=String(d.getDate()).padStart(2,'0')+' '+MON[d.getMonth()]+' '+d.getFullYear();
+        else if(scope==='monthly') key=MON[d.getMonth()]+' '+d.getFullYear();
+        else if(scope==='6months') key=d.getMonth()<=5?('H1 (Jan–Jun) '+d.getFullYear()):('H2 (Jul–Dec) '+d.getFullYear());
+        else key=String(d.getFullYear());
+      }
+      const o=g[key]||(g[key]={key:key,ts:0,rev:0,cnt:0,dl:0,dp:0,pe:0});
+      if(ts>o.ts) o.ts=ts;
+      if(!s.includes('cancel')){ o.rev+=getPriceFromRow(row); o.cnt++; }
+      if(s.includes('deliver')) o.dl++; else if(s.includes('dispatch')) o.dp++; else if(s.includes('pending')) o.pe++;
+    });
+    return Object.keys(g).map(k=>g[k]).sort((a,b)=>a.ts-b.ts);
+  }
+
+  /* ---------------- chart ---------------- */
+  let chart=null;
+  function drawChart(list){
+    const cv=$('anxTrend'); if(!cv||typeof Chart==='undefined') return;
+    const L=list.slice(-14);
+    const labels=L.map(x=>scope==='daily'?x.key.slice(0,6):x.key);
+    const grad=(hex,a)=>ctx=>{
+      const ch=ctx.chart, ar=ch.chartArea; if(!ar) return hex+'22';
+      const g=ch.ctx.createLinearGradient(0,ar.top,0,ar.bottom);
+      g.addColorStop(0,hex+a); g.addColorStop(1,hex+'00'); return g;
+    };
+    const line=(label,color,data,order)=>({type:'line',label:label,data:data,order:order,yAxisID:'y',borderColor:color,backgroundColor:grad(color,'55'),pointBackgroundColor:color,pointBorderColor:'#fff',pointBorderWidth:1,pointRadius:4,pointHoverRadius:6,borderWidth:3,tension:.4,fill:true});
+    const sets=[
+      line('Delivered','#22c55e',L.map(x=>x.dl),0),
+      line('Dispatched','#f0617a',L.map(x=>x.dp),1),
+      line('Pending','#f97316',L.map(x=>x.pe),2),
+      {type:'bar',label:'Revenue (AED)',data:L.map(x=>x.rev),order:3,yAxisID:'y1',backgroundColor:grad('#e6007e','AA'),borderColor:'#e6007e',borderWidth:1,borderRadius:7,maxBarThickness:34}
+    ];
+    if(chart){
+      chart.data.labels=labels;
+      sets.forEach((s,i)=>{ chart.data.datasets[i].data=s.data; });
+      chart.update(); return;
+    }
+    const tick='rgba(255,255,255,.62)';
+    chart=new Chart(cv,{
+      type:'bar',
+      data:{labels:labels,datasets:sets},
+      options:{
+        responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{display:true,position:'bottom',labels:{color:'#f3e8ee',boxWidth:10,boxHeight:10,usePointStyle:true,font:{size:10,weight:'700'}}},
+          tooltip:{backgroundColor:'rgba(28,10,20,.95)',borderColor:'rgba(230,0,126,.5)',borderWidth:1,titleColor:'#ffd6ea',bodyColor:'#fff',padding:10,cornerRadius:10}
+        },
+        scales:{
+          x:{ticks:{color:tick,font:{size:10},maxRotation:45,autoSkip:true},grid:{color:'rgba(255,255,255,.05)'}},
+          y:{beginAtZero:true,position:'left',ticks:{color:tick,font:{size:10},precision:0},grid:{color:'rgba(255,255,255,.06)'}},
+          y1:{beginAtZero:true,position:'right',ticks:{color:'#f9a8d4',font:{size:10},callback:v=>v>=1000?(v/1000)+'k':v},grid:{display:false}}
+        }
+      }
+    });
+  }
+
+  /* ---------------- update ---------------- */
+  let lastSig='', lastProd='', lastList='';
+  function sigOf(rows){ return scope+'|'+rows.length+'|'+rows.map(r=>r.rowNumber+':'+r.status).join(','); }
+
+  function update(rows){
+    if(!rows) rows=[];
+    const sig=sigOf(rows);
+    if(sig===lastSig) return;
+    lastSig=sig;
+    void panel.offsetWidth; // transition sahi chalne ke liye
+
+    let S={c:0,a:0}, cnt={p:0,d:0,l:0,x:0}, amt={p:0,d:0,l:0,x:0}, totA=0, netA=0, netC=0;
+    let cod=0, paid=0, exp=0, std=0;
+    const prod={};
+    rows.forEach(row=>{
+      const s=String(row['status']||'Pending').toLowerCase();
+      const price=getPriceFromRow(row);
+      totA+=price;
+      if(s.includes('pending')){ cnt.p++; amt.p+=price; }
+      if(s.includes('dispatch')){ cnt.d++; amt.d+=price; }
+      if(s.includes('deliver')){ cnt.l++; amt.l+=price; }
+      if(s.includes('cancel')){ cnt.x++; amt.x+=price; return; }
+      netA+=price; netC++;
+      const det=row['product details']||'';
+      if(detectPayment(det)==='PAID') paid++; else cod++;
+      if(detectDelivery(det)==='EXPRESS') exp++; else std++;
+      parseOrderItems(det).forEach(it=>{
+        const k=sNorm(it.product);
+        const o=prod[k]||(prod[k]={n:it.product,q:0,r:0});
+        o.q+=it.qty; o.r+=(it.price||0)*it.qty;
+      });
+    });
+    const T=rows.length;
+    const pc=v=>T?v/T:0;
+    const pt=v=>(T?Math.round(v/T*100):0)+'% of orders';
+
+    setRing('tot',T,totA,T?1:0,'ALL TIME');
+    setRing('pen',cnt.p,amt.p,pc(cnt.p),pt(cnt.p));
+    setRing('dsp',cnt.d,amt.d,pc(cnt.d),pt(cnt.d));
+    setRing('dlv',cnt.l,amt.l,pc(cnt.l),pt(cnt.l));
+    setRing('can',cnt.x,amt.x,pc(cnt.x),pt(cnt.x));
+
+    // status donut
+    setDonut('anxDS',[cnt.p,cnt.d,cnt.l,cnt.x],T,'orders');
+    legend('anxDSleg',[
+      {l:'Pending',v:cnt.p,c:PAL.pen[0]},{l:'Dispatched',v:cnt.d,c:PAL.dsp[1]},
+      {l:'Delivered',v:cnt.l,c:PAL.dlv[0]},{l:'Cancelled',v:cnt.x,c:PAL.can[1]}
+    ],T);
+
+    // gauge
+    const rate=T?cnt.l/T:0;
+    $('anxGP').style.strokeDasharray=(rate*100)+' 100';
+    $('anxNeedle').style.transform='rotate('+(-90+rate*180)+'deg)';
+    tween($('anxGnum'),Math.round(rate*100),v=>v+'%');
+    $('anxCxr').textContent=(T?Math.round(cnt.x/T*100):0)+'%';
+    $('anxAvg').textContent='AED '+nf(netC?Math.round(netA/netC):0);
+
+    // payment donut + delivery split
+    const live=cod+paid;
+    setDonut('anxDP',[cod,paid],live,'active orders');
+    legend('anxDPleg',[{l:'💵 Cash on Delivery',v:cod,c:PAL.dsp[1]},{l:'💳 Paid',v:paid,c:PAL.dlv[0]}],live);
+    const dt=exp+std;
+    $('anxExp').style.width=(dt?exp/dt*100:0)+'%';
+    $('anxStd').style.width=(dt?std/dt*100:0)+'%';
+    $('anxExpT').textContent='⚡ Express '+exp;
+    $('anxStdT').textContent='📦 Standard '+std;
+
+    // top products (sirf tab dobara banao jab data badle)
+    const top=Object.keys(prod).map(k=>prod[k]).sort((a,b)=>b.q-a.q||b.r-a.r).slice(0,6);
+    const ps=JSON.stringify(top);
+    if(ps!==lastProd){
+      lastProd=ps;
+      const mx=top.length?top[0].q:1;
+      $('anxProd').innerHTML=top.length
+        ? top.map(p=>`<div class="anx-prow"><span class="anx-pn" title="${esc(p.n)}">${esc(p.n)}</span><span class="anx-pv">${nf(p.q)} pcs${p.r?' · AED '+nf(p.r):''}</span><div class="anx-pbar"><i style="--w:${Math.max(6,Math.round(p.q/mx*100))}%"></i></div></div>`).join('')
+        : '<div class="anx-empty">Abhi koi product data nahi.</div>';
+    }
+
+    // period breakdown + chart
+    const list=groups(rows);
+    $('anxScope').textContent=SCOPE_TXT[scope]||'';
+    const titles={daily:'📊 Daily Orders Breakdown',monthly:'📊 Monthly Performance Report','6months':'📊 Half-Yearly (6 Month) Blocks',annual:'📊 Annual Performance Summary'};
+    $('anxPTitle').textContent=titles[scope]||'📊 Orders Breakdown';
+    const ls=scope+JSON.stringify(list);
+    if(ls!==lastList){
+      lastList=ls;
+      const mxr=Math.max.apply(null,list.map(x=>x.rev).concat([1]));
+      const rev=list.slice().reverse();
+      $('anxPlist').innerHTML=rev.length
+        ? '<div class="anx-pr anx-ph"><span>Time period</span><span>Orders</span><span>Revenue</span><span>Avg basket</span></div>'+
+          rev.map(x=>`<div class="anx-pr"><span class="anx-pl">📅 ${esc(x.key)}</span><span class="anx-pc">🛍️ ${x.cnt}</span><span class="anx-prv">AED ${nf(x.rev)}</span><span class="anx-pa">AED ${nf(x.cnt?Math.round(x.rev/x.cnt):0)} / order</span><div class="anx-pbr"><i style="width:${Math.max(3,Math.round(x.rev/mxr*100))}%"></i></div></div>`).join('')
+        : '<div class="anx-empty">No data for this filter.</div>';
+    }
+    const best=list.slice().sort((a,b)=>b.rev-a.rev)[0];
+    $('anxBest').textContent=best&&best.rev?('🏆 Best: '+best.key+' · AED '+nf(best.rev)):'';
+    drawChart(list);
+  }
+
+  /* ---------------- reset (Lock par screen ka data saaf) ---------------- */
+  function reset(){
+    lastSig=''; lastProd=''; lastList='';
+    panel.querySelectorAll('.anx-ring').forEach(el=>{
+      el.querySelector('.anx-prog').style.strokeDashoffset=String(CR);
+      const n=el.querySelector('[data-n]'); n._v=0; n.textContent='0';
+      const a=el.querySelector('[data-a]'); a._v=0; a.textContent='AED 0';
+      el.querySelector('[data-p]').textContent='0%';
+    });
+    panel.querySelectorAll('.anx-dseg').forEach(c=>{ c.style.strokeDasharray='0 100'; });
+    panel.querySelectorAll('.anx-dc [data-n]').forEach(n=>{ n._v=0; n.textContent='0'; });
+    ['anxDSleg','anxDPleg'].forEach(i=>{ $(i).innerHTML=''; });
+    $('anxGP').style.strokeDasharray='0 100';
+    $('anxNeedle').style.transform='rotate(-90deg)';
+    $('anxGnum')._v=0; $('anxGnum').textContent='0%';
+    $('anxProd').innerHTML='<div class="anx-empty">Awaiting data...</div>';
+    $('anxPlist').innerHTML='<div class="anx-empty">Awaiting data...</div>';
+    $('anxBest').textContent='';
+    if(chart){ chart.destroy(); chart=null; }
+  }
+
+  /* ---------------- hooks: baqi code ko chhue baghair ---------------- */
+  const _rt=renderTable;
+  renderTable=function(rows){ _rt(rows); try{ update(rows); }catch(e){} };
+  const _ws=wipeScreen;
+  wipeScreen=function(){ _ws(); try{ reset(); }catch(e){} };
+  try{ if(allOrders&&allOrders.length) update(allOrders); }catch(e){}
+})();
+</script>
 </body>
 </html>

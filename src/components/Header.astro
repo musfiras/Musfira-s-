@@ -658,7 +658,6 @@ import HelpLinks from './HelpLinks.astro';
     @media (hover: hover) { .ms-search-btn:hover { color: var(--brand-pink, #e6007e); } }
     .header-section.scrolling .ms-search-btn { filter: drop-shadow(0 0 3px rgba(255,255,255,0.95)) drop-shadow(0 0 6px rgba(255,255,255,0.8)); }
     @media (max-width: 767px) { .ms-search-btn svg { width: 27px; height: 27px; } }
-    @media (max-width: 600px) { .ms-search-btn { width: 36px; margin-right: -6px; } }
 
     /* ---------- Overlay + panel ---------- */
     .ms-overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 2147483640; display: none; opacity: 0; background: rgba(30, 0, 12, 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: opacity .35s ease; direction: ltr; -webkit-tap-highlight-color: transparent; }
@@ -736,6 +735,52 @@ import HelpLinks from './HelpLinks.astro';
     @media (prefers-reduced-motion: reduce) {
         .ms-overlay, .ms-panel { transition-duration: .01s !important; }
         .ms-item { animation: none !important; }
+    }
+
+    /* ══════ Search + Cart: alag alag tap zone, elite look ══════
+       Pehle dono ke tap area aapas mein overlap kar rahe the.
+       Ab har icon ka apna 44x44 (phone par 42x42) gol button hai, beech mein gap. */
+    .header-section .nav-right { gap: 4px; }
+
+    .header-section .nav-right .ms-search-btn,
+    .header-section .nav-right .m-header-cart-wrapper {
+        flex: 0 0 auto;
+        box-sizing: border-box;
+        width: 44px; height: 44px;
+        margin: 0; padding: 0;
+        border-radius: 50%;
+        display: flex !important; align-items: center; justify-content: center;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+        transition: background .3s ease, transform .3s cubic-bezier(.22,.61,.36,1), color .3s ease;
+    }
+    .header-section .nav-right .m-cart-icon-container { width: 100%; height: 100%; }
+
+    /* dono icons ka size barabar, taake jodi seedhi lage */
+    .header-section .nav-right .ms-search-btn svg { width: 27px; height: 27px; }
+    .header-section .nav-right .m-cart-icon-container svg { width: 30px; height: 30px; }
+
+    /* tap karne par halka pink gol glow (premium feel) */
+    .header-section .nav-right .ms-search-btn:active,
+    .header-section .nav-right .m-header-cart-wrapper:active {
+        background: var(--pink-soft, #fde8f2);
+        transform: scale(.92);
+    }
+    @media (hover: hover) {
+        .header-section .nav-right .ms-search-btn:hover,
+        .header-section .nav-right .m-header-cart-wrapper:hover { background: var(--pink-soft, #fde8f2); }
+    }
+
+    @media (max-width: 600px) {
+        .header-section .nav-right { gap: 2px; }
+        .header-section .nav-right .ms-search-btn,
+        .header-section .nav-right .m-header-cart-wrapper { width: 42px; height: 42px; }
+        .header-section .nav-right .ms-search-btn svg { width: 25px; height: 25px; }
+        .header-section .nav-right .m-cart-icon-container svg { width: 29px; height: 29px; }
+    }
+    @media (max-width: 380px) {
+        .header-section .nav-right .ms-search-btn,
+        .header-section .nav-right .m-header-cart-wrapper { width: 40px; height: 40px; }
     }
 </style>
 

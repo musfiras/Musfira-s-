@@ -5,6 +5,7 @@
 // Google Fonts (Bodoni Moda + Montserrat) ab Layout.astro ke <head> mein hain.
 // openDrawer() aur #m-global-count cart script se aate hain (wo alag step mein).
 // HelpLinks: categories dropdown aur mobile drawer ke end mein Reviews + Need help?
+// SEARCH: file ke bilkul end mein (SEARCH block). Data /search-index.json se aata hai (src/pages/search-index.json.js).
 import { site } from '../config/site.js';
 import HelpLinks from './HelpLinks.astro';
 ---
@@ -631,3 +632,661 @@ import HelpLinks from './HelpLinks.astro';
         new MutationObserver(sync).observe(b, { childList: true, characterData: true, subtree: true });
     })();
 </script>
+
+<!-- ======================= SEARCH (Musfira's) : smart, poori site ke har product par chalti hai ======================= -->
+<div id="msSearch" class="ms-overlay notranslate" translate="no" role="dialog" aria-modal="true" aria-label="Search products" aria-hidden="true">
+    <div class="ms-panel">
+        <div class="ms-bar">
+            <span class="ms-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+            </span>
+            <input class="ms-input" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search products, colours, price" aria-label="Search products">
+            <button type="button" class="ms-clear" aria-label="Clear search" hidden>&times;</button>
+            <button type="button" class="ms-close" aria-label="Close search">&#10005;</button>
+        </div>
+        <div class="ms-body" id="msBody" aria-live="polite"></div>
+        <div class="drawer-foot ms-foot"><i></i><b>&#9670;</b><i></i></div>
+    </div>
+</div>
+
+<style is:global>
+    /* ---------- Header ka search icon (cart icon ke left) ---------- */
+    .ms-search-btn { background: none; border: 0; padding: 8px 4px; margin: 0; width: 42px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--orange-maroon, #a3301f); border-radius: 50%; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: color .3s ease, transform .3s cubic-bezier(.22,.61,.36,1); }
+    .ms-search-btn svg { width: 30px; height: 30px; stroke-width: 1.5; filter: drop-shadow(0 3px 5px rgba(230, 0, 126, 0.15)); }
+    .ms-search-btn:active { color: var(--brand-pink, #e6007e); transform: scale(.92); }
+    .ms-search-btn:focus-visible { outline: 2px solid #fecce6; outline-offset: -2px; color: var(--brand-pink, #e6007e); }
+    @media (hover: hover) { .ms-search-btn:hover { color: var(--brand-pink, #e6007e); } }
+    .header-section.scrolling .ms-search-btn { filter: drop-shadow(0 0 3px rgba(255,255,255,0.95)) drop-shadow(0 0 6px rgba(255,255,255,0.8)); }
+    @media (max-width: 767px) { .ms-search-btn svg { width: 27px; height: 27px; } }
+    @media (max-width: 600px) { .ms-search-btn { width: 36px; margin-right: -6px; } }
+
+    /* ---------- Overlay + panel ---------- */
+    .ms-overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 2147483640; display: none; opacity: 0; background: rgba(30, 0, 12, 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: opacity .35s ease; direction: ltr; -webkit-tap-highlight-color: transparent; }
+    .ms-overlay.is-open { opacity: 1; }
+    .ms-panel { position: relative; display: flex; flex-direction: column; width: 100%; max-width: 760px; max-height: 92vh; max-height: 92dvh; margin: 0 auto; background: #fff; border-radius: 0 0 26px 26px; box-shadow: 0 30px 70px rgba(0,0,0,0.25); overflow: hidden; padding-top: env(safe-area-inset-top, 0px); transform: translateY(-26px); opacity: 0; transition: transform .5s cubic-bezier(.22,.61,.36,1), opacity .35s ease; }
+    .ms-overlay.is-open .ms-panel { transform: none; opacity: 1; }
+    .ms-panel::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; z-index: 2; background: linear-gradient(90deg, var(--maroon, #a3301f), var(--brand-pink, #e6007e), var(--maroon, #a3301f)); }
+
+    .ms-bar { display: flex; align-items: center; gap: 10px; margin: 0 18px; padding: 24px 0 10px; border-bottom: 1px solid var(--pink-line, #f6d9e6); transition: border-color .3s ease; flex: 0 0 auto; }
+    .ms-bar:focus-within { border-bottom-color: var(--brand-pink, #e6007e); }
+    .ms-ico { display: flex; color: var(--maroon, #a3301f); flex-shrink: 0; }
+    .ms-ico svg { width: 23px; height: 23px; }
+    .ms-input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; -webkit-appearance: none; appearance: none; font-family: 'Montserrat', system-ui, sans-serif; font-size: 18px; font-weight: 600; color: #800000; padding: 10px 0; border-radius: 0; }
+    .ms-input::placeholder { color: #c9a3b3; font-weight: 500; }
+    .ms-input::-webkit-search-cancel-button, .ms-input::-webkit-search-decoration { -webkit-appearance: none; display: none; }
+    .ms-clear, .ms-close { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--pink-line, #f6d9e6); background: #fff; color: var(--maroon, #a3301f); cursor: pointer; padding: 0; line-height: 1; touch-action: manipulation; transition: background .3s ease, color .3s ease, transform .35s cubic-bezier(.22,.61,.36,1); -webkit-tap-highlight-color: transparent; }
+    .ms-clear { font-size: 19px; }
+    .ms-close { font-size: 11px; font-weight: 800; }
+    .ms-clear[hidden] { display: none !important; }
+    .ms-clear:active, .ms-close:active { background: var(--pink-soft, #fde8f2); color: var(--brand-pink, #e6007e); }
+    @media (hover: hover) { .ms-clear:hover, .ms-close:hover { background: var(--pink-soft, #fde8f2); color: var(--brand-pink, #e6007e); } .ms-close:hover { transform: rotate(90deg); } }
+
+    .ms-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 4px 12px 8px; scrollbar-width: thin; scrollbar-color: #e6007e #fff5f8; font-family: 'Montserrat', system-ui, sans-serif; }
+    .ms-body::-webkit-scrollbar { width: 6px; }
+    .ms-body::-webkit-scrollbar-track { background: #fff5f8; }
+    .ms-body::-webkit-scrollbar-thumb { background: #e6007e; border-radius: 10px; }
+    .ms-foot { margin: 4px 0 14px; flex: 0 0 auto; }
+
+    .ms-label { display: flex; align-items: center; justify-content: space-between; margin: 16px 6px 8px; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #a8505c; }
+    .ms-link { background: none; border: 0; padding: 4px 2px; font-family: inherit; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--brand-pink, #e6007e); cursor: pointer; }
+
+    /* Jab exact na mile: soft note (closest matches ke upar) */
+    .ms-note { margin: 14px 6px 6px; padding: 10px 14px; border: 1px solid var(--pink-line, #f6d9e6); border-radius: 14px; background: #fffafc; font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 13.5px; line-height: 1.5; color: #9c2954; word-break: break-word; }
+    .ms-note b { font-style: normal; font-weight: 700; color: #800000; }
+
+    .ms-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 4px; }
+    .ms-chip { display: inline-flex; align-items: center; padding: 9px 15px; border: 1px solid var(--pink-line, #f6d9e6); border-radius: 999px; background: #fff; font-family: 'Montserrat', system-ui, sans-serif; font-size: 11px; font-weight: 800; letter-spacing: .8px; color: var(--maroon, #a3301f); text-decoration: none; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: background .3s ease, color .3s ease, border-color .3s ease; }
+    .ms-chip:active { background: var(--pink-soft, #fde8f2); color: var(--brand-pink, #e6007e); }
+    @media (hover: hover) { .ms-chip:hover { background: var(--pink-soft, #fde8f2); color: var(--brand-pink, #e6007e); border-color: #f6b3d4; } }
+
+    /* ---------- Result rows ---------- */
+    .ms-list { display: block; }
+    @keyframes msIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+    .ms-item { display: flex; align-items: center; gap: 14px; margin: 3px 0; padding: 10px; border-radius: 16px; text-decoration: none; color: inherit; animation: msIn .45s cubic-bezier(.22,.61,.36,1) backwards; -webkit-tap-highlight-color: transparent; transition: background .25s ease; }
+    .ms-item.is-active { background: var(--pink-soft, #fde8f2); }
+    .ms-thumb { width: 64px; height: 64px; flex-shrink: 0; border-radius: 12px; object-fit: cover; background: #f5f5f5; border: 1px solid var(--pink-line, #f6d9e6); }
+    .ms-info { flex: 1; min-width: 0; display: block; }
+    .ms-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; font-weight: 800; line-height: 1.3; color: #000; }
+    .ms-meta { display: block; margin-top: 3px; font-size: 11px; font-weight: 700; color: #e6007e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ms-prices { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; margin-top: 5px; }
+    .ms-new { font-size: 15px; font-weight: 900; color: #e6007e; }
+    .ms-old { font-size: 11px; font-weight: 600; color: #8f8f8f; text-decoration: line-through; }
+    .ms-sold { font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #c0182b; border: 1px solid #f3c0c8; border-radius: 999px; padding: 2px 8px; }
+    .ms-go { margin-left: auto; padding-left: 4px; font-size: 16px; color: #e6007e; opacity: 0; transform: translateX(-8px); transition: opacity .3s ease, transform .3s cubic-bezier(.22,.61,.36,1); }
+    .ms-item.is-active .ms-go { opacity: 1; transform: none; }
+    .ms-hl { background: transparent; color: #e6007e; font-weight: 900; }
+
+    .ms-state { text-align: center; padding: 38px 16px; font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 15px; color: #9c2954; }
+    .ms-none { text-align: center; padding: 26px 14px 6px; }
+    .ms-none-t { font-family: 'Bodoni Moda', Georgia, serif; font-size: 20px; font-weight: 600; color: #800000; line-height: 1.3; word-break: break-word; }
+    .ms-none-s { margin-top: 8px; font-size: 12.5px; line-height: 1.6; color: #8a6a78; }
+    .ms-chip-main { background: var(--maroon, #a3301f); border-color: var(--maroon, #a3301f); color: #fff; }
+    @media (hover: hover) { .ms-chip-main:hover { background: var(--brand-pink, #e6007e); border-color: var(--brand-pink, #e6007e); color: #fff; } }
+    .ms-chip-main:active { background: var(--brand-pink, #e6007e); color: #fff; }
+
+    @media (max-width: 600px) {
+        .ms-panel { border-radius: 0 0 22px 22px; max-height: 94vh; max-height: 94dvh; }
+        .ms-bar { margin: 0 12px; padding-top: 20px; }
+        .ms-body { padding: 2px 6px 6px; }
+        .ms-thumb { width: 56px; height: 56px; }
+        .ms-name { font-size: 12.5px; }
+        .ms-new { font-size: 14px; }
+        .ms-note { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .ms-overlay, .ms-panel { transition-duration: .01s !important; }
+        .ms-item { animation: none !important; }
+    }
+</style>
+
+<script is:inline>
+(function () {
+    'use strict';
+    var root = document.getElementById('msSearch');
+    if (!root || root.getAttribute('data-ready')) { return; }
+    root.setAttribute('data-ready', '1');
+    if (root.parentNode !== document.body) { document.body.appendChild(root); }
+
+    var INDEX_URL = '/search-index.json';
+    var MAX_RESULTS = 24;
+    var input = root.querySelector('.ms-input');
+    var body = root.querySelector('.ms-body');
+    var clearBtn = root.querySelector('.ms-clear');
+    var closeBtn = root.querySelector('.ms-close');
+
+    var DB = null, loading = false, failed = false, waiters = [];
+    var isOpen = false, lastFocus = null, items = [], active = -1, locked = false, prev = {}, warmed = false;
+
+    /* ---------- helpers ---------- */
+    function digits(s) {
+        s = String(s == null ? '' : s);
+        if (window.__mx && typeof window.__mx.digits === 'function') { return window.__mx.digits(s); }
+        return s;
+    }
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function norm(s) {
+        s = digits(s).toLowerCase();
+        try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
+        s = s.replace(/['\u2019]/g, '');
+        try { s = s.replace(new RegExp('[^\\p{L}\\p{N}]+', 'gu'), ' '); } catch (e) { s = s.replace(/[^a-z0-9]+/g, ' '); }
+        return s.replace(/\s+/g, ' ').trim();
+    }
+    function stem(w) {
+        return (w.length > 3 && w.charAt(w.length - 1) === 's' && w.charAt(w.length - 2) !== 's') ? w.slice(0, -1) : w;
+    }
+    function words(s) {
+        var n = norm(s);
+        return n ? n.split(' ').map(stem) : [];
+    }
+    function isNum(t) { return /^\d+$/.test(t); }
+    function lev(a, b, max) {
+        if (Math.abs(a.length - b.length) > max) { return max + 1; }
+        var prevRow = [], cur = [], i, j, t;
+        for (j = 0; j <= b.length; j++) { prevRow[j] = j; }
+        for (i = 1; i <= a.length; i++) {
+            cur[0] = i;
+            var rowMin = cur[0];
+            for (j = 1; j <= b.length; j++) {
+                var c = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+                cur[j] = Math.min(prevRow[j] + 1, cur[j - 1] + 1, prevRow[j - 1] + c);
+                if (cur[j] < rowMin) { rowMin = cur[j]; }
+            }
+            if (rowMin > max) { return max + 1; }
+            t = prevRow; prevRow = cur; cur = t;
+        }
+        return prevRow[b.length];
+    }
+    // do lafzon ki shakal kitni milti hai (0 se 1): "wallett" aur "wallet" waghera
+    function dice(a, b) {
+        if (a.length < 2 || b.length < 2) { return 0; }
+        var A = {}, n = a.length - 1, m = b.length - 1, hit = 0, i, x;
+        for (i = 0; i < n; i++) { x = a.substr(i, 2); A[x] = (A[x] || 0) + 1; }
+        for (i = 0; i < m; i++) { x = b.substr(i, 2); if (A[x] > 0) { A[x]--; hit++; } }
+        return (2 * hit) / (n + m);
+    }
+
+    /* ---------- milte julte lafz (synonyms) ----------
+       Customer "purse" likhe aur product "handbag" ho to bhi mil jaye.
+       Apne products ke hisaab se is list mein lafz add / kam kar sakte ho. */
+    var SYN_GROUPS = [
+        ['bag', 'handbag', 'purse', 'tote', 'sling', 'crossbody', 'satchel', 'clutch', 'backpack', 'shoulder', 'hobo'],
+        ['wallet', 'cardholder', 'purse', 'pouch'],
+        ['watch', 'wristwatch', 'timepiece'],
+        ['jewellery', 'jewelry', 'necklace', 'pendant', 'ring', 'earring', 'bracelet', 'bangle', 'anklet'],
+        ['sunglass', 'sunglasses', 'shades', 'eyewear', 'glasses'],
+        ['shoe', 'shoes', 'sandal', 'heel', 'sneaker', 'flat', 'footwear'],
+        ['scarf', 'hijab', 'shawl', 'stole'],
+        ['perfume', 'fragrance', 'scent'],
+        ['gift', 'present'],
+        ['beige', 'nude', 'cream', 'tan', 'camel'],
+        ['pink', 'blush', 'rose'],
+        ['black', 'ebony'],
+        ['brown', 'chocolate', 'coffee'],
+        ['white', 'ivory', 'offwhite'],
+        ['red', 'maroon', 'burgundy', 'wine'],
+        ['blue', 'navy'],
+        ['green', 'olive'],
+        ['grey', 'gray', 'silver']
+    ];
+    var SYN = {};
+    SYN_GROUPS.forEach(function (g) {
+        var st = g.map(stem);
+        st.forEach(function (w) {
+            var o = SYN[w] || (SYN[w] = []);
+            st.forEach(function (x) { if (x !== w && o.indexOf(x) < 0) { o.push(x); } });
+        });
+    });
+
+    /* ---------- recent + tracking ---------- */
+    function getRecent() {
+        try {
+            var a = JSON.parse(localStorage.getItem('ms_recent') || '[]');
+            return Array.isArray(a) ? a.filter(function (x) { return typeof x === 'string'; }).slice(0, 5) : [];
+        } catch (e) { return []; }
+    }
+    function addRecent(q) {
+        q = String(q || '').trim();
+        if (q.length < 2) { return; }
+        try {
+            var a = getRecent().filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); });
+            a.unshift(q.slice(0, 40));
+            localStorage.setItem('ms_recent', JSON.stringify(a.slice(0, 5)));
+        } catch (e) {}
+    }
+    function clearRecent() { try { localStorage.removeItem('ms_recent'); } catch (e) {} }
+    function track(q) {
+        q = String(q || '').trim();
+        if (q.length < 2) { return; }
+        try { if (typeof fbq !== 'undefined') { fbq('track', 'Search', { search_string: q.slice(0, 80) }); } } catch (e) {}
+        try { if (typeof gtag === 'function') { gtag('event', 'search', { search_term: q.slice(0, 80) }); } } catch (e) {}
+    }
+
+    /* ---------- data: har search se pehle poori site ka data scan ---------- */
+    function prepare(d) {
+        var out = { categories: (d && d.categories) || [], products: (d && d.products) || [] };
+        out.products.forEach(function (p) {
+            p.c = p.c || []; p.cats = p.cats || [];
+            p._name = words(p.n);
+            p._col = words(p.c.join(' '));
+            p._kw = words(p.k || '');
+            p._cat = words(p.cats.join(' '));
+            p._desc = words(p.d || '');
+            p._nameN = norm(p.n);
+        });
+        return out;
+    }
+    function load(cb) {
+        if (DB) { if (cb) { cb(); } return; }
+        if (cb) { waiters.push(cb); }
+        if (loading) { return; }
+        loading = true; failed = false;
+        fetch(INDEX_URL, { cache: 'no-cache' })
+            .then(function (r) { if (!r.ok) { throw new Error('bad'); } return r.json(); })
+            .then(function (d) { DB = prepare(d); })
+            .catch(function () { failed = true; })
+            .then(function () {
+                loading = false;
+                var w = waiters; waiters = [];
+                w.forEach(function (f) { try { f(); } catch (e) {} });
+            });
+    }
+    function warm() { if (!warmed) { warmed = true; load(); } }
+
+    /* ---------- query parse ---------- */
+    var UNDER = { under: 1, below: 1, less: 1, max: 1, upto: 1, within: 1, up: 1, cheaper: 1 };
+    var OVER = { over: 1, above: 1, min: 1, least: 1, more: 1, minimum: 1 };
+    var SKIP = { aed: 1, dirham: 1, dirhams: 1, dhs: 1, price: 1, cost: 1, the: 1, and: 1, 'for': 1, 'with': 1, a: 1, of: 1, 'in': 1, to: 1, than: 1, at: 1, only: 1, is: 1, my: 1 };
+    var FIELDS = [['_name', 10], ['_col', 6], ['_kw', 5], ['_cat', 4], ['_desc', 1]];
+
+    function parse(raw) {
+        var s = digits(raw).replace(/<=?/g, ' under ').replace(/>=?/g, ' over ');
+        var n = norm(s);
+        var q = { raw: raw, toks: [], stems: [], max: null, min: null, hasText: false, any: false, phrase: '' };
+        if (!n) { return q; }
+        var mode = null;
+        n.split(' ').forEach(function (t) {
+            if (UNDER[t]) { mode = 'max'; return; }
+            if (OVER[t]) { mode = 'min'; return; }
+            if (SKIP[t]) { return; }
+            if (isNum(t)) {
+                var v = parseInt(t, 10);
+                if (mode === 'max') { q.max = v; mode = null; return; }
+                if (mode === 'min') { q.min = v; mode = null; return; }
+                q.toks.push(t); q.stems.push(t);
+                return;
+            }
+            mode = null;
+            q.toks.push(t); q.stems.push(stem(t));
+        });
+        q.hasText = q.toks.length > 0;
+        q.any = q.hasText || q.max !== null || q.min !== null;
+        q.phrase = q.toks.join(' ');
+        return q;
+    }
+
+    /* ---------- scoring ---------- */
+    function fieldScore(ws, ts, numeric, loose) {
+        var best = 0, i, w, s, m;
+        for (i = 0; i < ws.length; i++) {
+            w = ws[i]; s = 0;
+            if (w === ts) { s = 1; }
+            else if (!numeric) {
+                if (w.indexOf(ts) === 0) { s = 0.8; }
+                else if (w.length >= 4 && ts.indexOf(w) === 0 && ts.length - w.length <= 2) { s = 0.7; }
+                else if (ts.length >= 3 && w.indexOf(ts) > 0) { s = 0.5; }
+                else if (ts.length >= 4 && w.length >= 3) {
+                    m = ts.length >= 7 ? 2 : 1;
+                    if (lev(w, ts, m) <= m) { s = 0.4; }
+                    else if (loose && w.length >= 4 && dice(w, ts) >= 0.6) { s = 0.3; }
+                }
+            }
+            if (s > best) { best = s; if (best === 1) { break; } }
+        }
+        return best;
+    }
+    // ek lafz ka ek product par score (name sab se zyada, phir color, keywords, category, description)
+    function tokScore(p, ts, loose, useDesc) {
+        var num = isNum(ts), best = 0, vars = [ts], j, k, f, v;
+        if (num) {
+            var n = parseInt(ts, 10);
+            if (p.p === n) { best = 8; }
+            else if (loose && n > 0 && Math.abs(p.p - n) / n <= 0.2) { best = 3; }
+        } else if (SYN[ts]) { vars = vars.concat(SYN[ts]); }
+        for (j = 0; j < vars.length; j++) {
+            f = j === 0 ? 1 : 0.6;
+            for (k = 0; k < FIELDS.length; k++) {
+                if (!useDesc && FIELDS[k][0] === '_desc') { continue; }
+                v = fieldScore(p[FIELDS[k][0]], vars[j], num, loose) * FIELDS[k][1] * f;
+                if (v > best) { best = v; }
+            }
+        }
+        return best;
+    }
+    // saare lafz milne chahiye
+    function andScore(p, q) {
+        var total = 1, i, v;
+        for (i = 0; i < q.stems.length; i++) {
+            v = tokScore(p, q.stems[i], false, true);
+            if (v === 0) { return 0; }
+            total += v;
+        }
+        if (q.toks.length > 1 && p._nameN.indexOf(q.phrase) > -1) { total += 8; }
+        return total;
+    }
+    // koi bhi lafz mil jaye (jitne zyada milen utna upar)
+    function orScore(p, q, loose) {
+        var total = 0, i;
+        for (i = 0; i < q.stems.length; i++) { total += tokScore(p, q.stems[i], loose, false); }
+        return total;
+    }
+    function collect(fn) {
+        var res = [];
+        DB.products.forEach(function (p, idx) {
+            var s = fn(p);
+            if (s > 0) { res.push({ p: p, s: s, i: idx }); }
+        });
+        res.sort(function (a, b) {
+            if (b.s !== a.s) { return b.s - a.s; }
+            var as = a.p.stock === false ? 1 : 0, bs = b.p.stock === false ? 1 : 0;
+            if (as !== bs) { return as - bs; }
+            return a.i - b.i;
+        });
+        return res;
+    }
+    function nearest(target) {
+        var r = DB.products.map(function (p, i) { return { p: p, s: 1, i: i, d: Math.abs(p.p - target) }; });
+        r.sort(function (a, b) { return (a.d - b.d) || (a.i - b.i); });
+        return r.slice(0, 6);
+    }
+    function picks() {
+        var r = [];
+        DB.products.forEach(function (p, i) { if (p.h) { r.push({ p: p, s: 1, i: i }); } });
+        if (!r.length) { DB.products.forEach(function (p, i) { r.push({ p: p, s: 1, i: i }); }); }
+        return r.slice(0, 4);
+    }
+
+    // Poora search: pehle exact, phir milta julta, phir shakal se milta, phir qeemat ke qareeb, aakhir mein "aap ko pasand aa sakta hai"
+    function search(q) {
+        var P = DB.products;
+        function ok(p) { return (q.max === null || p.p <= q.max) && (q.min === null || p.p >= q.min); }
+        var res, t;
+        if (!q.hasText) {
+            res = [];
+            P.forEach(function (p, i) { if (ok(p)) { res.push({ p: p, s: 1, i: i }); } });
+            if (res.length) {
+                res.sort(function (a, b) { return (a.p.p - b.p.p) || (a.i - b.i); });
+                return { kind: 'exact', list: res };
+            }
+            t = q.max !== null ? q.max : q.min;
+            return { kind: 'nearprice', list: nearest(t) };
+        }
+        res = collect(function (p) { return ok(p) ? andScore(p, q) : 0; });
+        if (res.length) { return { kind: 'exact', list: res }; }
+        res = collect(function (p) { return ok(p) ? orScore(p, q, false) : 0; });
+        if (res.length) { return { kind: 'close', list: res }; }
+        res = collect(function (p) { return ok(p) ? orScore(p, q, true) : 0; });
+        if (res.length) { return { kind: 'close', list: res }; }
+        if (q.max !== null || q.min !== null) {
+            res = collect(function (p) { return orScore(p, q, true); });
+            if (res.length) { return { kind: 'noprice', list: res }; }
+        }
+        var nums = q.toks.filter(isNum);
+        if (nums.length && nums.length === q.toks.length) {
+            return { kind: 'nearprice', list: nearest(parseInt(nums[0], 10)), target: parseInt(nums[0], 10) };
+        }
+        return { kind: 'none', list: picks() };
+    }
+
+    /* ---------- render ---------- */
+    function hl(text, toks) {
+        var t = String(text == null ? '' : text);
+        if (!toks || !toks.length) { return esc(t); }
+        var low = t.toLowerCase(), mk = [], i, j;
+        for (i = 0; i < t.length; i++) { mk[i] = 0; }
+        toks.forEach(function (tok) {
+            if (tok.length < 2) { return; }
+            var cands = [tok], st = stem(tok);
+            if (st !== tok) { cands.push(st); }
+            cands.forEach(function (c) {
+                var pos = low.indexOf(c);
+                while (pos > -1) {
+                    for (j = pos; j < pos + c.length; j++) { mk[j] = 1; }
+                    pos = low.indexOf(c, pos + c.length);
+                }
+            });
+        });
+        var out = '', open = false;
+        for (i = 0; i < t.length; i++) {
+            if (mk[i] && !open) { out += '<mark class="ms-hl">'; open = true; }
+            if (!mk[i] && open) { out += '</mark>'; open = false; }
+            out += esc(t.charAt(i));
+        }
+        if (open) { out += '</mark>'; }
+        return out;
+    }
+    function itemHtml(p, toks, i) {
+        var cols = p.c.length ? (p.c.length + (p.c.length === 1 ? ' Color: ' : ' Colors: ') + p.c.join(' \u00b7 ')) : '';
+        return '<a class="ms-item" role="option" href="/product/' + encodeURIComponent(p.s) + '" style="animation-delay:' + (Math.min(i, 8) * 30) + 'ms">'
+            + '<img class="ms-thumb" src="' + esc(p.i) + '" alt="" loading="lazy" width="64" height="64">'
+            + '<span class="ms-info">'
+            + '<span class="ms-name">' + hl(p.n, toks) + '</span>'
+            + (cols ? '<span class="ms-meta">' + hl(cols, toks) + '</span>' : '')
+            + '<span class="ms-prices"><b class="ms-new">AED ' + esc(p.p) + '</b>'
+            + (p.o > p.p ? '<s class="ms-old">AED ' + esc(p.o) + '</s>' : '')
+            + (p.stock === false ? '<em class="ms-sold">Sold out</em>' : '')
+            + '</span></span><span class="ms-go" aria-hidden="true">\u2192</span></a>';
+    }
+    function browseChips() {
+        var h = '<div class="ms-chips">';
+        DB.categories.forEach(function (c) {
+            h += '<a class="ms-chip" href="/' + esc(c.slug) + '/">' + esc(c.title) + '</a>';
+        });
+        return h + '<a class="ms-chip" href="/store/">Shop All</a></div>';
+    }
+    function bindItems() {
+        items = Array.prototype.slice.call(body.querySelectorAll('.ms-item'));
+        active = -1;
+        body.scrollTop = 0;
+    }
+    function setActive(i, scroll) {
+        if (active > -1 && items[active]) { items[active].classList.remove('is-active'); }
+        active = i;
+        if (i > -1 && items[i]) {
+            items[i].classList.add('is-active');
+            if (scroll && items[i].scrollIntoView) { try { items[i].scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+        }
+    }
+    function listHtml(res, toks) {
+        var h = '<div class="ms-list" role="listbox">';
+        res.slice(0, MAX_RESULTS).forEach(function (r, i) { h += itemHtml(r.p, toks, i); });
+        return h + '</div>';
+    }
+    function renderHome() {
+        var h = '', rec = getRecent();
+        if (rec.length) {
+            h += '<div class="ms-label"><span>Recent</span><button type="button" class="ms-link" data-act="clear-recent">Clear</button></div><div class="ms-chips">';
+            rec.forEach(function (r) { h += '<button type="button" class="ms-chip" data-q="' + esc(r) + '">' + esc(r) + '</button>'; });
+            h += '</div>';
+        }
+        h += '<div class="ms-label"><span>Browse</span></div>' + browseChips();
+        var pk = picks();
+        if (pk.length) {
+            h += '<div class="ms-label"><span>Quick picks</span></div>' + listHtml(pk, []);
+        }
+        body.innerHTML = h;
+        bindItems();
+    }
+    function renderNone(raw, r) {
+        var h = '<div class="ms-none"><div class="ms-none-t">Nothing matched \u201c' + esc(raw.trim()) + '\u201d</div>'
+            + '<div class="ms-none-s">Try a product name, a colour, or a price like \u201cunder 60\u201d.</div></div>';
+        if (r.list.length) { h += '<div class="ms-label"><span>You might like</span></div>' + listHtml(r.list, []); }
+        h += '<div class="ms-label"><span>Browse</span></div>' + browseChips()
+            + '<div class="ms-chips" style="margin-top:14px;"><a class="ms-chip ms-chip-main" href="/store/">Browse all products \u2192</a></div>';
+        body.innerHTML = h;
+        bindItems();
+    }
+    function renderFound(r, q, raw) {
+        var n = r.list.length, h = '', rawS = esc(raw.trim());
+        if (r.kind === 'exact') {
+            var note = '';
+            if (q.max !== null) { note += ' \u00b7 under AED ' + q.max; }
+            if (q.min !== null) { note += ' \u00b7 from AED ' + q.min; }
+            h += '<div class="ms-label"><span>' + n + (n === 1 ? ' result' : ' results') + esc(note) + '</span></div>';
+        } else if (r.kind === 'close') {
+            h += '<div class="ms-note">No exact match for <b>\u201c' + rawS + '\u201d</b>. These are the closest.</div>';
+        } else if (r.kind === 'noprice') {
+            var lim = q.max !== null ? ('under AED ' + q.max) : ('from AED ' + q.min);
+            h += '<div class="ms-note">Nothing <b>' + esc(lim) + '</b> for \u201c' + rawS + '\u201d. These are the closest options.</div>';
+        } else if (r.kind === 'nearprice') {
+            var lbl;
+            if (q.max !== null) { lbl = 'Nothing under <b>AED ' + q.max + '</b>. These are the closest prices.'; }
+            else if (q.min !== null) { lbl = 'Nothing from <b>AED ' + q.min + '</b>. These are the closest prices.'; }
+            else { lbl = 'No exact price match. These are closest to <b>AED ' + esc(r.target) + '</b>.'; }
+            h += '<div class="ms-note">' + lbl + '</div>';
+        }
+        h += listHtml(r.list, q.toks);
+        body.innerHTML = h;
+        bindItems();
+        setActive(0, false);
+    }
+    function render() {
+        var raw = input.value;
+        clearBtn.hidden = !raw;
+        if (!DB) {
+            body.innerHTML = failed
+                ? '<div class="ms-state">Search is unavailable right now.</div><div class="ms-chips" style="justify-content:center;"><a class="ms-chip ms-chip-main" href="/store/">Browse all products \u2192</a></div>'
+                : '<div class="ms-state">Loading\u2026</div>';
+            items = []; active = -1;
+            return;
+        }
+        var q = parse(raw);
+        if (!q.any) { renderHome(); return; }
+        var r = search(q);
+        if (r.kind === 'none') { renderNone(raw, r); } else { renderFound(r, q, raw); }
+    }
+
+    /* ---------- open / close ---------- */
+    function lockPage() {
+        if (locked) { return; }
+        locked = true;
+        var b = document.body, h = document.documentElement;
+        var sbw = window.innerWidth - h.clientWidth;
+        prev = { bo: b.style.overflow, ho: h.style.overflow, pr: b.style.paddingRight };
+        b.style.overflow = 'hidden';
+        h.style.overflow = 'hidden';
+        if (sbw > 0) { b.style.paddingRight = sbw + 'px'; }
+    }
+    function unlockPage() {
+        if (!locked) { return; }
+        locked = false;
+        var b = document.body, h = document.documentElement;
+        b.style.overflow = prev.bo || '';
+        h.style.overflow = prev.ho || '';
+        b.style.paddingRight = prev.pr || '';
+    }
+    function openSearch() {
+        if (isOpen) { return; }
+        isOpen = true;
+        lastFocus = document.activeElement;
+        try { if (typeof closeNav === 'function') { closeNav(); } } catch (e) {}
+        try { var dd = document.getElementById('mDropdown'); if (dd) { dd.classList.remove('open'); } } catch (e) {}
+        root.style.display = 'block';
+        root.setAttribute('aria-hidden', 'false');
+        lockPage();
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        root.offsetWidth;
+        root.classList.add('is-open');
+        if (DB) { render(); }
+        else { failed = false; render(); load(function () { if (isOpen) { render(); } }); }
+    }
+    function closeSearch() {
+        if (!isOpen) { return; }
+        isOpen = false;
+        root.classList.remove('is-open');
+        root.setAttribute('aria-hidden', 'true');
+        input.blur();
+        unlockPage();
+        setTimeout(function () {
+            if (!isOpen) { root.style.display = 'none'; input.value = ''; clearBtn.hidden = true; }
+        }, 380);
+        if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (e) {} }
+    }
+
+    /* ---------- header icon: cart ke left mein ---------- */
+    var right = document.querySelector('.header-section .nav-right');
+    if (right) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ms-search-btn';
+        btn.setAttribute('aria-label', 'Search products');
+        btn.setAttribute('aria-haspopup', 'dialog');
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 20l-4.2-4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        right.insertBefore(btn, right.querySelector('.m-header-cart-wrapper') || null);
+        btn.addEventListener('click', openSearch);
+        btn.addEventListener('pointerenter', warm);
+        btn.addEventListener('touchstart', warm, { passive: true });
+        btn.addEventListener('focus', warm);
+    }
+    window.addEventListener('load', function () { setTimeout(warm, 2500); });
+
+    /* ---------- events ---------- */
+    input.addEventListener('input', render);
+    clearBtn.addEventListener('click', function () { input.value = ''; render(); input.focus(); });
+    closeBtn.addEventListener('click', closeSearch);
+    root.addEventListener('click', function (e) { if (e.target === root) { closeSearch(); } });
+
+    function move(d) {
+        if (!items.length) { return; }
+        var n = active + d;
+        if (n < 0) { n = items.length - 1; }
+        if (n >= items.length) { n = 0; }
+        setActive(n, true);
+    }
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+        else if (e.key === 'Enter') {
+            e.preventDefault();
+            var el = items[active];
+            if (input.value.trim()) { addRecent(input.value); track(input.value); }
+            if (el) { window.location.href = el.getAttribute('href'); }
+        }
+    });
+    body.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) { return; }
+        var chip = t.closest('[data-q]');
+        if (chip) { e.preventDefault(); input.value = chip.getAttribute('data-q'); render(); input.focus(); return; }
+        if (t.closest('[data-act="clear-recent"]')) { clearRecent(); render(); return; }
+        if (t.closest('.ms-item') && input.value.trim()) { addRecent(input.value); track(input.value); }
+    });
+    body.addEventListener('mouseover', function (e) {
+        var it = e.target && e.target.closest ? e.target.closest('.ms-item') : null;
+        if (!it) { return; }
+        var i = items.indexOf(it);
+        if (i > -1 && i !== active) { setActive(i, false); }
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen) { closeSearch(); return; }
+        var tag = e.target && e.target.tagName;
+        var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
+        if (!isOpen && ((e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) || ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')))) {
+            e.preventDefault();
+            openSearch();
+        }
+    });
+    document.addEventListener('focusin', function (e) {
+        if (isOpen && !root.contains(e.target)) { try { input.focus({ preventScroll: true }); } catch (err) {} }
+    });
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted && isOpen) {
+            isOpen = false; unlockPage();
+            root.classList.remove('is-open'); root.style.display = 'none';
+            input.value = ''; clearBtn.hidden = true;
+        }
+    });
+})();
+</script>
+<!-- ======================= SEARCH end ======================= -->

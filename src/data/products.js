@@ -126,7 +126,15 @@ export const productBySlug = (slug) => products.find((p) => p.slug === slug);
 // ============================================================================
 const STOCK = { 'Classic Black': 6, 'Warm Beige': 7 };
 
-add({ id: 'PROD_001', name: 'Two-Tone Structured Tote', price: 110, oldPrice: 160, offer2: 215, offer3: 320, stock: { 'Brown & Beige': 5, 'Pink & Beige': 5 }, images: ['/tonebag (4)',  '/tonebag (2).jpg', '/tonebag (3).jpg', '/tonebag (1)', '/tonebag (5).jpg'], placements: ['shop-all',  'bags'], overview: 'Crafted from durable synthetic leather with a two-tone panel design, soft pom-pom charm, and open-top build for daily office and shopping use.', highlights: ['Two-Tone Panel Design: Contrasting panels with durable stitching and a structured shape.', 'Dual Shoulder Handles: Long handles built for comfortable daily shoulder carry.', 'Pom-Pom Charm Accent: Soft charm detail paired with an easy-access open-top interior.'], why: 'Combines clean structured style with practical everyday space in synthetic leather without overcomplicating your look.' });
+add({ id: 'PROD_001', name: 'Two-Tone Structured Tote', price: 110, oldPrice: 160, offer2: 215, offer3: 320, stock: { 'Brown & Beige': 5, 'Pink & Beige': 5 }, images: ['/tonebag (4).jpg', '/tonebag (2).jpg', '/tonebag (3).jpg', '/tonebag (1).jpg', '/tonebag (5).jpg'], placements: ['shop-all', 'bags'], overview: 'Crafted from durable synthetic leather with a two-tone panel design, soft pom-pom charm, and open-top build for daily office and shopping use.', highlights: ['Two-Tone Panel Design: Contrasting panels with durable stitching and a structured shape.', 'Dual Shoulder Handles: Long handles built for comfortable daily shoulder carry.', 'Pom-Pom Charm Accent: Soft charm detail paired with an easy-access open-top interior.'], why: 'Combines clean structured style with practical everyday space in synthetic leather without overcomplicating your look.' });
+
+
+
+
+
+
+
+
 
 // ============================================================================
 //  TEMPLATE (ye line hamesha sab se neeche rahe, isko copy karo, "// " hatao,

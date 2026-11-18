@@ -64,7 +64,7 @@ const many = p.images.length > 1;
 
           <div class="m-final-bill">Total: AED <span>{p.price}</span></div>
 
-          <!-- Soft note: Total ke neeche, buttons se pehle. Wrapper sirf halka sa ubhra hua look dene ke liye hai -->
+          <!-- Soft note: Total ke neeche, buttons se pehle. Wrapper par koi style nahi, sirf andar wala pill ubhra hua hai -->
           <div class="m-note-float">
             <ProductNote />
           </div>
@@ -90,12 +90,11 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v14
-   - Pure white page background
-   - Shadows: tight aur saaf (sirf neeche, side par phailti nahi)
-   - Bundle offer box: thora bara
-   - Thumbnails: lazy + soft placeholder (khali nahi lagte)
-   - "Colors & size may vary" note: halka ubhra hua
+   PRODUCT PAGE UPDATE v15
+   - Note ki lambi patti khatam (wrapper par style nahi)
+   - Note pill: kam round, ubhra hua
+   - Description box + uske neeche ke icons: ubhre hue, same design
+   - Pure white page, tight shadows
    - Desktop switch 975px par
    ===================================================== */
 
@@ -363,12 +362,39 @@ body:has(.m-master-box),
   box-shadow: 0 2px 4px -2px rgba(230, 0, 126, .40) !important;
 }
 
-/* 6b) "Colors & size may vary slightly" note: size/style wahi, bas halka ubhra hua */
-.m-note-float { padding-bottom: 5px; }
+/* 6b) "Colors & size may vary slightly" note
+       Wrapper aur uska seedha child bilkul saaf (patti na bane).
+       Sirf sab se andar wala pill (jis mein text likha hai) ubhra hua, kam round. */
+.m-note-float { padding: 0 0 6px; }
+.m-note-float,
 .m-note-float > * {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.m-note-float :is(button, summary, [role="button"], div, span, a, p)[class*="note"]:not(:has([class*="note"])),
+.m-note-float :is(button, summary, [role="button"]) {
   background-color: #ffffff !important;
-  border-color: var(--m-bd) !important;
+  border: 1px solid var(--m-bd) !important;
+  border-radius: 10px !important;
   box-shadow: var(--m-float-sm) !important;
+}
+
+/* 6c) DESCRIPTION BOX: halka ubhra hua, same border + tight shadow */
+.m-pop-description {
+  background: #ffffff !important;
+  border-color: var(--m-bd) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--m-float) !important;
+  margin-bottom: 14px !important;
+}
+
+/* 6d) DESCRIPTION KE NEECHE WALE ICONS: ubhre hue, same design */
+.m-pop-description ~ * > * {
+  background-color: #ffffff;
+  border: 1px solid var(--m-bd);
+  border-radius: 10px;
+  box-shadow: var(--m-float-sm);
 }
 
 /* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche */

@@ -20,6 +20,12 @@
    [v4]
    - Icon badge: script apna naya chhota circle (m-cart-dot) banati hai, icon ke top right par.
      Purana number wala badge (#m-global-count) chhup jata hai. Khali cart par circle nahi aata.
+
+   [v5]
+   - Badge position FIX: circle ab button ke kone se nahi, seedha cart ICON (svg/img) ke
+     top-right kone se naapa jata hai. Isliye har device par (mobile, iPhone, tab, laptop, PC)
+     icon ke kone se touch karta hai, upar chhupta nahi aur door nahi jata.
+   - Position badalni ho to script mein DOT_UP (upar) aur DOT_RIGHT (right) ki value badlen.
 */
 import HelpLinks from './HelpLinks.astro';
 ---
@@ -58,13 +64,15 @@ import HelpLinks from './HelpLinks.astro';
         --c-float-sm: 0 3px 4px -2px rgba(80, 20, 40, .28), 0 1px 1px rgba(80, 20, 40, .06);
     }
 
-    /* ══════════ ICON BADGE: chhota soft circle, top right (script banati hai) ══════════
+    /* ══════════ ICON BADGE: chhota soft circle (script banati hai) ══════════
+       Asli position script icon ke top-right kone se nikalti hai (inline style).
+       Neeche ki top/right sirf fallback hain (agar icon na mile).
        Purana number wala badge chhupa diya jata hai. Khali cart par ye bhi chhupa rehta hai. */
     .m-cart-dot {
         display: none;
         position: absolute !important;
-        top: -5px !important; right: -7px !important;
-        left: auto !important; bottom: auto !important;
+        top: 2px; right: 0;
+        left: auto; bottom: auto;
         min-width: 16px; height: 16px;
         padding: 0 4px; box-sizing: border-box;
         border-radius: 999px;
@@ -742,11 +750,58 @@ function removeFromCart(id) {
 }
 
 /* ==========================================================
-   ICON BADGE
+   ICON BADGE  [v5]
    Purana #m-global-count (header ka) chhupa kar, usi ki jagah apna naya chhota circle
-   (#m-cart-dot) banata hai. Header ki CSS is naye circle ko chhoo nahi sakti.
+   (#m-cart-dot) banata hai.
+   Position: circle ko button ke kone se nahi, balki cart ICON (svg / img) ke
+   top-right kone se naapte hain. Isliye har screen par icon ke kone se touch karta hai.
+
+   Position badalni ho to ye 2 numbers badlen (px):
+   DOT_UP    = circle icon ke top se kitna UPAR jaye (zyada = aur upar, kam / minus = aur NEECHE)
+   DOT_RIGHT = circle icon ke right edge se kitna BAHAR jaye (zyada = aur right, kam / minus = andar)
    ========================================================== */
+var DOT_UP = 3;
+var DOT_RIGHT = 4;
 var _lastBadge = 0;
+
+// Cart icon dhoondo: parent ke andar pehla svg ya img (purane badge aur naye circle ke ilawa)
+function cartIconEl(par, old, dot) {
+    try {
+        var el = par.querySelector('svg, img');
+        if (el && el !== old && el !== dot && !dot.contains(el) && !old.contains(el)) return el;
+        var kids = par.children;
+        for (var k = 0; k < kids.length; k++) {
+            if (kids[k] !== old && kids[k] !== dot) return kids[k];
+        }
+    } catch (e) {}
+    return null;
+}
+
+// Circle ko icon ke top-right kone par lagao (har device par sahi)
+function placeCartDot() {
+    var old = document.getElementById('m-global-count');
+    var dot = document.getElementById('m-cart-dot');
+    if (!old || !dot || !dot.parentElement) return;
+    var par = dot.parentElement;
+    var icon = cartIconEl(par, old, dot);
+    if (!icon) return;
+    try {
+        var pr = par.getBoundingClientRect();
+        var ir = icon.getBoundingClientRect();
+        if (!ir.width || !ir.height) return;           // icon abhi dikh nahi raha (hidden)
+        var w = dot.offsetWidth || 16;
+        var h = dot.offsetHeight || 16;
+        var left = ir.right - pr.left - w + DOT_RIGHT;
+        var top = ir.top - pr.top - DOT_UP;
+        // circle parent se bahar na nikle (kat na jaye): upar ki had
+        if (top < -h) top = -h;
+        dot.style.setProperty('left', Math.round(left) + 'px', 'important');
+        dot.style.setProperty('top', Math.round(top) + 'px', 'important');
+        dot.style.setProperty('right', 'auto', 'important');
+        dot.style.setProperty('bottom', 'auto', 'important');
+    } catch (e) {}
+}
+
 function cartDotEl() {
     var old = document.getElementById('m-global-count');
     if (!old || !old.parentElement) return null;
@@ -763,6 +818,8 @@ function cartDotEl() {
     }
     try {
         if (window.getComputedStyle(par).position === 'static') par.style.position = 'relative';
+        // circle kone se bahar nikle to kate nahi
+        par.style.setProperty('overflow', 'visible', 'important');
     } catch (e) {}
     old.style.setProperty('display', 'none', 'important');
     return dot;
@@ -774,6 +831,7 @@ function updateGlobalIcon() {
     if (dot) {
         dot.textContent = count > 9 ? '9+' : String(count);
         dot.style.display = count > 0 ? 'flex' : 'none';
+        if (count > 0) placeCartDot();                  // display ke BAAD naapna zaroori hai (width pata chale)
         if (count > _lastBadge && count > 0) {
             dot.classList.remove('m-pop');
             void dot.offsetWidth;
@@ -782,6 +840,21 @@ function updateGlobalIcon() {
     }
     _lastBadge = count;
 }
+
+// Screen ka size / rotate / font load hone par circle dobara icon ke kone par
+var _dotRaf = 0;
+function schedulePlaceDot() {
+    if (_dotRaf) return;
+    var run = function () { _dotRaf = 0; placeCartDot(); };
+    if (window.requestAnimationFrame) _dotRaf = requestAnimationFrame(run);
+    else { _dotRaf = 1; setTimeout(run, 16); }
+}
+window.addEventListener('resize', schedulePlaceDot);
+window.addEventListener('orientationchange', function () { setTimeout(schedulePlaceDot, 250); });
+window.addEventListener('load', function () { setTimeout(schedulePlaceDot, 300); });
+try {
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedulePlaceDot);
+} catch (e) {}
 
 var _cartLocked = false, _cartY = 0, _cartPrev = {}, _cartFixed = false;
 
@@ -823,6 +896,7 @@ function unlockPageForCart() {
     b.style.paddingRight = _cartPrev.pr || '';
     h.style.overflow = _cartPrev.ho || '';
     if (_cartFixed) window.scrollTo(0, _cartY);
+    schedulePlaceDot();
 }
 
 // Side drawer: ungli se right ki taraf swipe karke band karna

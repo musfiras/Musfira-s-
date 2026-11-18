@@ -90,10 +90,11 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v15
-   - Note ki lambi patti khatam (wrapper par style nahi)
-   - Note pill: kam round, ubhra hua
-   - Description box + uske neeche ke icons: ubhre hue, same design
+   PRODUCT PAGE UPDATE v16
+   - "You save" ki jaga pehle se reserve (step/jhatka nahi)
+   - Description box: thora zyada ubhra hua
+   - Note ("Colors & size may vary"): auto adjust, padhna aasan
+   - Icons wale boxes: thori zyada height
    - Pure white page, tight shadows
    - Desktop switch 975px par
    ===================================================== */
@@ -104,6 +105,8 @@ const many = p.images.length > 1;
   /* tight shadow: neeche ek chhoti gehri line, negative spread = side par kuch nahi phailta */
   --m-float: 0 4px 6px -3px rgba(80, 20, 40, .30), 0 1px 2px rgba(80, 20, 40, .08);
   --m-float-sm: 0 3px 4px -2px rgba(80, 20, 40, .28), 0 1px 1px rgba(80, 20, 40, .06);
+  /* description box ke liye: thora zyada ubhra hua */
+  --m-float-lg: 0 9px 14px -6px rgba(80, 20, 40, .34), 0 2px 4px rgba(80, 20, 40, .10);
 }
 
 /* 0) PURA PAGE WHITE */
@@ -364,8 +367,8 @@ body:has(.m-master-box),
 
 /* 6b) "Colors & size may vary slightly" note
        Wrapper aur uska seedha child bilkul saaf (patti na bane).
-       Sirf sab se andar wala pill (jis mein text likha hai) ubhra hua, kam round. */
-.m-note-float { padding: 0 0 6px; }
+       Sirf sab se andar wala pill ubhra hua, kam round, aur har screen par padhne mein aasan. */
+.m-note-float { padding: 0 0 6px; max-width: 100%; box-sizing: border-box; }
 .m-note-float,
 .m-note-float > * {
   background: transparent !important;
@@ -378,30 +381,50 @@ body:has(.m-master-box),
   border: 1px solid var(--m-bd) !important;
   border-radius: 10px !important;
   box-shadow: var(--m-float-sm) !important;
+  /* padhne mein aasan + auto adjust */
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  min-height: 36px;
+  padding: 8px 12px !important;
+  font-size: clamp(11.5px, 3.1vw, 13px) !important;
+  line-height: 1.4 !important;
+  color: #6b1a1a !important;
+  white-space: normal !important;
+  overflow-wrap: break-word;
+  text-align: left;
 }
 
-/* 6c) DESCRIPTION BOX: halka ubhra hua, same border + tight shadow */
+/* 6c) DESCRIPTION BOX: page se thora zyada ubhra hua, same border */
 .m-pop-description {
   background: #ffffff !important;
   border-color: var(--m-bd) !important;
   border-radius: 12px !important;
-  box-shadow: var(--m-float) !important;
-  margin-bottom: 14px !important;
+  box-shadow: var(--m-float-lg) !important;
+  margin-bottom: 16px !important;
 }
 
-/* 6d) DESCRIPTION KE NEECHE WALE ICONS: ubhre hue, same design */
+/* 6d) DESCRIPTION KE NEECHE WALE ICONS: ubhre hue, thori zyada height */
 .m-pop-description ~ * > * {
   background-color: #ffffff;
   border: 1px solid var(--m-bd);
   border-radius: 10px;
   box-shadow: var(--m-float-sm);
+  box-sizing: border-box;
+  min-height: 64px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
-/* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche */
+/* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche.
+      "You save" wali line ki jaga PEHLE SE reserve hai, taake aane/jaane par step na hile */
 .m-master-box .m-final-bill {
   display: flex !important; flex-wrap: wrap;
   align-items: baseline; justify-content: center;
   column-gap: 0; row-gap: 2px;
+  line-height: 1.25;
+  min-height: 42px;           /* price line (~24px) + gap + you-save line (~14px) */
+  align-content: flex-start;
+  box-sizing: border-box;
 }
 .m-master-box .m-final-bill > span:not(.m-final-old):not(.m-final-save) { margin-left: .28em; }
 .m-master-box .m-final-bill .m-final-old {
@@ -410,6 +433,7 @@ body:has(.m-master-box),
 }
 .m-master-box .m-final-bill .m-final-save {
   order: 3; flex: 0 0 100%; text-align: center; margin: 0 !important;
+  min-height: 14px; line-height: 1.3 !important;
 }
 .m-page-mode .m-final-bill { font-size: 19px !important; margin: 8px 0 12px !important; letter-spacing: 0 !important; }
 .m-page-mode .m-final-old { font-size: 11px !important; }

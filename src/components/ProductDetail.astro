@@ -11,6 +11,7 @@ const many = p.images.length > 1;
   data-offer2={p.offer2}
   data-offer3={p.offer3}
   data-stock={JSON.stringify(p.stock)}
+  data-colorindex={JSON.stringify(p.colorIndex || {})}
   data-checkout={checkoutUrl}
 >
   <div class="m-pop-overlay">
@@ -90,9 +91,9 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v17
-   - Note ("Colors & size may vary"): text/layout overrides hata diye
-     (lines ek dosre par chadh rahi thin). Sirf border + shadow + 10px corners.
+   PRODUCT PAGE UPDATE v18
+   - Color select karne par us color ki photo slider mein aati hai (script mein)
+   - Note ("Colors & size may vary"): text/layout overrides nahi, sirf border + shadow
    - "You save" ki jaga pehle se reserve
    - Description box ubhra hua, icons wale boxes thore bare
    - Pure white page, tight shadows
@@ -474,11 +475,16 @@ body:has(.m-master-box),
   var root = document.querySelector('.m-product-page-wrap .m-master-box');
   if (!root) return;
 
+  /* color -> photo number (products.js ke colorImages se aata hai) */
+  var colorIndex = {};
+  try { colorIndex = JSON.parse(root.getAttribute('data-colorindex') || '{}') || {}; } catch (e) { colorIndex = {}; }
+
   /* ================= THUMBNAILS ================= */
   var track = root.querySelector('.m-track');
   var strip = root.querySelector('.m-thumbs');
   var wrap = root.querySelector('.m-thumbs-wrap');
   var next = root.querySelector('.m-thumbs-next');
+  var go = null;
   if (track && strip) {
     var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
     var cur0 = 0;
@@ -525,7 +531,7 @@ body:has(.m-master-box),
         strip.scrollTo({ left: Math.max(l - 2, 0), behavior: 'smooth' });
       }
     };
-    var go = function (i) {
+    go = function (i) {
       track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
       mark(i);
     };
@@ -552,6 +558,14 @@ body:has(.m-master-box),
     window.addEventListener('load', function () { checkArrow(); setTimeout(checkArrow, 400); });
     window.addEventListener('resize', checkArrow);
     window.addEventListener('orientationchange', function () { setTimeout(checkArrow, 250); });
+  }
+
+  /* color ki photo dikhao (agar us color ki photo di gayi hai) */
+  function showColor(c) {
+    if (!go) return;
+    var i = colorIndex[c];
+    if (typeof i !== 'number') return;
+    go(i);
   }
 
   /* ================= BUNDLE BOX: heading ke UPAR ================= */
@@ -597,6 +611,7 @@ body:has(.m-master-box),
   if (!cfg || !pal) return;
 
   var lastSig = '';
+  var booted = false; /* pehli baar page khulne par slider ko na hilao */
 
   function rowsList() {
     return [].slice.call(cfg.children).filter(function (r) { return r.classList && r.classList.contains('m-row-item'); });
@@ -667,6 +682,18 @@ body:has(.m-master-box),
       if (dt.style.background !== bg) dt.style.background = bg;
     });
 
+    /* jis row ka color badla (ya nayi row aayi), us color ki photo dikhao */
+    rs.forEach(function (row) {
+      var s = selOf(row);
+      if (!s) return;
+      var prev = row.getAttribute('data-m-last');
+      if (prev !== s.value) {
+        row.setAttribute('data-m-last', s.value);
+        if (booted) showColor(s.value);
+      }
+    });
+    booted = true;
+
     placeAddBtn();
   }
 
@@ -675,6 +702,16 @@ body:has(.m-master-box),
     if (raf) return;
     raf = requestAnimationFrame(function () { raf = 0; sync(); fixBill(); });
   }
+
+  /* kisi row ko chhoo (qty plus/minus waghera) to us row ke color ki photo */
+  cfg.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var row = t.closest('.m-row-item');
+    if (!row || t.closest('.m-remove-btn')) return;
+    var s = selOf(row);
+    if (s) showColor(s.value);
+  });
 
   new MutationObserver(queue).observe(cfg, { childList: true, subtree: true, attributes: true, characterData: true });
   cfg.addEventListener('change', queue);

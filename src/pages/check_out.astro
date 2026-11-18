@@ -62,7 +62,9 @@ import MetaPixel from '../components/MetaPixel.astro';
                 <button type="button" id="summaryToggle" class="m-summary-toggle" aria-expanded="false" aria-controls="summaryBody">
                     <span class="m-sum-title">Order Summary</span>
                     <span class="m-sum-mini" id="miniInfo"></span>
-                    <svg class="m-sum-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span class="m-sum-chev-wrap">
+                        <svg class="m-sum-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
                 </button>
 
                 <!-- Stock warning band ho tab bhi nazar aaye -->
@@ -159,10 +161,17 @@ import MetaPixel from '../components/MetaPixel.astro';
 <SupportChat hideLauncher={true} />
 
 <style is:global>
-    :root { --maroon: #800000; --pink: #e6007e; --soft-pink: #fecce6; }
+    :root {
+        --maroon: #800000; --pink: #e6007e; --soft-pink: #fecce6;
+        /* ELITE FLOATING LOOK: dark pink border + tight shadow (side par phailti nahi) */
+        --bd: #e3a6c4;
+        --float: 0 4px 6px -3px rgba(80, 20, 40, .30), 0 1px 2px rgba(80, 20, 40, .08);
+        --float-sm: 0 3px 4px -2px rgba(80, 20, 40, .28), 0 1px 1px rgba(80, 20, 40, .06);
+        --float-lg: 0 9px 14px -6px rgba(80, 20, 40, .34), 0 2px 4px rgba(80, 20, 40, .10);
+    }
 
     html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-    body { margin: 0; background: #fafafa; padding-top: 46px; padding-top: calc(46px + env(safe-area-inset-top, 0px)); }
+    body { margin: 0; background: #ffffff; padding-top: 46px; padding-top: calc(46px + env(safe-area-inset-top, 0px)); }
     /* patli pink strip sab se upar */
     body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: #FFB6C1; z-index: 10000; pointer-events: none; }
 
@@ -190,12 +199,12 @@ import MetaPixel from '../components/MetaPixel.astro';
     }
 
     /* ---------- CHECKOUT ---------- */
-    .m-checkout-wrapper { width: 100%; padding: 40px 15px; box-sizing: border-box; min-height: calc(100vh - 46px); display: flex; align-items: center; justify-content: center; background-color: #fafafa; font-family: 'Segoe UI', Roboto, sans-serif; }
+    .m-checkout-wrapper { width: 100%; padding: 40px 15px; box-sizing: border-box; min-height: calc(100vh - 46px); display: flex; align-items: center; justify-content: center; background-color: #ffffff; font-family: 'Segoe UI', Roboto, sans-serif; }
 
     .m-checkout-container {
         width: 100%; max-width: 1040px;
         margin: 0 auto; padding: 35px; border-radius: 20px; background-color: #ffffff;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.05); border: 1px solid var(--soft-pink);
+        box-shadow: var(--float-lg); border: 1px solid var(--bd);
         position: relative; overflow: hidden; box-sizing: border-box;
     }
 
@@ -204,43 +213,54 @@ import MetaPixel from '../components/MetaPixel.astro';
 
     .m-checkout-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 35px; align-items: start; }
 
-    .m-summary-box { background: #ffffff !important; padding: 22px; border-radius: 14px; border: 1px solid var(--soft-pink); display: none; }
-    .m-summary-box:not(.is-open) { padding-top: 16px; padding-bottom: 16px; }
+    /* ORDER SUMMARY BOX: ubhra hua */
+    .m-summary-box { background: #ffffff !important; padding: 22px; border-radius: 14px; border: 1px solid var(--bd); box-shadow: var(--float); display: none; }
+    .m-summary-box:not(.is-open) { padding-top: 12px; padding-bottom: 12px; }
     .m-form-header { color: #C11C84; font-weight: 900; -webkit-text-stroke: 0.3px #C11C84; margin-bottom: 18px; font-size: 13.5px; text-transform: uppercase; border-bottom: 1px solid var(--soft-pink); padding-bottom: 8px; letter-spacing: 2px; }
 
     /* ---------- ORDER SUMMARY DROPDOWN ---------- */
     .m-summary-toggle {
         width: 100%; display: flex; align-items: center; gap: 10px;
-        padding: 0 0 8px; margin: 0 0 18px; background: none; border: 0;
+        padding: 0 0 10px; margin: 0 0 18px; background: none; border: 0;
         border-bottom: 1px solid var(--soft-pink); cursor: pointer; text-align: left;
         font-family: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     .m-sum-title { color: #C11C84; font-weight: 900; -webkit-text-stroke: 0.3px #C11C84; font-size: 13.5px; text-transform: uppercase; letter-spacing: 2px; }
     .m-sum-mini { margin-left: auto; font-size: 12.5px; font-weight: 800; color: var(--pink); white-space: nowrap; }
-    .m-sum-chev { width: 18px; height: 18px; flex: 0 0 auto; stroke: var(--maroon); fill: none; stroke-width: 2.4; transition: transform .3s ease; }
+    /* chevron: chhote round ubhre button mein */
+    .m-sum-chev-wrap {
+        flex: 0 0 auto; width: 28px; height: 28px; box-sizing: border-box;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #fff; border: 1px solid var(--bd); border-radius: 50%;
+        box-shadow: var(--float-sm);
+        transition: background .25s ease, border-color .25s ease;
+    }
+    .m-sum-chev { width: 16px; height: 16px; flex: 0 0 auto; stroke: var(--maroon); fill: none; stroke-width: 2.4; transition: transform .3s ease, stroke .25s ease; }
     .m-summary-box.is-open .m-sum-chev { transform: rotate(180deg); }
-    .m-summary-toggle:hover .m-sum-chev { stroke: var(--pink); }
+    .m-summary-toggle:hover .m-sum-chev-wrap, .m-summary-toggle:active .m-sum-chev-wrap { background: var(--pink); border-color: var(--pink); }
+    .m-summary-toggle:hover .m-sum-chev, .m-summary-toggle:active .m-sum-chev { stroke: #fff; }
     .m-summary-toggle:focus-visible { outline: 2px solid var(--pink); outline-offset: 4px; border-radius: 6px; }
     .m-summary-box:not(.is-open) .m-summary-toggle { margin-bottom: 0; padding-bottom: 0; border-bottom-color: transparent; }
 
     .m-summary-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
     .m-summary-box.is-open .m-summary-body { grid-template-rows: 1fr; }
-    .m-summary-inner { overflow: hidden; min-height: 0; visibility: hidden; transition: visibility 0s linear .35s; }
+    .m-summary-inner { overflow: hidden; min-height: 0; visibility: hidden; transition: visibility 0s linear .35s; padding: 2px 3px 6px; margin: -2px -3px -6px; }
     .m-summary-box.is-open .m-summary-inner { visibility: visible; transition-delay: 0s; }
 
     .m-item-list { margin-bottom: 12px; }
     .m-product-entry { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid #f3dfe9; padding: 12px 0; }
 
-    /* Product thumbnail */
+    /* Product thumbnail (color wali photo): ubhra hua */
     .m-prod-thumb {
         flex: 0 0 auto; width: 60px; height: 60px; box-sizing: border-box;
-        border: 1px solid var(--soft-pink); border-radius: 10px; background: #fff;
+        border: 1px solid var(--bd); border-radius: 10px; background: #fff;
+        box-shadow: var(--float-sm);
         overflow: hidden; display: flex; align-items: center; justify-content: center;
     }
     .m-prod-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 2px; box-sizing: border-box; }
     .m-thumb-ph { font-family: 'Bodoni Moda', Georgia, serif; font-size: 22px; font-weight: 700; color: var(--pink); background: #fff5f9; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 
-    .m-prod-name { color: var(--maroon); font-weight: 800; font-size: 14px; flex: 1 1 auto; min-width: 0; line-height: 1.35; }
+    .m-prod-name { color: var(--maroon); font-weight: 800; font-size: 14px; flex: 1 1 auto; min-width: 0; line-height: 1.35; overflow-wrap: break-word; }
     .m-prod-detail { display: block; font-size: 12.5px; margin-top: 5px; line-height: 1.3; }
     .m-prod-label { color: var(--maroon); font-weight: 800; }
     .m-prod-value { color: #C11C84; font-weight: 700; }
@@ -254,41 +274,41 @@ import MetaPixel from '../components/MetaPixel.astro';
     .m-value { color: var(--pink); font-weight: 800; text-align: right; }
     .m-shipping-row { border-bottom: 1px dashed var(--soft-pink); padding-bottom: 6px; margin-bottom: 6px; }
 
-    .m-total-payable-row { margin-top: 12px; border-top: 1.5px solid var(--maroon); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .m-total-payable-row { margin-top: 12px; border-top: 1.5px solid var(--maroon); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
     .m-total-label { color: #FF007F; font-size: 12.5px; font-weight: 900; letter-spacing: 1px; }
     .m-total-amount { color: var(--pink); font-weight: 900; font-size: 19px; }
 
     .m-old-total { color: #8a8a8a; text-decoration: line-through; font-size: 13px; font-weight: 700; margin-right: 8px; }
     .m-discount-row .m-value { color: #800000; }
 
-    .m-stock-warn { background: #fff5f9; border: 1px solid #f6b3d4; border-radius: 10px; padding: 12px 14px; margin: 14px 0; font-size: 12.5px; line-height: 1.6; color: #800000; font-weight: 700; }
+    .m-stock-warn { background: #fff5f9; border: 1px solid var(--bd); border-radius: 10px; box-shadow: var(--float-sm); padding: 12px 14px; margin: 14px 0; font-size: 12.5px; line-height: 1.6; color: #800000; font-weight: 700; }
     .m-stock-warn b { color: #c0182b; }
     .m-stock-warn button { margin-top: 10px; padding: 10px 18px; border: none; border-radius: 30px; background: var(--maroon); color: #fff; font-weight: 800; font-size: 11.5px; letter-spacing: 1px; cursor: pointer; touch-action: manipulation; }
     .m-prod-soldout { display: block; margin-top: 5px; font-size: 12px; font-weight: 800; color: #c0182b; letter-spacing: 0.5px; }
     .m-confirm-btn.is-blocked { background: #b9a3ad !important; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
 
-    .m-payment-selector { display: flex; flex-direction: column; gap: 10px; margin-bottom: 5px; }
-    .m-method-option { display: flex; align-items: center; position: relative; padding: 19px 20px; min-height: 58px; box-sizing: border-box; background: #fafafa; border: 1px solid #e2e2e2; border-radius: 10px; cursor: pointer; transition: 0.2s ease; }
+    .m-payment-selector { display: flex; flex-direction: column; gap: 10px; margin-bottom: 5px; padding: 2px 3px 6px; margin-left: -3px; margin-right: -3px; }
+    .m-method-option { display: flex; align-items: center; position: relative; padding: 19px 20px; min-height: 58px; box-sizing: border-box; background: #ffffff; border: 1px solid var(--bd); border-radius: 10px; box-shadow: var(--float-sm); cursor: pointer; transition: 0.2s ease; }
     .m-method-option input { position: absolute; opacity: 0; cursor: pointer; }
 
-    .m-custom-tick { height: 16px; width: 16px; background-color: #fff; border: 2px solid #ccc; border-radius: 50%; display: inline-block; margin-right: 12px; position: relative; transition: 0.2s; }
+    .m-custom-tick { height: 16px; width: 16px; background-color: #fff; border: 2px solid #ccc; border-radius: 50%; display: inline-block; margin-right: 12px; position: relative; transition: 0.2s; flex: 0 0 auto; }
     .m-method-option:hover { border-color: var(--pink); }
     .m-method-option input:checked ~ .m-custom-tick { border-color: var(--maroon); background-color: var(--maroon); }
     .m-method-option input:checked ~ .m-custom-tick::after { content: ""; position: absolute; display: block; left: 4.5px; top: 1.5px; width: 4px; height: 7px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
     .m-method-text { font-size: 15.5px; font-weight: 800; color: var(--maroon); }
 
-    .m-input-group { display: flex; flex-direction: column; gap: 16px; }
-    .m-input { width: 100%; padding: clamp(17px, 1.2vw + 12px, 20px) 20px; min-height: 58px; border: 1px solid #e2e2e2; border-radius: 10px; outline: none; transition: 0.3s; box-sizing: border-box; background: #fafafa; font-size: 16px; color: #333; font-family: inherit; }
-    .m-input:focus { border-color: var(--pink) !important; background: #fff !important; box-shadow: 0 0 8px rgba(230,0,126,0.08); }
+    .m-input-group { display: flex; flex-direction: column; gap: 16px; padding: 2px 3px 6px; margin-left: -3px; margin-right: -3px; }
+    .m-input { width: 100%; padding: clamp(17px, 1.2vw + 12px, 20px) 20px; min-height: 58px; border: 1px solid var(--bd); border-radius: 10px; outline: none; transition: 0.3s; box-sizing: border-box; background: #ffffff; box-shadow: var(--float-sm); font-size: 16px; color: #333; font-family: inherit; }
+    .m-input:focus { border-color: var(--pink) !important; background: #fff !important; box-shadow: 0 4px 8px -4px rgba(230,0,126,0.35), 0 1px 2px rgba(80,20,40,0.08); }
     .m-input::placeholder { color: #9a9a9a; opacity: 1; font-weight: 400; font-size: 15px; }
     .m-input::-webkit-input-placeholder { color: #9a9a9a; opacity: 1; font-weight: 400; font-size: 15px; }
     .m-input::-moz-placeholder { color: #9a9a9a; opacity: 1; font-weight: 400; font-size: 15px; }
 
     /* ELITE OPTIONAL EMAIL BOX */
-    .m-email-box { position: relative; padding: 16px 16px 14px; border-radius: 14px; border: 1px dashed #f1b4d3; background: linear-gradient(180deg, #fff9fc 0%, #ffffff 100%); }
-    .m-email-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+    .m-email-box { position: relative; padding: 16px 16px 14px; border-radius: 14px; border: 1px solid var(--bd); background: #ffffff; box-shadow: var(--float); }
+    .m-email-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; gap: 8px; }
     .m-email-title { font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 15px; font-weight: 600; color: var(--pink); letter-spacing: 0.3px; }
-    .m-email-opt { font-size: 9.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--maroon); background: #fff; border: 1px solid #f5cfe3; border-radius: 999px; padding: 4px 10px; }
+    .m-email-opt { font-size: 9.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--maroon); background: #fff; border: 1px solid var(--bd); border-radius: 999px; padding: 4px 10px; box-shadow: var(--float-sm); white-space: nowrap; }
     .m-email-input { background: #fff; }
     .m-email-note { margin: 10px 2px 0; font-size: 11.5px; line-height: 1.55; font-weight: 600; color: #8a6c7a; letter-spacing: 0.2px; }
 
@@ -299,7 +319,7 @@ import MetaPixel from '../components/MetaPixel.astro';
         border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); vertical-align: middle; margin-right: 6px;
     }
 
-    .m-readonly-box { background: #f4f4f4; border: 1px solid #e2e2e2; padding: 19px 20px; min-height: 58px; box-sizing: border-box; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .m-readonly-box { background: #ffffff; border: 1px solid var(--bd); box-shadow: var(--float-sm); padding: 19px 20px; min-height: 58px; box-sizing: border-box; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
     .m-box-label { font-size: 12px; color: #888; text-transform: uppercase; font-weight: 700; }
     .m-box-val { font-size: 15px; color: var(--maroon); font-weight: 700; display: flex; align-items: center; }
 
@@ -309,10 +329,10 @@ import MetaPixel from '../components/MetaPixel.astro';
     .m-phone-code { margin-left: 7px; font-size: 15px; font-weight: 700; color: var(--maroon); letter-spacing: 0.3px; }
     .m-phone-input { padding-left: 124px !important; }
 
-    /* CONFIRM BUTTON: ab halka rounded (squircle type) */
-    .m-confirm-btn { width: 100%; min-height: 60px; padding: 21px; background: var(--maroon); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; letter-spacing: 2px; transition: all 0.4s ease; box-shadow: 0 8px 15px rgba(128,0,0,0.1); margin-top: 20px; font-family: inherit; scroll-margin-bottom: 24px; }
-    .m-confirm-btn:hover { background: var(--pink); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(230,0,126,0.25); }
-    .m-confirm-btn.is-loading { background: #f0f0f0 !important; color: #999 !important; cursor: not-allowed; animation: glass-glow 1.5s infinite ease-in-out; }
+    /* CONFIRM BUTTON: halka rounded, ubhra hua */
+    .m-confirm-btn { width: 100%; min-height: 60px; padding: 21px; background: var(--maroon); color: white; border: 1px solid var(--maroon); border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; letter-spacing: 2px; transition: all 0.4s ease; box-shadow: 0 6px 8px -4px rgba(80,20,40,0.40), 0 1px 2px rgba(80,20,40,0.12); margin-top: 20px; font-family: inherit; scroll-margin-bottom: 24px; }
+    .m-confirm-btn:hover { background: var(--pink); border-color: var(--pink); transform: translateY(-2px); box-shadow: 0 8px 10px -4px rgba(230,0,126,0.40), 0 1px 2px rgba(80,20,40,0.10); }
+    .m-confirm-btn.is-loading { background: #f0f0f0 !important; border-color: #e6e6e6 !important; color: #999 !important; cursor: not-allowed; animation: glass-glow 1.5s infinite ease-in-out; }
     @keyframes glass-glow { 0%, 100% { box-shadow: 0 5px 15px rgba(230,0,126,0.1); } 50% { box-shadow: 0 10px 35px rgba(230,0,126,0.7); } }
 
     .m-secure-text { font-size: 9.5px; color: #aaa; text-align: center; margin-top: 12px; letter-spacing: 0.5px; }
@@ -354,6 +374,7 @@ import MetaPixel from '../components/MetaPixel.astro';
     @media (max-width: 360px) {
         .m-sum-title { letter-spacing: 1px; font-size: 12px; }
         .m-sum-mini { font-size: 11px; }
+        .m-sum-chev-wrap { width: 26px; height: 26px; }
     }
 
     /* Keyboard khulne par Confirm button upar scroll ho sake */
@@ -383,7 +404,7 @@ const SCRIPT_URL = "https://store.musfiras.workers.dev";
 const ORDER_KEY = "4Zr0aVGBeRo0aqIE52k1Jq";
 const THANK_YOU_URL = "https://www.musfiras.com/thank_you";
 const SHOP_URL = "https://www.musfiras.com/store";
-const PAGE_VERSION = "order-page v11 free-delivery + per-item-price + any-language-digits (2026-11-16)";
+const PAGE_VERSION = "order-page v12 color-wise thumbnails + elite floating look (2026-11-19)";
 
 try { console.log("Musfira's " + PAGE_VERSION); } catch (e) {}
 
@@ -533,7 +554,7 @@ if (products.length > 0) {
         `;
         wrapper.appendChild(entry);
         entryEls.push({ el: entry, key: nrm(p.name) + "||" + nrm(p.color) });
-        thumbJobs.push({ box: entry.querySelector('.m-prod-thumb'), name: p.name, img: p.img });
+        thumbJobs.push({ box: entry.querySelector('.m-prod-thumb'), name: p.name, color: p.color, img: p.img });
     });
 
     const offerDiscount = calcBundleDiscount(products);
@@ -584,9 +605,10 @@ function openSummary() {
 }
 
 // =====================================================================
-//  PRODUCT THUMBNAILS
-//  Pehle URL ka image, phir browser ke cart data se, phir /store/ page se.
-//  Kuch na mile to product ke naam ka pehla harf dikhta hai.
+//  PRODUCT THUMBNAILS (COLOR WISE)
+//  1) Foran: URL ka image ya browser ke cart data se (taake box khali na lage)
+//  2) Phir: product page (/product/<slug>/) se us COLOR ki photo (products.js ke colorImages)
+//  3) Color ki photo na mile to purani photo hi rehti hai, aur kuch na mile to naam ka pehla harf.
 // =====================================================================
 function setThumb(box, url) {
     if (!box || !url) return;
@@ -665,17 +687,90 @@ async function fetchStoreImages(names) {
     }
 }
 
+// ---- Color wali photo: product page se ----
+function slugifyName(s) {
+    return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+async function fetchDoc(url) {
+    try {
+        const ctrl = new AbortController();
+        const t = setTimeout(function () { ctrl.abort(); }, 6000);
+        const r = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(t);
+        if (!r.ok) return null;
+        return new DOMParser().parseFromString(await r.text(), 'text/html');
+    } catch (e) {
+        return null;
+    }
+}
+
+// Ek product ka page sirf ek baar khulta hai (us ke sab colors ke liye)
+const productDocCache = {};
+function getProductDoc(name) {
+    const k = nrm(name);
+    if (!productDocCache[k]) {
+        const s = slugifyName(name);
+        productDocCache[k] = (async function () {
+            if (!s) return null;
+            let d = await fetchDoc('/product/' + s + '/');
+            if (!d) d = await fetchDoc('/product/' + s);
+            return d;
+        })();
+    }
+    return productDocCache[k];
+}
+
+function colorImgFromDoc(doc, name, color) {
+    try {
+        if (!doc) return '';
+        const boxes = doc.querySelectorAll('.m-master-box[data-pname]');
+        let box = null;
+        for (let i = 0; i < boxes.length; i++) {
+            if (nrm(boxes[i].getAttribute('data-pname')) === nrm(name)) { box = boxes[i]; break; }
+        }
+        if (!box) return '';
+        let idx = {};
+        try { idx = JSON.parse(box.getAttribute('data-colorindex') || '{}') || {}; } catch (e) { idx = {}; }
+        let n;
+        Object.keys(idx).forEach(function (c) { if (nrm(c) === nrm(color)) n = idx[c]; });
+        if (typeof n !== 'number') return '';
+        const imgs = box.querySelectorAll('.m-track img');
+        const im = imgs[n];
+        if (!im) return '';
+        return safeImg(im.getAttribute('src') || im.getAttribute('data-src') || '');
+    } catch (e) {
+        return '';
+    }
+}
+
 (function resolveThumbs() {
     if (!thumbJobs.length) return;
     const stored = findImgInStorage();
     const missing = [];
+
+    // Step 1: foran jo mile wo dikhao (khali box na lage)
     thumbJobs.forEach(function (j) {
         const u = j.img || stored[nrm(j.name)];
         if (u) setThumb(j.box, u); else missing.push(j);
     });
+
+    // Step 2: color wali photo mil jaye to usay laga do
+    thumbJobs.forEach(function (j) {
+        getProductDoc(j.name).then(function (doc) {
+            const u = colorImgFromDoc(doc, j.name, j.color);
+            if (u) {
+                j.colorImgFound = true;
+                setThumb(j.box, u);
+            }
+        });
+    });
+
+    // Step 3: jin ki koi photo nahi mili unke liye store page se main photo
     if (missing.length) {
         fetchStoreImages(missing.map(function (j) { return j.name; })).then(function (map) {
             missing.forEach(function (j) {
+                if (j.colorImgFound) return;
                 const u = map[nrm(j.name)];
                 if (u) setThumb(j.box, u);
             });

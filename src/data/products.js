@@ -73,7 +73,28 @@ const make = (p) => {
   const savePercent = Math.round((save / oldPrice) * 100);
 
   // Images: pehli = main (card/store page), baqi = details page gallery
-  const images = Array.isArray(p.images) && p.images.length ? p.images : [DEFAULT_IMAGE];
+  const images = Array.isArray(p.images) && p.images.length ? [...p.images] : [DEFAULT_IMAGE];
+
+  // COLOR IMAGES: { 'Color': '/photo.jpeg' } -> har color ki photo ka number (colorIndex).
+  // Agar photo images list mein nahi hai to khud end mein jud jati hai.
+  // Color ka naam bilkul stock jaisa hona chahiye. Number (photo ka number, 0 se shuru) bhi chalta hai.
+  const colorIndex = {};
+  const ci = p.colorImages && typeof p.colorImages === 'object' ? p.colorImages : {};
+  Object.keys(ci).forEach((c) => {
+    if (!(c in stock)) {
+      console.warn('[products.js] colorImages: ye color stock mein nahi mila ->', p.name, c);
+      return;
+    }
+    const v = ci[c];
+    if (typeof v === 'number') {
+      if (v >= 0 && v < images.length) colorIndex[c] = v;
+      return;
+    }
+    if (!v) return;
+    let i = images.indexOf(v);
+    if (i === -1) { images.push(v); i = images.length - 1; }
+    colorIndex[c] = i;
+  });
 
   return {
     ...p,
@@ -88,6 +109,7 @@ const make = (p) => {
     totalStock,
     inStock: totalStock > 0,
     images,
+    colorIndex,
     image: images[0],
     gallery: images.slice(1),
     placements: p.placements?.length ? p.placements : DEFAULT_PLACEMENTS,
@@ -140,18 +162,7 @@ add({ id: 'PROD_002', name: 'Slouchy Suede Totes', price: 120, oldPrice: 170, of
 //
 //  ZAROORI: id, name, price, stock
 //  OPTIONAL: baqi sab (nahi likhoge to auto/default lag jayega)
+//  colorImages: har color ki photo. Color ka naam stock jaisa hi likho.
 //  Text me apostrophe (') na likho, ya \' likho. Har field ke baad comma.
 // ============================================================================
-// add({ id: 'PROD_34', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['shop-all', 'home', 'bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });
-
-
-
-
-
-
-
-
-
-
-
-
+// add({ id: 'PROD_34', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, colorImages: { 'Classic Black': '/black.jpeg', 'Warm Beige': '/beige.jpeg', 'Blush Pink': '/pink.jpeg' }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['shop-all', 'home', 'bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });

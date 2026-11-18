@@ -15,8 +15,11 @@
    [v3]
    - Cart item ke saath us COLOR ki photo save hoti hai, drawer mein wahi dikhti hai,
      aur checkout link ke 7th part mein bhi jati hai.
-   - Icon ka count badge: chhota soft circle, top right, khali cart par chhupa.
    - Cart items: ubhre hue elite boxes.
+
+   [v4]
+   - Icon badge: script apna naya chhota circle (m-cart-dot) banati hai, icon ke top right par.
+     Purana number wala badge (#m-global-count) chhup jata hai. Khali cart par circle nahi aata.
 */
 import HelpLinks from './HelpLinks.astro';
 ---
@@ -55,31 +58,29 @@ import HelpLinks from './HelpLinks.astro';
         --c-float-sm: 0 3px 4px -2px rgba(80, 20, 40, .28), 0 1px 1px rgba(80, 20, 40, .06);
     }
 
-    /* ══════════ ICON BADGE (header ke cart icon par): chhota soft circle, top right ══════════
-       Khali cart par script isay chhupa deti hai. Sirf dot chahiye (number nahi) to
-       neeche "font-size: 9px" ko "font-size: 0" kar do. */
-    :has(> #m-global-count) { position: relative; }
-    #m-global-count {
+    /* ══════════ ICON BADGE: chhota soft circle, top right (script banati hai) ══════════
+       Purana number wala badge chhupa diya jata hai. Khali cart par ye bhi chhupa rehta hai. */
+    .m-cart-dot {
+        display: none;
         position: absolute !important;
-        top: -5px !important; right: -6px !important;
+        top: -5px !important; right: -7px !important;
         left: auto !important; bottom: auto !important;
-        transform: none;
-        min-width: 15px !important; width: auto !important; height: 15px !important;
-        padding: 0 4px !important; box-sizing: border-box !important;
-        border-radius: 999px !important;
-        background: #e6007e !important; color: #fff !important;
-        border: 1.5px solid #fff !important;
-        box-shadow: 0 2px 4px -1px rgba(80, 20, 40, .35) !important;
+        min-width: 16px; height: 16px;
+        padding: 0 4px; box-sizing: border-box;
+        border-radius: 999px;
+        background: #e6007e; color: #fff;
+        border: 1.5px solid #fff;
+        box-shadow: 0 2px 4px -1px rgba(80, 20, 40, .40);
         align-items: center; justify-content: center;
-        font-family: 'Montserrat', 'Segoe UI', sans-serif !important;
-        font-size: 9px !important; font-weight: 800 !important;
-        line-height: 1 !important; letter-spacing: 0 !important;
+        font-family: 'Montserrat', 'Segoe UI', sans-serif;
+        font-size: 9px; font-weight: 800; line-height: 1; letter-spacing: 0;
         pointer-events: none;
-        margin: 0 !important;
+        z-index: 5;
+        margin: 0;
     }
-    #m-global-count.m-pop { animation: mBadgePop .5s cubic-bezier(.34,1.56,.64,1); }
+    .m-cart-dot.m-pop { animation: mBadgePop .5s cubic-bezier(.34,1.56,.64,1); }
     @keyframes mBadgePop { 0% { transform: scale(.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    @media (prefers-reduced-motion: reduce) { #m-global-count.m-pop { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .m-cart-dot.m-pop { animation: none; } }
 
     /* ══════════ Backdrop ══════════ */
     .m-cart-overlay {
@@ -740,22 +741,43 @@ function removeFromCart(id) {
     saveAndUpdate();
 }
 
-// Icon ka badge: khali cart par chhupa, item aane par chhota circle (halki pop animation ke saath)
+/* ==========================================================
+   ICON BADGE
+   Purana #m-global-count (header ka) chhupa kar, usi ki jagah apna naya chhota circle
+   (#m-cart-dot) banata hai. Header ki CSS is naye circle ko chhoo nahi sakti.
+   ========================================================== */
 var _lastBadge = 0;
+function cartDotEl() {
+    var old = document.getElementById('m-global-count');
+    if (!old || !old.parentElement) return null;
+    var par = old.parentElement;
+    var dot = document.getElementById('m-cart-dot');
+    if (!dot) {
+        dot = document.createElement('span');
+        dot.id = 'm-cart-dot';
+        dot.className = 'm-cart-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        par.appendChild(dot);
+    } else if (dot.parentElement !== par) {
+        par.appendChild(dot);
+    }
+    try {
+        if (window.getComputedStyle(par).position === 'static') par.style.position = 'relative';
+    } catch (e) {}
+    old.style.setProperty('display', 'none', 'important');
+    return dot;
+}
+
 function updateGlobalIcon() {
     const count = MUSFIRAS_CART.reduce((acc, i) => acc + (i.soldOut ? 0 : cInt(i.qty)), 0);
-    const badge = document.getElementById('m-global-count');
-    if (badge) {
-        try {
-            var par = badge.parentElement;
-            if (par && window.getComputedStyle(par).position === 'static') par.style.position = 'relative';
-        } catch (e) {}
-        badge.innerText = count > 9 ? '9+' : String(count);
-        badge.style.display = count > 0 ? 'flex' : 'none';
+    const dot = cartDotEl();
+    if (dot) {
+        dot.textContent = count > 9 ? '9+' : String(count);
+        dot.style.display = count > 0 ? 'flex' : 'none';
         if (count > _lastBadge && count > 0) {
-            badge.classList.remove('m-pop');
-            void badge.offsetWidth;
-            badge.classList.add('m-pop');
+            dot.classList.remove('m-pop');
+            void dot.offsetWidth;
+            dot.classList.add('m-pop');
         }
     }
     _lastBadge = count;
@@ -932,10 +954,13 @@ function cartInit() {
     cartBackfillImgs();
     updateGlobalIcon();
     renderCart();
-    setTimeout(function () { cartRefreshStock(false); }, 1200);
+    setTimeout(function () { cartRefreshStock(false); updateGlobalIcon(); }, 1200);
 }
 if (document.readyState === 'complete') cartInit();
 else window.addEventListener('load', cartInit);
+
+// Header baad mein bane to bhi circle lag jaye
+document.addEventListener('DOMContentLoaded', function () { updateGlobalIcon(); });
 
 // Tab wapas khule to taaza qty
 document.addEventListener('visibilitychange', function () {

@@ -1,4 +1,5 @@
 ---
+import ProductNote from './ProductNote.astro';
 const { p, checkoutUrl } = Astro.props;
 const many = p.images.length > 1;
 ---
@@ -60,6 +61,9 @@ const many = p.images.length > 1;
           <div class="m-offer-hint"></div>
 
           <div class="m-final-bill">Total: AED <span>{p.price}</span></div>
+
+          <!-- Soft note: Total ke neeche, buttons se pehle. Click par poori line, kahin bhi click par wapas chhoti -->
+          <ProductNote />
 
           <button class="m-buy-now-btn" onclick={`goCheckout('${p.id}')`}>BUY IT NOW →</button>
 

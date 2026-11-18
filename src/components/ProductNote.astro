@@ -1,0 +1,94 @@
+---
+const {
+  short = "Colors & size may vary slightly",
+  full = "Colors, finish, or measurements may slightly vary due to lighting and manual sizing.",
+  class: extra = "",
+} = Astro.props;
+---
+<div class:list={["m-note", extra]}>
+  <button type="button" class="m-note-btn" aria-expanded="false">
+    <span class="m-note-ico" aria-hidden="true">i</span>
+    <span class="m-note-txt">
+      <span class="m-note-short">{short}</span>
+      <span class="m-note-full">{full}</span>
+    </span>
+    <span class="m-note-chev" aria-hidden="true">›</span>
+  </button>
+</div>
+
+<style is:global>
+  .m-note { margin: 8px 0 10px; text-align: center; }
+  .m-note-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    max-width: 100%; margin: 0; padding: 6px 12px;
+    border: 1px solid #f7e3ec; border-radius: 999px;
+    background: #fffafc; color: #a8808f;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 11.5px; font-weight: 500; line-height: 1.5; letter-spacing: .1px;
+    text-align: left; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    transition: background .3s ease, border-color .3s ease, border-radius .3s ease, color .3s ease;
+  }
+  .m-note-btn:focus-visible { outline: 2px solid #fecce6; outline-offset: 2px; }
+  @media (hover: hover) { .m-note-btn:hover { background: #fff3f8; border-color: #f3cfde; color: #8f5f72; } }
+
+  .m-note-ico {
+    flex: 0 0 auto; width: 15px; height: 15px; border-radius: 50%;
+    border: 1px solid #ebc3d4; color: #cf6e98;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Bodoni Moda', Georgia, serif; font-style: italic; font-size: 10px; font-weight: 600; line-height: 1;
+  }
+  .m-note-chev { flex: 0 0 auto; font-size: 14px; line-height: 1; color: #d9a3bb; transition: transform .3s ease; }
+
+  .m-note-full { display: none; }
+
+  /* open: poori line, thora naram box */
+  .m-note.is-open .m-note-btn {
+    align-items: flex-start; border-radius: 14px; padding: 9px 13px;
+    background: #fff7fa; border-color: #f3d3e0; color: #8f5f72;
+  }
+  .m-note.is-open .m-note-ico { margin-top: 1px; }
+  .m-note.is-open .m-note-short { display: none; }
+  .m-note.is-open .m-note-full { display: inline; animation: mNoteIn .35s ease; }
+  .m-note.is-open .m-note-chev { transform: rotate(90deg); margin-top: 1px; }
+  @keyframes mNoteIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 600px) {
+    .m-note { margin: 6px 0 8px; }
+    .m-note-btn { font-size: 11px; padding: 5px 11px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .m-note-btn, .m-note-chev { transition: none; }
+    .m-note.is-open .m-note-full { animation: none; }
+  }
+</style>
+
+<script>
+  function setOpen(note: HTMLElement, open: boolean) {
+    note.classList.toggle("is-open", open);
+    note.querySelector(".m-note-btn")?.setAttribute("aria-expanded", String(open));
+  }
+
+  // Note par click = poori line. Phir kahin bhi click = wapas chhoti.
+  document.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    const btn = t.closest<HTMLElement>(".m-note-btn");
+    const openNotes = document.querySelectorAll<HTMLElement>(".m-note.is-open");
+
+    if (btn) {
+      const note = btn.closest<HTMLElement>(".m-note");
+      if (!note) return;
+      const wasOpen = note.classList.contains("is-open");
+      openNotes.forEach((n) => setOpen(n, false));
+      if (!wasOpen) setOpen(note, true);
+      return;
+    }
+    openNotes.forEach((n) => setOpen(n, false));
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll<HTMLElement>(".m-note.is-open").forEach((n) => setOpen(n, false));
+    }
+  });
+</script>

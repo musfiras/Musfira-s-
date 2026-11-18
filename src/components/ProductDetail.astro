@@ -53,10 +53,10 @@ const many = p.images.length > 1;
           <!-- Sare colors ek hi line mein (script khud bharti hai) -->
           <div class="m-palette"></div>
 
-          <!-- Neeche: selected color + qty + remove (har row mein) -->
+          <!-- Neeche: remove + selected color + qty (har row mein) -->
           <div class="m-config-rows"></div>
 
-          <!-- Add Color: ab rows ke NEECHE apni alag full-width line mein -->
+          <!-- Add Color: rows ke NEECHE, chota soft button -->
           <button class="m-add-row-btn" onclick={`addDynamicRow('${p.id}')`}>+ ADD COLOR</button>
 
           <!-- Bundle ki live line (script isi ko bharti hai) -->
@@ -88,10 +88,10 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v10
-   - Selected row: [color chip (poora naam)] ...... [qty] [x]
-   - Add Color: rows ke neeche alag full-width button
-   - Remove: row ke andar chhota round button
+   PRODUCT PAGE UPDATE v11
+   - Selected row: [x] [color box: naam ke hisab se auto] ...... [qty]
+   - Remove (x): left par, qty se door (ghalat click nahi)
+   - Add Color: chota, soft, elite
    - Desktop switch 975px par
    ===================================================== */
 
@@ -187,8 +187,8 @@ const many = p.images.length > 1;
 .m-master-box .m-palette .m-swatch .m-sw-sold b { font-size: 9.5px !important; }
 .m-master-box .m-palette .m-swatch .m-sw-sold b::after { font-size: 9px !important; }
 
-/* 5) SELECTED ROW: [color chip] ........ [qty] [x]
-      flex-wrap on: jaga kam ho to qty neeche chali jati hai, naam kabhi cut nahi hota */
+/* 5) SELECTED ROW: [x] [color box auto] ........ [qty]
+      flex-wrap on: bohot tang jagah ho to qty neeche chali jati hai, naam kabhi cut nahi hota */
 .m-config-rows .m-row-item {
   position: relative !important; overflow: visible !important;
   display: flex !important; flex-wrap: wrap !important; align-items: center !important;
@@ -203,16 +203,16 @@ const many = p.images.length > 1;
 }
 .m-config-rows .m-row-item .m-swatches { display: none !important; }
 
-/* Order: chip, qty, remove */
-.m-config-rows .m-row-item .m-sel-chip   { order: 1; }
-.m-config-rows .m-row-item .m-qty-box    { order: 2; margin: 0 0 0 auto !important; }
-.m-config-rows .m-row-item .m-remove-btn { order: 3; }
+/* Order: remove (left), color box, qty (right) */
+.m-config-rows .m-row-item .m-remove-btn { order: 1; }
+.m-config-rows .m-row-item .m-sel-chip   { order: 2; }
+.m-config-rows .m-row-item .m-qty-box    { order: 3; margin: 0 0 0 auto !important; }
 
-/* COLOR CHIP: poora naam dikhta hai, lamba ho to do lines mein */
+/* COLOR BOX: naam ke hisab se auto size (chota naam = chota box, bara naam = bara box) */
 .m-sel-chip {
   display: inline-flex; align-items: center; gap: 7px;
-  flex: 1 1 130px; min-width: 0;
-  padding: 6px 11px 6px 9px; box-sizing: border-box;
+  flex: 0 1 auto !important; width: auto !important; min-width: 0; max-width: 100%;
+  padding: 6px 12px 6px 9px; box-sizing: border-box;
   background: #fff5f9; border: 1px solid #e6007e; border-radius: 10px;
   font-family: 'Segoe UI', sans-serif; font-size: 12px; font-weight: 800; color: #800000; line-height: 1.25;
 }
@@ -220,33 +220,34 @@ const many = p.images.length > 1;
   width: 12px; height: 12px; border-radius: 50%;
   border: 1px solid rgba(0,0,0,.16); flex-shrink: 0; box-sizing: border-box;
 }
+/* naam pura dikhta hai; bohot lamba ho tabhi do lines mein jata hai */
 .m-sel-chip .m-sc-name {
-  white-space: normal; overflow-wrap: anywhere; word-break: normal;
+  white-space: normal; overflow-wrap: break-word; word-break: normal;
   overflow: visible; text-overflow: clip; max-width: none; min-width: 0;
 }
 
-/* REMOVE: row ke ANDAR, chhota round "x" button (bahar nahi nikalta, jaga nahi khata) */
+/* REMOVE (x): LEFT par, qty se door. Chhota, soft, round */
 .m-config-rows .m-row-item .m-remove-btn {
   position: relative !important;
   top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
   transform: none !important;
   flex: 0 0 auto;
-  width: 30px !important; height: 30px !important; min-width: 30px;
+  width: 24px !important; height: 24px !important; min-width: 24px;
   padding: 0 !important; margin: 0 !important;
   font-size: 0 !important; line-height: 0; -webkit-text-stroke: 0 !important;
   display: inline-flex !important; align-items: center; justify-content: center;
-  border: 1px solid #f3c9dc !important; border-radius: 50% !important;
-  background: #fff !important; color: #a3301f !important; cursor: pointer;
+  border: 1px solid #f3d3e2 !important; border-radius: 50% !important;
+  background: #fffafd !important; color: #b4707f !important; cursor: pointer;
   box-shadow: none !important;
   transition: background .25s ease, color .25s ease, border-color .25s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .m-config-rows .m-row-item .m-remove-btn::before {
-  content: "\00d7"; font-size: 20px; font-weight: 700; line-height: 1;
-  font-family: 'Segoe UI', Arial, sans-serif; margin-top: -2px;
+  content: "\00d7"; font-size: 17px; font-weight: 600; line-height: 1;
+  font-family: 'Segoe UI', Arial, sans-serif; margin-top: -1px;
 }
-/* touch ke liye bara tap area */
-.m-config-rows .m-row-item .m-remove-btn::after { content: ""; position: absolute; inset: -7px; }
+/* touch tap area sirf left/up/down mein (right side chip ki taraf nahi barhta) */
+.m-config-rows .m-row-item .m-remove-btn::after { content: ""; position: absolute; top: -6px; bottom: -6px; left: -6px; right: -2px; }
 @media (hover: hover) and (pointer: fine) {
   .m-config-rows .m-row-item .m-remove-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
 }
@@ -263,45 +264,44 @@ const many = p.images.length > 1;
 /* Tablet / Laptop / PC */
 @media (min-width: 481px) {
   .m-config-rows .m-row-item { padding: 9px 12px !important; gap: 10px !important; }
-  .m-sel-chip { font-size: 12.5px; flex-basis: 160px; }
+  .m-sel-chip { font-size: 12.5px; }
   .m-qty-box { width: 112px !important; }
   .m-qty-box input { width: 44px !important; }
 }
 /* Mobile / iPhone */
 @media (max-width: 400px) {
   .m-config-rows .m-row-item { padding: 7px 8px !important; gap: 6px !important; }
-  .m-sel-chip { padding: 5px 8px 5px 7px; font-size: 11.5px; flex-basis: 110px; }
+  .m-sel-chip { padding: 5px 9px 5px 7px; font-size: 11.5px; }
   .m-qty-box { width: 92px !important; height: 33px !important; }
   .m-qty-box button { min-width: 29px !important; }
   .m-qty-box input { width: 34px !important; }
 }
-/* Bohot chhoti screen: chip poori line le, qty + remove neeche */
+/* Bohot chhoti screen: jaga kam ho to qty neeche line mein, kuch cut nahi hota */
 @media (max-width: 340px) {
-  .m-config-rows .m-row-item .m-sel-chip { flex: 1 1 100%; }
-  .m-config-rows .m-row-item .m-qty-box { margin-left: 0 !important; }
-  .m-config-rows .m-row-item .m-remove-btn { margin-left: auto !important; }
+  .m-config-rows .m-row-item .m-qty-box { margin-left: auto !important; }
 }
 
-/* 6) ADD COLOR: rows ke neeche, full-width, elite look */
+/* 6) ADD COLOR: chota, soft, elite (halka pink + maroon text), beech mein */
 .m-pop-right button.m-add-row-btn,
 .m-pop-right button.m-add-row-btn:focus,
 .m-pop-right button.m-add-row-btn:focus-visible {
   display: flex !important; align-items: center; justify-content: center;
-  width: 100% !important; height: 38px; margin: 2px 0 10px !important; padding: 0 14px !important;
+  width: auto !important; height: 30px; margin: 2px auto 10px !important; padding: 0 16px !important;
   box-sizing: border-box;
-  font-size: 11px !important; font-weight: 800 !important; letter-spacing: 1px !important; white-space: nowrap;
-  background: #a3301f !important; color: #fff !important;
-  border: none !important; border-radius: 10px !important;
+  font-size: 10px !important; font-weight: 800 !important; letter-spacing: 1.4px !important; white-space: nowrap;
+  font-family: 'Segoe UI', sans-serif;
+  background: #fff5f9 !important; color: #800000 !important;
+  border: 1px solid #f3c9dc !important; border-radius: 999px !important;
   -webkit-text-stroke: 0 !important; animation: none !important;
-  box-shadow: 0 6px 14px -10px rgba(163, 48, 31, .7) !important;
+  box-shadow: 0 4px 12px -9px rgba(128, 0, 0, .35) !important;
   outline: none !important; cursor: pointer;
-  transition: background .25s ease, transform .15s ease;
+  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 @media (hover: hover) and (pointer: fine) {
-  .m-pop-right button.m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; }
+  .m-pop-right button.m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
 }
-.m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; transform: scale(.98); }
+.m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; transform: scale(.97); }
 
 /* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche */
 .m-master-box .m-final-bill {

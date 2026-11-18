@@ -88,10 +88,11 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v11
-   - Selected row: [x] [color box: naam ke hisab se auto] ...... [qty]
-   - Remove (x): left par, qty se door (ghalat click nahi)
-   - Add Color: chota, soft, elite
+   PRODUCT PAGE UPDATE v12
+   - Selected row: [x] ...gap... [color box: auto] ...... [qty bara]
+   - Remove (x): left par, color box se door
+   - Qty: thora bara (click aasan)
+   - Add Color: square-ish, dark border, floating luxury shadow
    - Desktop switch 975px par
    ===================================================== */
 
@@ -187,7 +188,7 @@ const many = p.images.length > 1;
 .m-master-box .m-palette .m-swatch .m-sw-sold b { font-size: 9.5px !important; }
 .m-master-box .m-palette .m-swatch .m-sw-sold b::after { font-size: 9px !important; }
 
-/* 5) SELECTED ROW: [x] [color box auto] ........ [qty]
+/* 5) SELECTED ROW: [x] ...gap... [color box auto] ...... [qty]
       flex-wrap on: bohot tang jagah ho to qty neeche chali jati hai, naam kabhi cut nahi hota */
 .m-config-rows .m-row-item {
   position: relative !important; overflow: visible !important;
@@ -196,7 +197,7 @@ const many = p.images.length > 1;
   box-sizing: border-box !important;
   width: 100% !important;
   margin: 0 0 8px 0 !important;
-  padding: 8px 10px !important;
+  padding: 8px 10px 8px 8px !important;
   border-radius: 12px !important; border: 1px solid #f6dce8 !important;
   background: #fff !important;
   box-shadow: 0 3px 10px -8px rgba(128, 0, 0, 0.25) !important;
@@ -226,14 +227,14 @@ const many = p.images.length > 1;
   overflow: visible; text-overflow: clip; max-width: none; min-width: 0;
 }
 
-/* REMOVE (x): LEFT par, qty se door. Chhota, soft, round */
+/* REMOVE (x): LEFT par, color box se door (extra gap), chhota soft round */
 .m-config-rows .m-row-item .m-remove-btn {
   position: relative !important;
   top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
   transform: none !important;
   flex: 0 0 auto;
   width: 24px !important; height: 24px !important; min-width: 24px;
-  padding: 0 !important; margin: 0 !important;
+  padding: 0 !important; margin: 0 10px 0 0 !important;
   font-size: 0 !important; line-height: 0; -webkit-text-stroke: 0 !important;
   display: inline-flex !important; align-items: center; justify-content: center;
   border: 1px solid #f3d3e2 !important; border-radius: 50% !important;
@@ -253,55 +254,68 @@ const many = p.images.length > 1;
 }
 .m-config-rows .m-row-item .m-remove-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
 
-/* QTY BOX */
+/* QTY BOX: thora bara, click aasan */
 .m-qty-box {
-  border-radius: 9px !important; height: 34px !important; width: 104px !important;
-  border-color: #f6dce8 !important; box-shadow: none !important; flex: 0 0 auto;
+  border-radius: 10px !important; height: 40px !important; width: 124px !important;
+  border-color: #f0cddd !important; box-shadow: none !important; flex: 0 0 auto;
 }
-.m-qty-box button { min-width: 32px !important; font-size: 19px !important; }
-.m-qty-box input { width: 38px !important; }
+.m-qty-box button { min-width: 38px !important; font-size: 21px !important; }
+.m-qty-box input { width: 44px !important; font-size: 15px !important; }
 
 /* Tablet / Laptop / PC */
 @media (min-width: 481px) {
-  .m-config-rows .m-row-item { padding: 9px 12px !important; gap: 10px !important; }
+  .m-config-rows .m-row-item { padding: 9px 12px 9px 10px !important; gap: 10px !important; }
   .m-sel-chip { font-size: 12.5px; }
-  .m-qty-box { width: 112px !important; }
-  .m-qty-box input { width: 44px !important; }
+  .m-qty-box { width: 132px !important; height: 42px !important; }
+  .m-qty-box button { min-width: 42px !important; }
+  .m-qty-box input { width: 48px !important; }
 }
 /* Mobile / iPhone */
 @media (max-width: 400px) {
-  .m-config-rows .m-row-item { padding: 7px 8px !important; gap: 6px !important; }
+  .m-config-rows .m-row-item { padding: 7px 8px 7px 7px !important; gap: 6px !important; }
+  .m-config-rows .m-row-item .m-remove-btn { margin-right: 8px !important; }
   .m-sel-chip { padding: 5px 9px 5px 7px; font-size: 11.5px; }
-  .m-qty-box { width: 92px !important; height: 33px !important; }
-  .m-qty-box button { min-width: 29px !important; }
-  .m-qty-box input { width: 34px !important; }
+  .m-qty-box { width: 112px !important; height: 38px !important; }
+  .m-qty-box button { min-width: 36px !important; }
+  .m-qty-box input { width: 38px !important; }
 }
 /* Bohot chhoti screen: jaga kam ho to qty neeche line mein, kuch cut nahi hota */
 @media (max-width: 340px) {
   .m-config-rows .m-row-item .m-qty-box { margin-left: auto !important; }
 }
 
-/* 6) ADD COLOR: chota, soft, elite (halka pink + maroon text), beech mein */
+/* 6) ADD COLOR: square-ish, thora dark border, hawa mein uthi hui luxury shadow */
 .m-pop-right button.m-add-row-btn,
 .m-pop-right button.m-add-row-btn:focus,
 .m-pop-right button.m-add-row-btn:focus-visible {
   display: flex !important; align-items: center; justify-content: center;
-  width: auto !important; height: 30px; margin: 2px auto 10px !important; padding: 0 16px !important;
+  width: auto !important; height: 32px; margin: 4px auto 16px !important; padding: 0 20px !important;
   box-sizing: border-box;
-  font-size: 10px !important; font-weight: 800 !important; letter-spacing: 1.4px !important; white-space: nowrap;
+  font-size: 10px !important; font-weight: 800 !important; letter-spacing: 1.5px !important; white-space: nowrap;
   font-family: 'Segoe UI', sans-serif;
-  background: #fff5f9 !important; color: #800000 !important;
-  border: 1px solid #f3c9dc !important; border-radius: 999px !important;
+  background: #ffffff !important; color: #800000 !important;
+  border: 1px solid #e3a6c4 !important; border-radius: 8px !important;
   -webkit-text-stroke: 0 !important; animation: none !important;
-  box-shadow: 0 4px 12px -9px rgba(128, 0, 0, .35) !important;
+  box-shadow:
+    0 12px 22px -10px rgba(128, 0, 0, .32),
+    0 5px 10px -5px rgba(230, 0, 126, .22),
+    0 1px 0 rgba(255, 255, 255, .95) inset !important;
   outline: none !important; cursor: pointer;
-  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .15s ease;
+  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease, box-shadow .25s ease;
   -webkit-tap-highlight-color: transparent;
 }
 @media (hover: hover) and (pointer: fine) {
-  .m-pop-right button.m-add-row-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
+  .m-pop-right button.m-add-row-btn:hover {
+    background: #e6007e !important; color: #fff !important; border-color: #e6007e !important;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 26px -10px rgba(230, 0, 126, .45), 0 6px 12px -6px rgba(128, 0, 0, .25) !important;
+  }
 }
-.m-pop-right button.m-add-row-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; transform: scale(.97); }
+.m-pop-right button.m-add-row-btn:active {
+  background: #e6007e !important; color: #fff !important; border-color: #e6007e !important;
+  transform: translateY(0) scale(.98);
+  box-shadow: 0 6px 12px -8px rgba(230, 0, 126, .45) !important;
+}
 
 /* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche */
 .m-master-box .m-final-bill {

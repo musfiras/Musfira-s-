@@ -35,7 +35,7 @@ const many = p.images.length > 1;
               <div class="m-thumbs">
                 {p.images.map((src, i) => (
                   <button type="button" class={i === 0 ? 'm-thumb is-on' : 'm-thumb'} data-i={i} aria-label={`Photo ${i + 1}`}>
-                    <img src={src} alt="" loading="lazy" decoding="async" />
+                    <img src={src} alt="" width="56" height="56" loading="lazy" decoding="async" />
                   </button>
                 ))}
               </div>
@@ -64,8 +64,10 @@ const many = p.images.length > 1;
 
           <div class="m-final-bill">Total: AED <span>{p.price}</span></div>
 
-          <!-- Soft note: Total ke neeche, buttons se pehle. Click par poori line, kahin bhi click par wapas chhoti -->
-          <ProductNote />
+          <!-- Soft note: Total ke neeche, buttons se pehle. Wrapper sirf halka sa ubhra hua look dene ke liye hai -->
+          <div class="m-note-float">
+            <ProductNote />
+          </div>
 
           <button class="m-buy-now-btn" onclick={`goCheckout('${p.id}')`}>BUY IT NOW →</button>
 
@@ -88,18 +90,34 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v13
-   - Sab boxes/buttons: hawa mein uthe hue (dark pink border + floating shadow)
-   - Bundle offer box: extra patla
-   - Remove (x): color box se aur door, left par
+   PRODUCT PAGE UPDATE v14
+   - Pure white page background
+   - Shadows: tight aur saaf (sirf neeche, side par phailti nahi)
+   - Bundle offer box: thora bara
+   - Thumbnails: lazy + soft placeholder (khali nahi lagte)
+   - "Colors & size may vary" note: halka ubhra hua
    - Desktop switch 975px par
    ===================================================== */
 
 /* Floating look ke liye common values (yahin se sab badal sakte ho) */
 .m-master-box {
   --m-bd: #e3a6c4;
-  --m-float: 0 10px 18px -10px rgba(128, 0, 0, .32), 0 4px 8px -5px rgba(230, 0, 126, .20);
-  --m-float-sm: 0 7px 12px -8px rgba(128, 0, 0, .30), 0 3px 6px -4px rgba(230, 0, 126, .18);
+  /* tight shadow: neeche ek chhoti gehri line, negative spread = side par kuch nahi phailta */
+  --m-float: 0 4px 6px -3px rgba(80, 20, 40, .30), 0 1px 2px rgba(80, 20, 40, .08);
+  --m-float-sm: 0 3px 4px -2px rgba(80, 20, 40, .28), 0 1px 1px rgba(80, 20, 40, .06);
+}
+
+/* 0) PURA PAGE WHITE */
+body:has(.m-master-box),
+.m-product-page-wrap,
+.m-page-mode,
+.m-master-box,
+.m-pop-overlay,
+.m-pop-box,
+.m-pop-layout,
+.m-pop-left,
+.m-pop-right {
+  background: #ffffff !important;
 }
 
 /* 1) Maroon line, heading, arrow, dots khatam */
@@ -119,24 +137,35 @@ const many = p.images.length > 1;
 .m-thumbs-wrap.has-more { padding-right: 28px; }
 .m-thumbs {
   position: relative;
-  display: flex; gap: 6px; overflow-x: auto; scroll-behavior: smooth;
+  display: flex; gap: 7px; overflow-x: auto; scroll-behavior: smooth;
   scrollbar-width: none; -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
-  padding: 3px 3px 10px; margin: -3px -3px -6px;
+  padding: 2px 3px 6px; margin: -2px -3px -4px;
 }
 .m-thumbs::-webkit-scrollbar { display: none; }
+@keyframes m-shimmer {
+  0%   { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
 .m-thumb {
   flex: 0 0 var(--m-th); width: var(--m-th); height: var(--m-th);
-  box-sizing: border-box; padding: 2px; margin: 0; background: #fff;
+  box-sizing: border-box; padding: 2px; margin: 0;
+  /* placeholder: photo aane tak halka soft shimmer, khali nahi lagta */
+  background: linear-gradient(110deg, #f7eff3 30%, #fffafc 50%, #f7eff3 70%);
+  background-size: 220% 100%;
+  animation: m-shimmer 1.4s linear infinite;
   border: 1px solid var(--m-bd); border-radius: 8px;
   box-shadow: var(--m-float-sm);
   cursor: pointer; scroll-snap-align: start; overflow: hidden;
-  opacity: .8; transition: opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
+  opacity: .85; transition: opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
   -webkit-tap-highlight-color: transparent;
 }
+/* photo load hote hi placeholder band */
+.m-thumb.is-ready { background: #fff; animation: none; }
 .m-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 6px; }
 .m-thumb.is-on { opacity: 1; border-color: #e6007e; box-shadow: 0 0 0 1px #e6007e inset, var(--m-float-sm); }
 @media (hover: hover) and (pointer: fine) { .m-thumb:hover { opacity: 1; border-color: #e6007e; } }
+@media (prefers-reduced-motion: reduce) { .m-thumb { animation: none; } }
 .m-thumbs-next {
   position: absolute; right: 0; top: 50%; transform: translateY(-50%);
   width: 22px; height: 22px; padding: 0; border-radius: 50%;
@@ -153,39 +182,39 @@ const many = p.images.length > 1;
   .m-thumbs-wrap { max-width: min(100%, 79vh); margin-left: auto; margin-right: auto; }
 }
 
-/* 3) BUNDLE OFFER: extra patla, dark border, hawa mein uthi hui */
+/* 3) BUNDLE OFFER: thora bara, pure white, dark border, tight shadow */
 .m-offer-box {
-  padding: 2px 6px 3px !important;
+  padding: 5px 7px 6px !important;
   margin-top: 18px !important;
   border: 1px solid var(--m-bd) !important;
   border-radius: 9px !important;
-  background: linear-gradient(180deg, #fffafd 0%, #ffffff 100%) !important;
+  background: #ffffff !important;
   box-shadow: var(--m-float) !important;
 }
 @media (max-width: 974px) { .m-offer-box { margin-top: 26px !important; } }
 .m-offer-title {
-  font-size: 7.5px !important; letter-spacing: 2.2px !important;
-  margin: 0 0 2px !important; line-height: 1.1 !important;
+  font-size: 8px !important; letter-spacing: 2.3px !important;
+  margin: 0 0 4px !important; line-height: 1.2 !important;
   font-weight: 700 !important;
 }
-.m-offer-tiers { gap: 5px !important; }
+.m-offer-tiers { gap: 6px !important; }
 .m-offer-tier {
-  padding: 1px 4px !important; border-radius: 7px !important;
-  line-height: 1.05 !important;
+  padding: 4px 4px !important; border-radius: 7px !important;
+  line-height: 1.12 !important;
   box-shadow: var(--m-float-sm) !important;
 }
 .m-offer-tier:not([class*="sel"]):not([class*="act"]):not(.is-on):not(.on) {
   border-color: var(--m-bd) !important;
 }
-.m-ot-n { font-size: 7.5px !important; letter-spacing: .8px !important; line-height: 1.1 !important; }
-.m-ot-new { font-size: 11px !important; margin-top: 0 !important; line-height: 1.1 !important; }
-.m-ot-old { font-size: 7.5px !important; line-height: 1.05 !important; }
+.m-ot-n { font-size: 8px !important; letter-spacing: .8px !important; line-height: 1.15 !important; }
+.m-ot-new { font-size: 12px !important; margin-top: 1px !important; line-height: 1.15 !important; }
+.m-ot-old { font-size: 8px !important; line-height: 1.1 !important; }
 .m-offer-hint { font-size: 11px !important; margin: 3px 0 6px !important; }
 
 /* 4) COLOR PALETTE: sare colors ek line mein, uthe hue chips */
 .m-palette {
   display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center;
-  gap: 14px 7px; padding: 6px 3px 8px; margin: 0 0 8px; text-align: left;
+  gap: 14px 7px; padding: 6px 3px 7px; margin: 0 0 8px; text-align: left;
 }
 .m-palette:empty { display: none; }
 .m-palette:has(.m-sw-sold) { row-gap: 22px; padding-bottom: 20px; }
@@ -193,6 +222,7 @@ const many = p.images.length > 1;
   padding: 3px 9px 3px 6px !important; min-height: 26px !important;
   font-size: 10.5px !important; font-weight: 700 !important; gap: 5px !important;
   border-radius: 8px !important;
+  background: #fff;
   box-shadow: var(--m-float-sm) !important;
 }
 .m-palette .m-swatch:not(.is-sel) { border-color: var(--m-bd) !important; }
@@ -242,7 +272,7 @@ const many = p.images.length > 1;
   overflow: visible; text-overflow: clip; max-width: none; min-width: 0;
 }
 
-/* REMOVE (x): LEFT par, color box se door, dark border + hawa mein uthi hui */
+/* REMOVE (x): LEFT par, color box se door, dark border + uthi hui */
 .m-config-rows .m-row-item .m-remove-btn {
   position: relative !important;
   top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
@@ -273,6 +303,7 @@ const many = p.images.length > 1;
 .m-qty-box {
   border-radius: 10px !important; height: 40px !important; width: 124px !important;
   border: 1px solid var(--m-bd) !important;
+  background: #fff;
   box-shadow: var(--m-float-sm) !important; flex: 0 0 auto;
 }
 .m-qty-box button { min-width: 38px !important; font-size: 21px !important; }
@@ -302,7 +333,7 @@ const many = p.images.length > 1;
   .m-config-rows .m-row-item .m-qty-box { margin-left: auto !important; }
 }
 
-/* 6) ADD COLOR: square-ish, dark border, hawa mein uthi hui luxury shadow */
+/* 6) ADD COLOR: square-ish, dark border, tight luxury shadow */
 .m-pop-right button.m-add-row-btn,
 .m-pop-right button.m-add-row-btn:focus,
 .m-pop-right button.m-add-row-btn:focus-visible {
@@ -314,10 +345,7 @@ const many = p.images.length > 1;
   background: #ffffff !important; color: #800000 !important;
   border: 1px solid var(--m-bd) !important; border-radius: 8px !important;
   -webkit-text-stroke: 0 !important; animation: none !important;
-  box-shadow:
-    0 12px 22px -10px rgba(128, 0, 0, .34),
-    0 5px 10px -5px rgba(230, 0, 126, .24),
-    0 1px 0 rgba(255, 255, 255, .95) inset !important;
+  box-shadow: 0 5px 7px -3px rgba(80, 20, 40, .32), 0 1px 2px rgba(80, 20, 40, .08) !important;
   outline: none !important; cursor: pointer;
   transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease, box-shadow .25s ease;
   -webkit-tap-highlight-color: transparent;
@@ -326,13 +354,21 @@ const many = p.images.length > 1;
   .m-pop-right button.m-add-row-btn:hover {
     background: #e6007e !important; color: #fff !important; border-color: #e6007e !important;
     transform: translateY(-2px);
-    box-shadow: 0 16px 26px -10px rgba(230, 0, 126, .45), 0 6px 12px -6px rgba(128, 0, 0, .25) !important;
+    box-shadow: 0 7px 9px -4px rgba(230, 0, 126, .38), 0 1px 2px rgba(80, 20, 40, .10) !important;
   }
 }
 .m-pop-right button.m-add-row-btn:active {
   background: #e6007e !important; color: #fff !important; border-color: #e6007e !important;
   transform: translateY(0) scale(.98);
-  box-shadow: 0 6px 12px -8px rgba(230, 0, 126, .45) !important;
+  box-shadow: 0 2px 4px -2px rgba(230, 0, 126, .40) !important;
+}
+
+/* 6b) "Colors & size may vary slightly" note: size/style wahi, bas halka ubhra hua */
+.m-note-float { padding-bottom: 5px; }
+.m-note-float > * {
+  background-color: #ffffff !important;
+  border-color: var(--m-bd) !important;
+  box-shadow: var(--m-float-sm) !important;
 }
 
 /* 7) TOTAL: "Total: AED 95   ~~AED 100~~" ek hi line mein, "You save" neeche */
@@ -406,6 +442,31 @@ const many = p.images.length > 1;
   if (track && strip) {
     var items = [].slice.call(strip.querySelectorAll('.m-thumb'));
     var cur0 = 0;
+
+    /* lazy thumbnails: photo load ho jaye to placeholder band (is-ready) */
+    items.forEach(function (el) {
+      var im = el.querySelector('img');
+      if (!im) return;
+      var done = function () { el.classList.add('is-ready'); };
+      if (im.complete && im.naturalWidth > 0) done();
+      else {
+        im.addEventListener('load', done);
+        im.addEventListener('error', done);
+      }
+    });
+
+    /* page load ke baad, khali waqt mein baqi thumbnails bhi load kar lo,
+       taake scroll karne par khali na milein */
+    var warm = function () {
+      items.forEach(function (el) {
+        var im = el.querySelector('img');
+        if (im) im.loading = 'eager';
+      });
+    };
+    window.addEventListener('load', function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(warm, { timeout: 2000 });
+      else setTimeout(warm, 800);
+    });
 
     /* arrow sirf tab, jab thumbnails wrap ki poori chauraai mein na samayen */
     var checkArrow = function () {

@@ -88,13 +88,19 @@ const many = p.images.length > 1;
 
 <style is:global>
 /* =====================================================
-   PRODUCT PAGE UPDATE v12
-   - Selected row: [x] ...gap... [color box: auto] ...... [qty bara]
-   - Remove (x): left par, color box se door
-   - Qty: thora bara (click aasan)
-   - Add Color: square-ish, dark border, floating luxury shadow
+   PRODUCT PAGE UPDATE v13
+   - Sab boxes/buttons: hawa mein uthe hue (dark pink border + floating shadow)
+   - Bundle offer box: extra patla
+   - Remove (x): color box se aur door, left par
    - Desktop switch 975px par
    ===================================================== */
+
+/* Floating look ke liye common values (yahin se sab badal sakte ho) */
+.m-master-box {
+  --m-bd: #e3a6c4;
+  --m-float: 0 10px 18px -10px rgba(128, 0, 0, .32), 0 4px 8px -5px rgba(230, 0, 126, .20);
+  --m-float-sm: 0 7px 12px -8px rgba(128, 0, 0, .30), 0 3px 6px -4px rgba(230, 0, 126, .18);
+}
 
 /* 1) Maroon line, heading, arrow, dots khatam */
 .m-maroon-top-bar { display: none !important; }
@@ -116,25 +122,27 @@ const many = p.images.length > 1;
   display: flex; gap: 6px; overflow-x: auto; scroll-behavior: smooth;
   scrollbar-width: none; -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+  padding: 3px 3px 10px; margin: -3px -3px -6px;
 }
 .m-thumbs::-webkit-scrollbar { display: none; }
 .m-thumb {
   flex: 0 0 var(--m-th); width: var(--m-th); height: var(--m-th);
   box-sizing: border-box; padding: 2px; margin: 0; background: #fff;
-  border: 1px solid #fbd9e8; border-radius: 8px;
+  border: 1px solid var(--m-bd); border-radius: 8px;
+  box-shadow: var(--m-float-sm);
   cursor: pointer; scroll-snap-align: start; overflow: hidden;
-  opacity: .7; transition: opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
+  opacity: .8; transition: opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .m-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 6px; }
-.m-thumb.is-on { opacity: 1; border-color: #e6007e; box-shadow: 0 0 0 1px #e6007e inset; }
+.m-thumb.is-on { opacity: 1; border-color: #e6007e; box-shadow: 0 0 0 1px #e6007e inset, var(--m-float-sm); }
 @media (hover: hover) and (pointer: fine) { .m-thumb:hover { opacity: 1; border-color: #e6007e; } }
 .m-thumbs-next {
   position: absolute; right: 0; top: 50%; transform: translateY(-50%);
   width: 22px; height: 22px; padding: 0; border-radius: 50%;
   display: none; align-items: center; justify-content: center;
-  background: #fff; border: 1px solid #fbd9e8; color: #800000;
-  box-shadow: 0 2px 8px rgba(128,0,0,.10); cursor: pointer;
+  background: #fff; border: 1px solid var(--m-bd); color: #800000;
+  box-shadow: var(--m-float-sm); cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 .m-thumbs-wrap.has-more .m-thumbs-next { display: flex; }
@@ -145,50 +153,56 @@ const many = p.images.length > 1;
   .m-thumbs-wrap { max-width: min(100%, 79vh); margin-left: auto; margin-right: auto; }
 }
 
-/* 3) BUNDLE OFFER: sab se upar, extra patla, elite look */
+/* 3) BUNDLE OFFER: extra patla, dark border, hawa mein uthi hui */
 .m-offer-box {
-  padding: 4px 7px 5px !important;
+  padding: 2px 6px 3px !important;
   margin-top: 18px !important;
-  border: 1px solid #f3d3e2 !important;
+  border: 1px solid var(--m-bd) !important;
   border-radius: 9px !important;
   background: linear-gradient(180deg, #fffafd 0%, #ffffff 100%) !important;
-  box-shadow: 0 6px 16px -14px rgba(128, 0, 0, 0.35) !important;
+  box-shadow: var(--m-float) !important;
 }
 @media (max-width: 974px) { .m-offer-box { margin-top: 26px !important; } }
 .m-offer-title {
-  font-size: 8.5px !important; letter-spacing: 2.4px !important;
-  margin: 0 0 3px !important; line-height: 1.2 !important;
+  font-size: 7.5px !important; letter-spacing: 2.2px !important;
+  margin: 0 0 2px !important; line-height: 1.1 !important;
   font-weight: 700 !important;
 }
 .m-offer-tiers { gap: 5px !important; }
 .m-offer-tier {
-  padding: 2px 4px !important; border-radius: 7px !important;
-  line-height: 1.12 !important;
+  padding: 1px 4px !important; border-radius: 7px !important;
+  line-height: 1.05 !important;
+  box-shadow: var(--m-float-sm) !important;
 }
-.m-ot-n { font-size: 8px !important; letter-spacing: .9px !important; line-height: 1.15 !important; }
-.m-ot-new { font-size: 11.5px !important; margin-top: 0 !important; line-height: 1.15 !important; }
-.m-ot-old { font-size: 8px !important; line-height: 1.1 !important; }
+.m-offer-tier:not([class*="sel"]):not([class*="act"]):not(.is-on):not(.on) {
+  border-color: var(--m-bd) !important;
+}
+.m-ot-n { font-size: 7.5px !important; letter-spacing: .8px !important; line-height: 1.1 !important; }
+.m-ot-new { font-size: 11px !important; margin-top: 0 !important; line-height: 1.1 !important; }
+.m-ot-old { font-size: 7.5px !important; line-height: 1.05 !important; }
 .m-offer-hint { font-size: 11px !important; margin: 3px 0 6px !important; }
 
-/* 4) COLOR PALETTE: sare colors ek line mein */
+/* 4) COLOR PALETTE: sare colors ek line mein, uthe hue chips */
 .m-palette {
   display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center;
-  gap: 14px 6px; padding: 6px 2px 4px; margin: 0 0 8px; text-align: left;
+  gap: 14px 7px; padding: 6px 3px 8px; margin: 0 0 8px; text-align: left;
 }
 .m-palette:empty { display: none; }
-.m-palette:has(.m-sw-sold) { row-gap: 22px; padding-bottom: 18px; }
+.m-palette:has(.m-sw-sold) { row-gap: 22px; padding-bottom: 20px; }
 .m-palette .m-swatch {
   padding: 3px 9px 3px 6px !important; min-height: 26px !important;
   font-size: 10.5px !important; font-weight: 700 !important; gap: 5px !important;
-  border-radius: 8px !important; border-color: #f6dce8 !important;
+  border-radius: 8px !important;
+  box-shadow: var(--m-float-sm) !important;
 }
+.m-palette .m-swatch:not(.is-sel) { border-color: var(--m-bd) !important; }
 .m-palette .m-swatch.is-sel { font-weight: 800 !important; }
 .m-palette .m-sw-dot { width: 11px !important; height: 11px !important; }
 .m-palette .m-sw-stock { font-size: 7.5px !important; top: -6px !important; left: 7px !important; }
 .m-master-box .m-palette .m-swatch .m-sw-sold b { font-size: 9.5px !important; }
 .m-master-box .m-palette .m-swatch .m-sw-sold b::after { font-size: 9px !important; }
 
-/* 5) SELECTED ROW: [x] ...gap... [color box auto] ...... [qty]
+/* 5) SELECTED ROW: [x] ....door.... [color box auto] ...... [qty]
       flex-wrap on: bohot tang jagah ho to qty neeche chali jati hai, naam kabhi cut nahi hota */
 .m-config-rows .m-row-item {
   position: relative !important; overflow: visible !important;
@@ -196,11 +210,11 @@ const many = p.images.length > 1;
   gap: 8px !important;
   box-sizing: border-box !important;
   width: 100% !important;
-  margin: 0 0 8px 0 !important;
+  margin: 0 0 12px 0 !important;
   padding: 8px 10px 8px 8px !important;
-  border-radius: 12px !important; border: 1px solid #f6dce8 !important;
+  border-radius: 12px !important; border: 1px solid var(--m-bd) !important;
   background: #fff !important;
-  box-shadow: 0 3px 10px -8px rgba(128, 0, 0, 0.25) !important;
+  box-shadow: var(--m-float) !important;
 }
 .m-config-rows .m-row-item .m-swatches { display: none !important; }
 
@@ -209,12 +223,13 @@ const many = p.images.length > 1;
 .m-config-rows .m-row-item .m-sel-chip   { order: 2; }
 .m-config-rows .m-row-item .m-qty-box    { order: 3; margin: 0 0 0 auto !important; }
 
-/* COLOR BOX: naam ke hisab se auto size (chota naam = chota box, bara naam = bara box) */
+/* COLOR BOX: naam ke hisab se auto size, uthi hui */
 .m-sel-chip {
   display: inline-flex; align-items: center; gap: 7px;
   flex: 0 1 auto !important; width: auto !important; min-width: 0; max-width: 100%;
   padding: 6px 12px 6px 9px; box-sizing: border-box;
   background: #fff5f9; border: 1px solid #e6007e; border-radius: 10px;
+  box-shadow: var(--m-float-sm);
   font-family: 'Segoe UI', sans-serif; font-size: 12px; font-weight: 800; color: #800000; line-height: 1.25;
 }
 .m-sel-chip .m-sw-dot {
@@ -227,37 +242,38 @@ const many = p.images.length > 1;
   overflow: visible; text-overflow: clip; max-width: none; min-width: 0;
 }
 
-/* REMOVE (x): LEFT par, color box se door (extra gap), chhota soft round */
+/* REMOVE (x): LEFT par, color box se door, dark border + hawa mein uthi hui */
 .m-config-rows .m-row-item .m-remove-btn {
   position: relative !important;
   top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
   transform: none !important;
   flex: 0 0 auto;
-  width: 24px !important; height: 24px !important; min-width: 24px;
-  padding: 0 !important; margin: 0 10px 0 0 !important;
+  width: 26px !important; height: 26px !important; min-width: 26px;
+  padding: 0 !important; margin: 0 18px 0 0 !important;
   font-size: 0 !important; line-height: 0; -webkit-text-stroke: 0 !important;
   display: inline-flex !important; align-items: center; justify-content: center;
-  border: 1px solid #f3d3e2 !important; border-radius: 50% !important;
-  background: #fffafd !important; color: #b4707f !important; cursor: pointer;
-  box-shadow: none !important;
-  transition: background .25s ease, color .25s ease, border-color .25s ease;
+  border: 1px solid var(--m-bd) !important; border-radius: 50% !important;
+  background: #ffffff !important; color: #a3301f !important; cursor: pointer;
+  box-shadow: var(--m-float-sm) !important;
+  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .m-config-rows .m-row-item .m-remove-btn::before {
-  content: "\00d7"; font-size: 17px; font-weight: 600; line-height: 1;
+  content: "\00d7"; font-size: 18px; font-weight: 600; line-height: 1;
   font-family: 'Segoe UI', Arial, sans-serif; margin-top: -1px;
 }
 /* touch tap area sirf left/up/down mein (right side chip ki taraf nahi barhta) */
 .m-config-rows .m-row-item .m-remove-btn::after { content: ""; position: absolute; top: -6px; bottom: -6px; left: -6px; right: -2px; }
 @media (hover: hover) and (pointer: fine) {
-  .m-config-rows .m-row-item .m-remove-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
+  .m-config-rows .m-row-item .m-remove-btn:hover { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; transform: translateY(-1px); }
 }
 .m-config-rows .m-row-item .m-remove-btn:active { background: #e6007e !important; color: #fff !important; border-color: #e6007e !important; }
 
-/* QTY BOX: thora bara, click aasan */
+/* QTY BOX: bara, click aasan, uthi hui */
 .m-qty-box {
   border-radius: 10px !important; height: 40px !important; width: 124px !important;
-  border-color: #f0cddd !important; box-shadow: none !important; flex: 0 0 auto;
+  border: 1px solid var(--m-bd) !important;
+  box-shadow: var(--m-float-sm) !important; flex: 0 0 auto;
 }
 .m-qty-box button { min-width: 38px !important; font-size: 21px !important; }
 .m-qty-box input { width: 44px !important; font-size: 15px !important; }
@@ -265,6 +281,7 @@ const many = p.images.length > 1;
 /* Tablet / Laptop / PC */
 @media (min-width: 481px) {
   .m-config-rows .m-row-item { padding: 9px 12px 9px 10px !important; gap: 10px !important; }
+  .m-config-rows .m-row-item .m-remove-btn { margin-right: 22px !important; }
   .m-sel-chip { font-size: 12.5px; }
   .m-qty-box { width: 132px !important; height: 42px !important; }
   .m-qty-box button { min-width: 42px !important; }
@@ -273,7 +290,7 @@ const many = p.images.length > 1;
 /* Mobile / iPhone */
 @media (max-width: 400px) {
   .m-config-rows .m-row-item { padding: 7px 8px 7px 7px !important; gap: 6px !important; }
-  .m-config-rows .m-row-item .m-remove-btn { margin-right: 8px !important; }
+  .m-config-rows .m-row-item .m-remove-btn { margin-right: 14px !important; }
   .m-sel-chip { padding: 5px 9px 5px 7px; font-size: 11.5px; }
   .m-qty-box { width: 112px !important; height: 38px !important; }
   .m-qty-box button { min-width: 36px !important; }
@@ -281,10 +298,11 @@ const many = p.images.length > 1;
 }
 /* Bohot chhoti screen: jaga kam ho to qty neeche line mein, kuch cut nahi hota */
 @media (max-width: 340px) {
+  .m-config-rows .m-row-item .m-remove-btn { margin-right: 8px !important; }
   .m-config-rows .m-row-item .m-qty-box { margin-left: auto !important; }
 }
 
-/* 6) ADD COLOR: square-ish, thora dark border, hawa mein uthi hui luxury shadow */
+/* 6) ADD COLOR: square-ish, dark border, hawa mein uthi hui luxury shadow */
 .m-pop-right button.m-add-row-btn,
 .m-pop-right button.m-add-row-btn:focus,
 .m-pop-right button.m-add-row-btn:focus-visible {
@@ -294,11 +312,11 @@ const many = p.images.length > 1;
   font-size: 10px !important; font-weight: 800 !important; letter-spacing: 1.5px !important; white-space: nowrap;
   font-family: 'Segoe UI', sans-serif;
   background: #ffffff !important; color: #800000 !important;
-  border: 1px solid #e3a6c4 !important; border-radius: 8px !important;
+  border: 1px solid var(--m-bd) !important; border-radius: 8px !important;
   -webkit-text-stroke: 0 !important; animation: none !important;
   box-shadow:
-    0 12px 22px -10px rgba(128, 0, 0, .32),
-    0 5px 10px -5px rgba(230, 0, 126, .22),
+    0 12px 22px -10px rgba(128, 0, 0, .34),
+    0 5px 10px -5px rgba(230, 0, 126, .24),
     0 1px 0 rgba(255, 255, 255, .95) inset !important;
   outline: none !important; cursor: pointer;
   transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease, box-shadow .25s ease;

@@ -13,6 +13,8 @@
 //      Price wali white patti ki purani shadow hata di; ab wo page se ubhri hui (apni tight shadow).
 //      Buttons row price patti se aur zyada ubhri hui, buttons par halki bevel + gehri lift.
 //      Home aur Chat icons alag alag ubhre hue chips ki tarah (apni shadow ke saath).
+// [v4] SAARI SHADOWS KHATM (bar, price patti, buttons row, icons, desktop buttons): bilkul saaf flat look.
+//      Sirf bar ke top par ek bareek halki line hai (shadow nahi), taake safed bar page se alag dikhe.
 const { id } = Astro.props;
 ---
 <div id="mStickyBar" class="msb" role="toolbar" aria-label="Quick actions" data-id={id}>
@@ -70,7 +72,7 @@ const { id } = Astro.props;
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
     background: #fff;
-    border-top: none;
+    border-top: 1px solid #ececec;
     /* Bar par ab koi shadow nahi: price patti aur buttons row apni apni shadow se ubhre hue hain */
     box-shadow: none;
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
@@ -81,10 +83,7 @@ const { id } = Astro.props;
     position: relative; z-index: 1;
     height: var(--msb-total); display: flex; align-items: center; justify-content: space-between;
     padding: 0 16px; background: #fff; border-bottom: none;
-    /* Price patti page se ubhri hui: tight, saaf shadow (phailti nahi) */
-    box-shadow:
-      0 -1px 0 rgba(0, 0, 0, 0.10),
-      0 -3px 5px -1px rgba(0, 0, 0, 0.20);
+    box-shadow: none;
   }
   .msb-t-left { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
   .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
@@ -98,14 +97,7 @@ const { id } = Astro.props;
   .msb-row {
     position: relative; z-index: 2;
     display: flex; align-items: stretch; height: var(--msb-row); padding-left: 2px; background: #fff;
-    box-shadow:
-      0 -1px 0 rgba(0, 0, 0, 0.08),
-      0 -4px 6px -2px rgba(0, 0, 0, 0.32);
-  }
-  .msb-row::before {
-    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px;
-    background: rgba(255, 255, 255, 0.95);
-    pointer-events: none; z-index: 3;
+    box-shadow: none;
   }
   /* Home / Chat: alag alag ubhre hue chips (apni shadow, halka border, thora upar uthe hue) */
   .msb-ic {
@@ -115,23 +107,19 @@ const { id } = Astro.props;
     border: 1px solid #f1d3e0; border-radius: 11px; padding: 0;
     cursor: pointer; text-decoration: none;
     color: #800000; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-    transform: translateY(-2px);
-    box-shadow:
-      0 -2px 3px rgba(0, 0, 0, 0.10),
-      0 4px 6px -2px rgba(80, 20, 40, 0.38),
-      inset 0 1px 0 #fff;
-    transition: transform .2s ease, box-shadow .2s ease, color .2s ease;
+    box-shadow: none;
+    transition: color .2s ease;
   }
   .msb-ic svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   .msb-ic span { font-size: 9px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
-  .msb-ic:active { color: #e6007e; transform: translateY(0); box-shadow: 0 1px 2px rgba(80, 20, 40, 0.30), inset 0 1px 0 #fff; }
+  .msb-ic:active { color: #e6007e; }
   @media (hover: hover) { .msb-ic:hover { color: #e6007e; } }
 
   /* Buttons ki lift: filter parent par lagta hai, is liye clip-path (tirchhe kone) ke saath bhi shadow sahi aati hai.
      Buttons price patti ki taraf thora aur upar uthe hue. */
   .msb-btns {
     flex: 1; display: flex; min-width: 0;
-    filter: drop-shadow(0 -3px 3px rgba(60, 0, 20, 0.40));
+    filter: none;
   }
   .msb-cart, .msb-buy {
     flex: 1; min-width: 0; border: none; cursor: pointer; color: #fff;
@@ -185,8 +173,6 @@ const { id } = Astro.props;
       display: flex; gap: 12px; align-items: stretch;
       width: 100%; margin: 8px 0 14px; box-sizing: border-box;
       font-family: 'Segoe UI', 'Montserrat', sans-serif;
-      /* elite ubhra look: shadow parent par (clip-path wale buttons ke saath bhi sahi) */
-      filter: drop-shadow(0 3px 3px rgba(60, 0, 20, 0.28));
     }
     .msb-d-cart, .msb-d-buy {
       flex: 1; min-width: 0; height: 48px; border: none; cursor: pointer; color: #fff;

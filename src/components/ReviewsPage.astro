@@ -7,6 +7,8 @@
 // 2) "SEE PRODUCT" button ki jagah product ka naam blue clickable link ban gaya.
 // [v3] Upload ki photo ab ~30KB tak compress hoti hai (pehle 50KB), max side 900px (pehle 1280px).
 // [v4] Photo popup ab chhota elite card hai (poora page nahi gherta), close button ke saath.
+// [v5] Product ab alag page hai (/product/<slug>): review ke product naam par click seedha usi page par le jata hai.
+//      Approve par store page ke product cards se naam + asli link liya jata hai. Purane reviews ka link naam se banta hai.
 // 3) Photo zoom: pehle chhoti photo foran dikhti hai, phir asli photo aati hai.
 //    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
 ---
@@ -333,22 +335,32 @@
         return (typeof url === 'string' && url.indexOf('/upload/') > -1) ? url.replace('/upload/', '/upload/' + t + '/') : url;
     }
 
-    function prodUrl(page, name) {
-        const e = encodeURIComponent(name);
-        return page + '?product=' + e + '#product=' + e + ':~:text=' + e.replace(/-/g, '%2D');
+    // Product ab alag page hai: https://www.musfiras.com/product/<slug>
+    // slug = naam chhote harf mein, har ghair-harf/ghair-number ki jagah "-" (e.g. "Suede & Matte Bag" -> suede-matte-bag)
+    function slugify(n) {
+        return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+    function productPath(name) {
+        const sl = slugify(name);
+        return sl ? '/product/' + sl : '';
     }
 
-    // Review ka product link aur naam (link par jo naam dikhega)
-    function prodHref(r) {
-        return (r.prod && r.prodPage) ? prodUrl(r.prodPage, r.prod) : (r.prodLink || '');
-    }
-    function prodName(r) {
+    // Review ka product naam (purane reviews mein naam sirf link ke ?product= mein hota tha)
+    function rawProdName(r) {
         if (r.prod) return r.prod;
         try {
-            const n = new URL(r.prodLink).searchParams.get('product');
+            const n = new URL(r.prodLink, location.origin).searchParams.get('product');
             if (n) return n;
         } catch (e) {}
-        return 'View Product';
+        return '';
+    }
+    function prodName(r) { return rawProdName(r) || 'View Product'; }
+
+    // Review ka product link: seedha product page. Asli link save ho to wohi, warna naam se banta hai.
+    function prodHref(r) {
+        if (r.prodLink && /\/product\/[^\/?#]+/.test(r.prodLink)) return r.prodLink;
+        const n = rawProdName(r);
+        return n ? productPath(n) : '';
     }
 
     function tgl(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
@@ -586,31 +598,23 @@
         return null;
     }
 
-    // Product ke naam nikalta hai: pehle product boxes ke data-pname se (View details button ki zaroorat nahi)
-    function extractNames(doc) {
-        const names = [];
-        const add = function (n) {
-            n = String(n || '').replace(/\s+/g, ' ').trim();
-            if (n && names.indexOf(n) === -1) names.push(n);
+    // Product ka naam + asli link nikalta hai: store page ke product cards (heading ke andar /product/... ka link)
+    function extractProducts(doc) {
+        const list = [], seen = {};
+        const add = function (name, href) {
+            name = String(name || '').replace(/\s+/g, ' ').trim();
+            if (!name || seen[name]) return;
+            seen[name] = 1;
+            let path = '';
+            if (href) { try { path = new URL(href, 'https://www.musfiras.com').pathname; } catch (e) {} }
+            list.push({ name: name, path: path || productPath(name) });
         };
-        doc.querySelectorAll('[data-pname]').forEach(function (el) { add(el.getAttribute('data-pname')); });
-        if (names.length) return names;
-
-        // backup 1: purana tareeqa ("View details" wale card ka h2)
-        doc.querySelectorAll('*').forEach(function (el) {
-            if (el.textContent.trim().toLowerCase() !== 'view details') return;
-            let p = el.parentElement;
-            while (p) {
-                const h = p.querySelector('h2');
-                if (h) { add(h.textContent); break; }
-                p = p.parentElement;
-            }
-        });
-        if (names.length) return names;
-
-        // backup 2: product box ke andar ka heading
-        doc.querySelectorAll('.m-master-box h2, .m-master-box h3').forEach(function (h) { add(h.textContent); });
-        return names;
+        doc.querySelectorAll('h2 a[href*="/product/"], h3 a[href*="/product/"]').forEach(function (a) { add(a.textContent, a.getAttribute('href')); });
+        if (list.length) return list;
+        doc.querySelectorAll('a[href*="/product/"]').forEach(function (a) { if (a.textContent.trim()) add(a.textContent, a.getAttribute('href')); });
+        if (list.length) return list;
+        doc.querySelectorAll('[data-pname]').forEach(function (el) { add(el.getAttribute('data-pname'), ''); });
+        return list;
     }
 
     async function loadProducts() {
@@ -623,12 +627,12 @@
             if (!prodCache[url]) {
                 const doc = await fetchPageDoc(url);
                 if (!doc) throw new Error('http');
-                const names = extractNames(doc);
-                if (!names.length) throw new Error('none');
-                prodCache[url] = names;
+                const list = extractProducts(doc);
+                if (!list.length) throw new Error('none');
+                prodCache[url] = list;
             }
             ps.innerHTML = '<option value="">-- Select Product --</option>' +
-                prodCache[url].map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+                prodCache[url].map(p => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');
             msg.innerText = prodCache[url].length + ' products found';
         } catch (e) {
             ps.innerHTML = '<option value="">Auto list nahi mili</option>';
@@ -640,11 +644,18 @@
     async function confirmApprove() {
         const url = document.getElementById('ap-page').value;
         const man = document.getElementById('ap-manual');
-        const name = (man.style.display !== 'none' ? man.value : document.getElementById('ap-prod').value).trim();
+        const manualOn = man.style.display !== 'none';
+        const name = (manualOn ? man.value : document.getElementById('ap-prod').value).trim();
         let data = { status: 'approved', prod: '', prodPage: '', prodLink: '' };
-        if (url && name) {
-            data.prod = name; data.prodPage = url;
-            data.prodLink = prodUrl(url, name);
+        if (name) {
+            let path = '';
+            if (!manualOn && prodCache[url]) {
+                const f = prodCache[url].find(p => p.name === name);
+                if (f) path = f.path;
+            }
+            data.prod = name;
+            data.prodPage = url || '';
+            data.prodLink = path || productPath(name);     // seedha product page: /product/<slug>
         } else if (!confirm('Product select nahi hua. Bina product link ke approve karein?')) return;
         await db.collection("reviews").doc(apId).update(data);
         tgl('p-approve', 0);

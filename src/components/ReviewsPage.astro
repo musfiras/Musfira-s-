@@ -13,6 +13,10 @@
 //    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
 // [v6] Approve par review mein prodSlug (product page ka slug) bhi save hota hai.
 //      Is se ProductReviews.astro (product page wala elite section) review ko khud sahi product page par dikha deta hai.
+// [v10] QUOTA SAVER: public page ab sirf approved reviews 5-5 karke mangwata hai ("Show More" par agle 5), poori collection nahi.
+//       Pehla page 5 minute browser mein cache hota hai. Admin panel ke sab reviews sirf tab load hote hain jab admin panel khule.
+//       Review post par naam 40 / message 600 harf ki limit aur 2 minute ka cooldown (spam se writes/storage bachane ke liye).
+//       Ek baar ka kaam: pehli baar page khulne par Firebase index banana parta hai (console (F12) ke error mein link aata hai).
 // [v9] Admin panel mein "Fix Old Reviews" button: purane approved reviews mein prodSlug bhar deta hai (ek dafa), taake product page sirf apne reviews mangwaye.
 // [v8] Auto compress target ab 25KB. Admin panel / approve window / zoom mein har photo ki KB size dikhti hai.
 // [v7] Admin panel mein review ki photo par click se bara popup khulta hai (pehle sirf size alert aata tha), thumbnail bhi bara.
@@ -116,7 +120,7 @@
             <div class="mdl-h">Share Your Experience <span class="cl-btn" onclick="tgl('p-form',0)">&times;</span></div>
             <div class="mdl-b">
                 <label class="label-m">Customer Name</label>
-                <input type="text" id="in-n" class="i-box" placeholder="Your Name" required>
+                <input type="text" id="in-n" class="i-box" placeholder="Your Name" maxlength="40" required>
                 <div style="display:flex; gap:10px;">
                     <div style="flex:1">
                         <label class="label-m">GENDER</label>
@@ -134,7 +138,7 @@
                     </div>
                 </div>
                 <label class="label-m">Customer Says:</label>
-                <textarea id="in-m" class="i-box" style="height:70px" placeholder="Your Experience..."></textarea>
+                <textarea id="in-m" class="i-box" style="height:70px" placeholder="Your Experience..." maxlength="600"></textarea>
 
                 <div style="text-align:center; margin-bottom:10px;">
                     <label class="label-m" style="margin-bottom:2px;">Add Photos (Optional)</label>
@@ -224,8 +228,18 @@
 
     let uploaded = [];
     let uploadedKB = [];
-    let reviews = [];
-    let limit = 8;
+    let pubReviews = [];      // public page: sirf approved, 5-5 karke
+    let admReviews = [];      // admin panel: sab reviews, sirf admin khulne par
+    let admUnsub = null;
+    let lastTs = null;
+    let hasMore = false;
+    let firstMore = false;
+    let loadingMore = false;
+    let cacheT = 0;
+    const PAGE = 5;
+    const CACHE_KEY = 'musr_v2_first';
+    const CACHE_MIN = 5;
+    function findRev(id) { return admReviews.find(x => x.id === id) || pubReviews.find(x => x.id === id); }
 
     // Safety: user text ko HTML banne se rokta hai
     function esc(s) {
@@ -384,8 +398,12 @@
 
     async function postReview() {
         if (pending > 0) return alert("Please wait, your photo is still uploading...");
-        const n = document.getElementById('in-n').value, m = document.getElementById('in-m').value;
+        const n = document.getElementById('in-n').value.trim().slice(0, 40), m = document.getElementById('in-m').value.trim().slice(0, 600);
         if (!n || !m) return alert("Please fill all details!");
+        try {
+            const lastPost = parseInt(localStorage.getItem('musr_last') || '0', 10);
+            if (Date.now() - lastPost < 120000) return alert("Please wait 2 minutes before posting another review.");
+        } catch (e) {}
         const rid = "MUS-" + Math.random().toString(36).substring(2, 5).toUpperCase();
         await db.collection("reviews").add({
             rid, name: n, msg: m, gender: document.getElementById('in-g').value,
@@ -394,19 +412,70 @@
             picKB: [0, 1, 2].filter(k => uploaded[k]).map(k => uploadedKB[k] || 0), status: 'pending', time: getDT(), ts: Date.now(),
             reply: '', comments: []
         });
+        try { localStorage.setItem('musr_last', String(Date.now())); } catch (e) {}
         tgl('p-form', 0); tgl('p-success', 1);
         uploaded = []; uploadedKB = []; document.querySelectorAll('.up-slot').forEach(s => { s.innerHTML = '+'; s.classList.remove('done'); });
     }
 
-    db.collection("reviews").orderBy("ts", "desc").onSnapshot(snap => {
-        reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderPublic();
-        renderAdmin();
-    });
+    /* ===== PUBLIC REVIEWS: sirf approved, 5-5 karke (quota bachane ke liye) =====
+       Pehla page 5 minute browser mein cache hota hai (dobara read nahi). "Show More" par agle 5 aate hain.
+       Button tab dikhta hai jab pichla page poora 5 reviews ka tha (yani shayad aur hain). */
+    function readCache() {
+        try {
+            const o = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (o && o.list && (Date.now() - o.t) < CACHE_MIN * 60000) return o;
+        } catch (e) {}
+        return null;
+    }
+    function saveCache() {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: cacheT || Date.now(), list: pubReviews.slice(0, PAGE), more: firstMore })); } catch (e) {}
+    }
+    function docsToList(snap) { return snap.docs.map(d => ({ id: d.id, ...d.data() })); }
+
+    async function loadPublic() {
+        const c = readCache();
+        if (c) {
+            pubReviews = c.list;
+            hasMore = firstMore = !!c.more;
+            cacheT = c.t;
+            lastTs = pubReviews.length ? pubReviews[pubReviews.length - 1].ts : null;
+            renderPublic();
+            return;
+        }
+        try {
+            const snap = await db.collection("reviews").where("status", "==", "approved").orderBy("ts", "desc").limit(PAGE).get();
+            pubReviews = docsToList(snap);
+            hasMore = firstMore = snap.docs.length === PAGE;
+            lastTs = pubReviews.length ? pubReviews[pubReviews.length - 1].ts : null;
+            cacheT = Date.now();
+            saveCache();
+            renderPublic();
+        } catch (e) {
+            console.error('Reviews load error (agar link aya hai to us par click karke Firebase index banayen):', e);
+            document.getElementById('wall').innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#888; font-size:13px; padding:20px;">Reviews are loading soon. Please refresh in a few minutes.</div>';
+        }
+    }
+    loadPublic();
+
+    async function showMore() {
+        if (loadingMore || !hasMore || lastTs == null) return;
+        loadingMore = true;
+        const b = document.getElementById('load-more');
+        b.textContent = 'Loading...';
+        try {
+            const snap = await db.collection("reviews").where("status", "==", "approved").orderBy("ts", "desc").startAfter(lastTs).limit(PAGE).get();
+            const more = docsToList(snap).filter(n => !pubReviews.some(o => o.id === n.id));
+            pubReviews = pubReviews.concat(more);
+            hasMore = snap.docs.length === PAGE;
+            lastTs = pubReviews.length ? pubReviews[pubReviews.length - 1].ts : lastTs;
+            renderPublic();
+        } catch (e) { console.error(e); }
+        b.textContent = 'Show More Reviews';
+        loadingMore = false;
+    }
 
     function renderPublic() {
-        const app = reviews.filter(r => r.status === 'approved');
-        const show = app.slice(0, limit);
+        const show = pubReviews;
         document.getElementById('wall').innerHTML = show.map(r => `
             <div class="r-card">
                 <div class="r-id">${esc(r.rid)}</div>
@@ -450,24 +519,35 @@
                 </div>
             </div>
         `).join('');
-        document.getElementById('load-more').style.display = app.length > limit ? 'block' : 'none';
+        document.getElementById('load-more').style.display = hasMore ? 'block' : 'none';
     }
 
     async function addCm(rid) {
-        const u = document.getElementById('cn-' + rid).value, t = document.getElementById('ct-' + rid).value;
+        const u = document.getElementById('cn-' + rid).value.trim().slice(0, 40), t = document.getElementById('ct-' + rid).value.trim().slice(0, 300);
         if (!u || !t) return;
-        const r = reviews.find(x => x.id === rid);
-        const updated = [...(r.comments || []), { user: u, text: t, time: getDT(), reps: [] }];
-        await db.collection("reviews").doc(rid).update({ comments: updated });
+        const r = pubReviews.find(x => x.id === rid);
+        if (!r) return;
+        const c = { user: u, text: t, time: getDT(), reps: [] };
+        await db.collection("reviews").doc(rid).update({ comments: firebase.firestore.FieldValue.arrayUnion(c) });
+        r.comments = [...(r.comments || []), c];
+        saveCache();
+        renderPublic();
+        const el = document.getElementById('cm-area-' + rid);
+        if (el) el.style.display = 'block';
     }
 
     async function repCm(rid, idx) {
         const u = prompt("Your Name:"), t = prompt("Your Reply:");
         if (!u || !t) return;
-        const r = reviews.find(x => x.id === rid);
+        const r = pubReviews.find(x => x.id === rid);
+        if (!r) return;
         r.comments[idx].reps = r.comments[idx].reps || [];
-        r.comments[idx].reps.push({ user: u, text: t, time: getDT() });
+        r.comments[idx].reps.push({ user: u.slice(0, 40), text: t.slice(0, 300), time: getDT() });
         await db.collection("reviews").doc(rid).update({ comments: r.comments });
+        saveCache();
+        renderPublic();
+        const el = document.getElementById('cm-area-' + rid);
+        if (el) el.style.display = 'block';
     }
 
     function tglCm(id) {
@@ -485,7 +565,6 @@
         } catch (e) { alert('Could not check the size right now.'); }
     }
 
-    function showMore() { limit += 8; renderPublic(); }
 
     /* ===== PHOTO ZOOM (fast) =====
        Pehle wohi chhoti photo foran dikhti hai jo browser ke paas pehle se hai,
@@ -546,22 +625,33 @@
             try {
                 await db.collection("config").doc("admin_panel").update({ isAdmin: true });
                 tgl('p-admin', 1);
+                startAdminFeed();
             } catch (e) { alert("SYSTEM LOCKED: Access Denied. (Firebase Rule is currently False)"); }
         }
     }
+    // Admin ke sab reviews (pending bhi) sirf admin panel khulne par load hote hain, band karne par rok diye jate hain
+    function startAdminFeed() {
+        if (admUnsub) return;
+        admUnsub = db.collection("reviews").orderBy("ts", "desc").onSnapshot(snap => {
+            admReviews = docsToList(snap);
+            renderAdmin();
+        }, err => console.error(err));
+    }
     async function lockAdmin() {
         try { await db.collection("config").doc("admin_panel").update({ isAdmin: false }); } catch (e) {}
+        if (admUnsub) { admUnsub(); admUnsub = null; }
+        admReviews = [];
         tgl('p-admin', 0);
     }
 
     function renderAdmin() {
         const q = document.getElementById('adm-srch').value.toUpperCase();
         const list = document.getElementById('adm-list');
-        const fil = reviews.filter(r => r.rid.includes(q) || !q);
+        const fil = admReviews.filter(r => r.rid.includes(q) || !q);
 
-        document.getElementById('st-all').innerText = reviews.length;
-        document.getElementById('st-app').innerText = reviews.filter(r => r.status === 'approved').length;
-        document.getElementById('st-pen').innerText = reviews.filter(r => r.status === 'pending').length;
+        document.getElementById('st-all').innerText = admReviews.length;
+        document.getElementById('st-app').innerText = admReviews.filter(r => r.status === 'approved').length;
+        document.getElementById('st-pen').innerText = admReviews.filter(r => r.status === 'pending').length;
 
         list.innerHTML = fil.map(r => `
             <div style="border-bottom:1px solid #eee; padding:10px; background:${r.status === 'pending' ? '#fff9f0' : 'white'}">
@@ -600,7 +690,7 @@
        Naye reviews mein size save hoti hai (picKB). Purane reviews ki size photo se seedha maloom karte hain. */
     const _kbCache = {};
     function kbFromReviews(u) {
-        for (const r of reviews) {
+        for (const r of admReviews.concat(pubReviews)) {
             const i = (r.pics || []).indexOf(u);
             if (i > -1 && r.picKB && r.picKB[i]) return r.picKB[i];
         }
@@ -629,7 +719,7 @@
     /* ===== APPROVE + LINK PRODUCT ===== */
     function openApprove(id) {
         apId = id;
-        const rv = reviews.find(x => x.id === id);
+        const rv = findRev(id);
         const info = document.getElementById('ap-info');
         if (rv) {
             info.innerHTML = '<div style="font-weight:700; color:var(--m); margin-bottom:4px;">' + esc(rv.name) + ' <span style="color:#FFD700;">' + '★'.repeat(rv.rating || 0) + '</span></div>' +
@@ -735,18 +825,18 @@
         if (t) await db.collection("reviews").doc(id).update({ reply: t, replyTime: getDT() });
     }
     async function delCm(rid, idx) {
-        const r = reviews.find(x => x.id === rid);
+        const r = admReviews.find(x => x.id === rid);
         r.comments.splice(idx, 1);
         await db.collection("reviews").doc(rid).update({ comments: r.comments });
     }
     async function delRp(rid, ci, ri) {
-        const r = reviews.find(x => x.id === rid);
+        const r = admReviews.find(x => x.id === rid);
         r.comments[ci].reps.splice(ri, 1);
         await db.collection("reviews").doc(rid).update({ comments: r.comments });
     }
     // Purane approved reviews jin mein prodSlug nahi, un mein link/naam se bhar deta hai (ek dafa chalana kafi hai)
     async function backfillSlugs() {
-        const todo = reviews.filter(r => r.status === 'approved' && !r.prodSlug && (r.prodLink || r.prod));
+        const todo = admReviews.filter(r => r.status === 'approved' && !r.prodSlug && (r.prodLink || r.prod));
         if (!todo.length) return alert('Sab approved reviews pehle se theek hain.');
         if (!confirm(todo.length + ' purane reviews theek karne hain?')) return;
         let n = 0;

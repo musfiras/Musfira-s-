@@ -6,6 +6,7 @@
 //    aur page same domain (www / bina www) se fetch hota hai taake browser block na kare.
 // 2) "SEE PRODUCT" button ki jagah product ka naam blue clickable link ban gaya.
 // [v3] Upload ki photo ab ~30KB tak compress hoti hai (pehle 50KB), max side 900px (pehle 1280px).
+// [v4] Photo popup ab chhota elite card hai (poora page nahi gherta), close button ke saath.
 // 3) Photo zoom: pehle chhoti photo foran dikhti hai, phir asli photo aati hai.
 //    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
 ---
@@ -73,9 +74,15 @@
 
     #load-more { display: none; margin: 20px auto; background: var(--m); color: white; border: none; padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; font-family: inherit; }
 
-    #zoom-pop { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,182,193,0.85); z-index:200000; align-items:center; justify-content:center; flex-direction:column; }
-    #zoom-pop img { width: 250px; max-width: 90vw; height: auto; border: 4px solid white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); background: #fff; transition: opacity .25s ease; }
-    #zoom-ld { display: none; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--m); background: #fff; padding: 3px 12px; border-radius: 20px; }
+    /* Photo ka chhota elite popup: poora page nahi gherta, sirf ek chhota card beech mein */
+    #zoom-pop { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(60,0,20,0.28); z-index:200000; align-items:center; justify-content:center; }
+    #zoom-card { position: relative; background: #fff; border: 2px solid var(--p); border-radius: 18px; padding: 8px 8px 6px; box-shadow: 0 8px 22px rgba(163,11,34,0.20); text-align: center; animation: zmIn .22s ease; }
+    @keyframes zmIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+    #zoom-pop img { display: block; width: min(250px, 68vw); max-height: 55vh; height: auto; object-fit: contain; border-radius: 12px; background: #fff; transition: opacity .25s ease; }
+    .zm-x { position: absolute; top: -13px; right: -13px; width: 30px; height: 30px; border-radius: 50%; background: var(--m); color: #fff; border: 2px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; line-height: 1; cursor: pointer; transition: .3s; }
+    .zm-x:hover { background: var(--p); color: var(--m); border-color: var(--m); transform: rotate(90deg); }
+    #zoom-ld { display: none; margin-top: 6px; font-size: 10px; font-weight: 700; color: var(--m); }
+    .zm-hint { margin-top: 5px; font-size: 9px; color: #b88; font-weight: 600; letter-spacing: .3px; }
 
     #adm-trigger { position: fixed; bottom: 15px; left: 15px; width: 30px; height: 30px; background: var(--p); color: var(--m); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; opacity: 0.1; z-index: 9999; }
 
@@ -179,10 +186,13 @@
         </div>
     </div>
 
-    <div id="zoom-pop" onclick="this.style.display='none'">
-        <img id="zoom-img" alt="">
-        <div id="zoom-ld">Loading photo...</div>
-        <div style="color:var(--m); font-weight:bold; font-size:12px; margin-top:10px; background:white; padding:5px 15px; border-radius:20px;">Click anywhere to close</div>
+    <div id="zoom-pop" onclick="closeZoom()">
+        <div id="zoom-card">
+            <span class="zm-x" onclick="closeZoom()" title="Close">&times;</span>
+            <img id="zoom-img" alt="">
+            <div id="zoom-ld">Loading photo...</div>
+            <div class="zm-hint">Tap anywhere to close</div>
+        </div>
     </div>
 </div>
 
@@ -486,6 +496,10 @@
             im.style.opacity = '1';
         };
         full.src = s;
+    }
+    function closeZoom() {
+        _zoomCur = '';
+        document.getElementById('zoom-pop').style.display = 'none';
     }
     function getRateTxt(v) { return { 5: "EXCELLENT", 4: "VERY GOOD", 3: "GOOD", 2: "AVERAGE", 1: "TERRIBLE" }[v]; }
 

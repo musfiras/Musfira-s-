@@ -1,8 +1,17 @@
 ---
 // Musfira's Customer Reviews - ported from System.io (design + logic same)
+//
+// [v2]
+// 1) Approve karte waqt product list ab product boxes ke data-pname se aati hai (View details button ki zaroorat nahi),
+//    aur page same domain (www / bina www) se fetch hota hai taake browser block na kare.
+// 2) "SEE PRODUCT" button ki jagah product ka naam blue clickable link ban gaya.
+// [v3] Upload ki photo ab ~30KB tak compress hoti hai (pehle 50KB), max side 900px (pehle 1280px).
+// 3) Photo zoom: pehle chhoti photo foran dikhti hai, phir asli photo aati hai.
+//    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
 ---
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 
 <style is:global>
     :root { --m: #A30B22; --p: #FFB6C1; --s: white; --g: #28a745; --lg: #8fce00; --w: #ffffff; }
@@ -65,12 +74,14 @@
     #load-more { display: none; margin: 20px auto; background: var(--m); color: white; border: none; padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; font-family: inherit; }
 
     #zoom-pop { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,182,193,0.85); z-index:200000; align-items:center; justify-content:center; flex-direction:column; }
-    #zoom-pop img { max-width: 250px; border: 4px solid white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    #zoom-pop img { width: 250px; max-width: 90vw; height: auto; border: 4px solid white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); background: #fff; transition: opacity .25s ease; }
+    #zoom-ld { display: none; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--m); background: #fff; padding: 3px 12px; border-radius: 20px; }
 
     #adm-trigger { position: fixed; bottom: 15px; left: 15px; width: 30px; height: 30px; background: var(--p); color: var(--m); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; opacity: 0.1; z-index: 9999; }
 
-    .see-prod { display: inline-block; margin-top: 10px; padding: 8px 22px; border-radius: 25px; background: linear-gradient(135deg, var(--m), #d4122f); color: #fff !important; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-decoration: none; border: 2px solid var(--p); box-shadow: 0 4px 12px rgba(163,11,34,0.3); transition: 0.3s; }
-    .see-prod:hover { background: var(--p); color: var(--m) !important; }
+    /* Product ka naam: blue clickable link (SEE PRODUCT button ki jagah) */
+    .prod-link { display: inline-block; margin-top: 10px; color: #0b5ed7 !important; font-weight: 700; font-size: 14px; line-height: 1.4; text-decoration: underline; text-underline-offset: 3px; word-break: break-word; cursor: pointer; transition: color .25s ease; }
+    .prod-link:hover, .prod-link:active { color: #083c9a !important; }
 </style>
 
 <div id="musfira-reviews">
@@ -112,7 +123,7 @@
 
                 <div style="text-align:center; margin-bottom:10px;">
                     <label class="label-m" style="margin-bottom:2px;">Add Photos (Optional)</label>
-                    <p style="color:var(--m); font-size:10px; margin:2px 0;">Up to 3 photos of any size. They are compressed automatically to about 50KB.</p>
+                    <p style="color:var(--m); font-size:10px; margin:2px 0;">Up to 3 photos of any size. They are compressed automatically to about 30KB.</p>
                     <a href="https://image.pi7.org/resize-image-pixel" target="_blank" style="color:var(--m); font-weight:bold; font-size:12px; text-decoration:none;">Click here to compress pic (Optional)</a>
                     <p style="color:#888; font-size:10px; margin:2px 0;">Manual compression is optional - you can skip it, we compress your photos automatically.</p>
                 </div>
@@ -169,7 +180,8 @@
     </div>
 
     <div id="zoom-pop" onclick="this.style.display='none'">
-        <img id="zoom-img">
+        <img id="zoom-img" alt="">
+        <div id="zoom-ld">Loading photo...</div>
         <div style="color:var(--m); font-weight:bold; font-size:12px; margin-top:10px; background:white; padding:5px 15px; border-radius:20px;">Click anywhere to close</div>
     </div>
 </div>
@@ -212,10 +224,10 @@
     let apId = null;
     const prodCache = {};
 
-    /* ===== PHOTO UPLOAD: auto compress (~50KB) + Cloudinary ===== */
+    /* ===== PHOTO UPLOAD: auto compress (~30KB) + Cloudinary ===== */
     const CLOUD_NAME = 'dgtwdwufv';
     const UPLOAD_PRESET = 'musfira_final';
-    const TARGET_BYTES = 50 * 1024;
+    const TARGET_BYTES = 30 * 1024;
     let curSlot = 0;
     let pending = 0;
 
@@ -245,7 +257,7 @@
     async function compressImage(file) {
         const img = await loadImg(file);
         let w = img.naturalWidth, h = img.naturalHeight;
-        const scale = Math.min(1, 1280 / Math.max(w, h));
+        const scale = Math.min(1, 900 / Math.max(w, h));
         w = Math.round(w * scale);
         h = Math.round(h * scale);
         let best = null;
@@ -315,6 +327,20 @@
         const e = encodeURIComponent(name);
         return page + '?product=' + e + '#product=' + e + ':~:text=' + e.replace(/-/g, '%2D');
     }
+
+    // Review ka product link aur naam (link par jo naam dikhega)
+    function prodHref(r) {
+        return (r.prod && r.prodPage) ? prodUrl(r.prodPage, r.prod) : (r.prodLink || '');
+    }
+    function prodName(r) {
+        if (r.prod) return r.prod;
+        try {
+            const n = new URL(r.prodLink).searchParams.get('product');
+            if (n) return n;
+        } catch (e) {}
+        return 'View Product';
+    }
+
     function tgl(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
     function getDT() { return new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }); }
 
@@ -360,9 +386,9 @@
                 </div>
                 <span class="c-says-h">Customer Says:</span>
                 <div class="c-msg">"${esc(r.msg)}"</div>
-                <div class="r-imgs">${(r.pics || []).map(p => `<img src="${esc(cl(p, 'w_140,h_140,c_fill,q_auto:eco,f_auto,fl_lossy'))}" loading="lazy" onerror="this.onerror=null;this.src='${esc(p)}'" onclick="zoom('${esc(p)}')">`).join('')}</div>
+                <div class="r-imgs">${(r.pics || []).map(p => `<img src="${esc(cl(p, 'w_140,h_140,c_fill,q_auto:eco,f_auto,fl_lossy'))}" alt="" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='${esc(p)}'" onpointerdown="preFull('${esc(p)}')" onmouseenter="preFull('${esc(p)}')" onclick="zoom('${esc(p)}')">`).join('')}</div>
                 <span class="ts-elite">Posted on: ${esc(r.time)}</span>
-                ${(r.prod && r.prodPage) || r.prodLink ? `<div style="text-align:center;"><a class="see-prod" href="${esc((r.prod && r.prodPage) ? prodUrl(r.prodPage, r.prod) : r.prodLink)}">✦ SEE PRODUCT</a></div>` : ''}
+                ${prodHref(r) ? `<div style="text-align:center;"><a class="prod-link" href="${esc(prodHref(r))}">${esc(prodName(r))}</a></div>` : ''}
 
                 ${r.reply ? `<div class="off-box"><span class="off-h">Musfira's Official Reply:</span>${esc(r.reply)}<span class="ts-elite">Replied: ${esc(r.replyTime)}</span></div>` : ''}
 
@@ -422,11 +448,44 @@
     }
 
     function showMore() { limit += 8; renderPublic(); }
+
+    /* ===== PHOTO ZOOM (fast) =====
+       Pehle wohi chhoti photo foran dikhti hai jo browser ke paas pehle se hai,
+       phir asli photo (jo upload par pehle hi ~30KB compress hoti hai) aa kar uski jagah le leti hai.
+       Asli photo ungli / mouse rakhte hi pehle se load hona shuru ho jati hai (preFull). */
+    const _preDone = {};
+    function preFull(p) {
+        if (!p || _preDone[p]) return;
+        _preDone[p] = 1;
+        const i = new Image();
+        i.decoding = 'async';
+        i.src = p;
+    }
+
+    let _zoomCur = '';
     function zoom(s) {
         const im = document.getElementById('zoom-img');
-        im.onerror = function () { im.onerror = null; im.src = s; };
-        im.src = cl(s, 'w_450,q_auto:eco,f_auto,fl_lossy');
+        const ld = document.getElementById('zoom-ld');
+        _zoomCur = s;
+        im.onerror = null;
+        im.src = cl(s, 'w_140,h_140,c_fill,q_auto:eco,f_auto,fl_lossy');   // browser cache se foran
+        im.style.opacity = '.9';
+        ld.style.display = 'block';
         tgl('zoom-pop', 1);
+        const full = new Image();
+        full.decoding = 'async';
+        full.onload = function () {
+            if (_zoomCur !== s) return;
+            im.src = s;
+            im.style.opacity = '1';
+            ld.style.display = 'none';
+        };
+        full.onerror = function () {
+            if (_zoomCur !== s) return;
+            ld.style.display = 'none';
+            im.style.opacity = '1';
+        };
+        full.src = s;
     }
     function getRateTxt(v) { return { 5: "EXCELLENT", 4: "VERY GOOD", 3: "GOOD", 2: "AVERAGE", 1: "TERRIBLE" }[v]; }
 
@@ -497,6 +556,49 @@
         tgl('p-approve', 1);
     }
 
+    // Page ko pehle isi site ke domain se mangwata hai (www / bina www ka masla nahi, browser block nahi karta)
+    async function fetchPageDoc(url) {
+        const tries = [];
+        try { tries.push(location.origin + new URL(url).pathname); } catch (e) {}
+        if (tries.indexOf(url) === -1) tries.push(url);
+        for (const t of tries) {
+            try {
+                const res = await fetch(t, { credentials: 'omit' });
+                if (!res.ok) continue;
+                const html = await res.text();
+                return new DOMParser().parseFromString(html, 'text/html');
+            } catch (e) {}
+        }
+        return null;
+    }
+
+    // Product ke naam nikalta hai: pehle product boxes ke data-pname se (View details button ki zaroorat nahi)
+    function extractNames(doc) {
+        const names = [];
+        const add = function (n) {
+            n = String(n || '').replace(/\s+/g, ' ').trim();
+            if (n && names.indexOf(n) === -1) names.push(n);
+        };
+        doc.querySelectorAll('[data-pname]').forEach(function (el) { add(el.getAttribute('data-pname')); });
+        if (names.length) return names;
+
+        // backup 1: purana tareeqa ("View details" wale card ka h2)
+        doc.querySelectorAll('*').forEach(function (el) {
+            if (el.textContent.trim().toLowerCase() !== 'view details') return;
+            let p = el.parentElement;
+            while (p) {
+                const h = p.querySelector('h2');
+                if (h) { add(h.textContent); break; }
+                p = p.parentElement;
+            }
+        });
+        if (names.length) return names;
+
+        // backup 2: product box ke andar ka heading
+        doc.querySelectorAll('.m-master-box h2, .m-master-box h3').forEach(function (h) { add(h.textContent); });
+        return names;
+    }
+
     async function loadProducts() {
         const url = document.getElementById('ap-page').value;
         const ps = document.getElementById('ap-prod'), man = document.getElementById('ap-manual'), msg = document.getElementById('ap-msg');
@@ -505,24 +607,14 @@
         ps.innerHTML = '<option value="">Loading products...</option>';
         try {
             if (!prodCache[url]) {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('http');
-                const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
-                const names = [];
-                doc.querySelectorAll('*').forEach(el => {
-                    if (el.textContent.trim().toLowerCase() !== 'view details') return;
-                    let p = el.parentElement;
-                    while (p) {
-                        const h = p.querySelector('h2');
-                        if (h) { const n = h.textContent.trim(); if (n && !names.includes(n)) names.push(n); break; }
-                        p = p.parentElement;
-                    }
-                });
+                const doc = await fetchPageDoc(url);
+                if (!doc) throw new Error('http');
+                const names = extractNames(doc);
                 if (!names.length) throw new Error('none');
                 prodCache[url] = names;
             }
             ps.innerHTML = '<option value="">-- Select Product --</option>' +
-                prodCache[url].map(n => `<option value="${n.replace(/"/g, '&quot;')}">${n}</option>`).join('');
+                prodCache[url].map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
             msg.innerText = prodCache[url].length + ' products found';
         } catch (e) {
             ps.innerHTML = '<option value="">Auto list nahi mili</option>';

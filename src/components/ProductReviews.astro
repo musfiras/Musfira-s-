@@ -109,6 +109,7 @@ const {
     }
 </style>
 
+<div id="mpr-sentinel" style="height:1px;"></div>
 <section id="mpr" hidden data-slug={slug} data-all={allReviewsUrl} data-per={perPage}>
     <div class="mpr-head">
         <div class="mpr-eyebrow">Loved by our family</div>
@@ -128,13 +129,11 @@ const {
     </div>
 </section>
 
-<script is:inline src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script is:inline src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
 <script is:inline>
 (function () {
     var root = document.getElementById('mpr');
-    if (!root || typeof firebase === 'undefined') return;
+    if (!root) return;
 
     var firebaseConfig = {
         apiKey: "AIzaSyDnRgwuGA_3rcDuRXlIYRLnFY7xS2_Bqzc",
@@ -144,8 +143,6 @@ const {
         messagingSenderId: "347196137668",
         appId: "1:347196137668:web:d5ed6e3da3180b4e042991"
     };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
 
     function esc(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -268,12 +265,68 @@ const {
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeZoom(); });
 
-    // Live: sirf approved reviews, phir isi product ke
-    db.collection('reviews').where('status', '==', 'approved').onSnapshot(function (snap) {
-        list = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; })
-            .filter(matches)
-            .sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+    /* ===== BANDWIDTH SAVER =====
+       1) Firebase ki JS files aur reviews tab hi aate hain jab customer reviews wale hisse ke qareeb pohnche.
+       2) Sirf isi product ke approved reviews mangwate hain (prodSlug se), poori collection nahi.
+       3) Live listener ki jagah ek dafa get(), aur 10 minute tak browser mein cache (dobara read/download nahi). */
+    var CACHE_MIN = 10;
+    var ck = 'mpr_v1_' + slug;
+    function readCache() {
+        try {
+            var o = JSON.parse(localStorage.getItem(ck) || 'null');
+            if (o && o.list && (Date.now() - o.t) < CACHE_MIN * 60000) return o.list;
+        } catch (e) {}
+        return null;
+    }
+    function writeCache(l) {
+        try { localStorage.setItem(ck, JSON.stringify({ t: Date.now(), list: l })); } catch (e) {}
+    }
+    function loadScript(src) {
+        return new Promise(function (res, rej) {
+            var sc = document.createElement('script');
+            sc.src = src; sc.onload = res; sc.onerror = rej;
+            document.head.appendChild(sc);
+        });
+    }
+    function ensureFirebase() {
+        if (window.firebase && firebase.firestore) return Promise.resolve();
+        return loadScript('https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js')
+            .then(function () { return loadScript('https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js'); });
+    }
+    var started = false;
+    function fetchReviews() {
+        if (started) return;
+        started = true;
+        ensureFirebase().then(function () {
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            return firebase.firestore().collection('reviews')
+                .where('status', '==', 'approved')
+                .where('prodSlug', '==', slug)
+                .limit(50).get();
+        }).then(function (snap) {
+            list = snap.docs.map(function (d) {
+                var o = d.data();
+                return { name: o.name, msg: o.msg, rating: o.rating, pics: o.pics || [], time: o.time, ts: o.ts || 0, reply: o.reply || '', replyTime: o.replyTime || '' };
+            }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+            writeCache(list);
+            render();
+        }).catch(function () { /* error par section chhupa rehta hai */ });
+    }
+
+    var cached = readCache();
+    if (cached) {
+        list = cached;
         render();
-    }, function () { /* error par section chhupa rehta hai */ });
+    } else {
+        var sentinel = document.getElementById('mpr-sentinel');
+        if ('IntersectionObserver' in window && sentinel) {
+            var io = new IntersectionObserver(function (en) {
+                if (en[0].isIntersecting) { io.disconnect(); fetchReviews(); }
+            }, { rootMargin: '600px 0px' });
+            io.observe(sentinel);
+        } else {
+            fetchReviews();
+        }
+    }
 })();
 </script>

@@ -13,6 +13,7 @@
 //    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
 // [v6] Approve par review mein prodSlug (product page ka slug) bhi save hota hai.
 //      Is se ProductReviews.astro (product page wala elite section) review ko khud sahi product page par dikha deta hai.
+// [v9] Admin panel mein "Fix Old Reviews" button: purane approved reviews mein prodSlug bhar deta hai (ek dafa), taake product page sirf apne reviews mangwaye.
 // [v8] Auto compress target ab 25KB. Admin panel / approve window / zoom mein har photo ki KB size dikhti hai.
 // [v7] Admin panel mein review ki photo par click se bara popup khulta hai (pehle sirf size alert aata tha), thumbnail bhi bara.
 //      Approve window mein ab review ka message + photos upar dikhte hain taake dekh kar sahi product chuna jaye.
@@ -174,6 +175,7 @@
                 <input type="text" id="adm-srch" class="i-box" placeholder="Search Review ID..." onkeyup="renderAdmin()">
                 <div id="adm-list" style="max-height:350px; overflow-y:auto; border:1px solid #eee; padding:10px;"></div>
                 <button onclick="bulkDel()" style="background:#333; color:white; width:100%; border:none; padding:10px; margin-top:10px; border-radius:8px; font-size:12px;">Bulk Delete Selected</button>
+                <button onclick="backfillSlugs()" style="background:var(--m); color:white; width:100%; border:none; padding:10px; margin-top:8px; border-radius:8px; font-size:12px; cursor:pointer;">Fix Old Reviews (one time)</button>
             </div>
         </div>
     </div>
@@ -741,6 +743,19 @@
         const r = reviews.find(x => x.id === rid);
         r.comments[ci].reps.splice(ri, 1);
         await db.collection("reviews").doc(rid).update({ comments: r.comments });
+    }
+    // Purane approved reviews jin mein prodSlug nahi, un mein link/naam se bhar deta hai (ek dafa chalana kafi hai)
+    async function backfillSlugs() {
+        const todo = reviews.filter(r => r.status === 'approved' && !r.prodSlug && (r.prodLink || r.prod));
+        if (!todo.length) return alert('Sab approved reviews pehle se theek hain.');
+        if (!confirm(todo.length + ' purane reviews theek karne hain?')) return;
+        let n = 0;
+        for (const r of todo) {
+            const sl = slugFromPath(prodHref(r)) || slugify(rawProdName(r));
+            if (!sl) continue;
+            try { await db.collection("reviews").doc(r.id).update({ prodSlug: sl }); n++; } catch (e) {}
+        }
+        alert(n + ' reviews theek ho gaye.');
     }
     async function bulkDel() {
         const ids = [...document.querySelectorAll('.blk:checked')].map(i => i.value);

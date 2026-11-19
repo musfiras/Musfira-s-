@@ -11,6 +11,8 @@
 //      Approve par store page ke product cards se naam + asli link liya jata hai. Purane reviews ka link naam se banta hai.
 // 3) Photo zoom: pehle chhoti photo foran dikhti hai, phir asli photo aati hai.
 //    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
+// [v6] Approve par review mein prodSlug (product page ka slug) bhi save hota hai.
+//      Is se ProductReviews.astro (product page wala elite section) review ko khud sahi product page par dikha deta hai.
 ---
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -345,6 +347,13 @@
         return sl ? '/product/' + sl : '';
     }
 
+    // Link (ya path) se product page ka slug nikalta hai: /product/<slug>
+    function slugFromPath(p) {
+        const m = String(p || '').match(/\/product\/([^\/?#]+)/);
+        if (!m) return '';
+        try { return decodeURIComponent(m[1]).toLowerCase(); } catch (e) { return m[1].toLowerCase(); }
+    }
+
     // Review ka product naam (purane reviews mein naam sirf link ke ?product= mein hota tha)
     function rawProdName(r) {
         if (r.prod) return r.prod;
@@ -646,7 +655,7 @@
         const man = document.getElementById('ap-manual');
         const manualOn = man.style.display !== 'none';
         const name = (manualOn ? man.value : document.getElementById('ap-prod').value).trim();
-        let data = { status: 'approved', prod: '', prodPage: '', prodLink: '' };
+        let data = { status: 'approved', prod: '', prodPage: '', prodLink: '', prodSlug: '' };
         if (name) {
             let path = '';
             if (!manualOn && prodCache[url]) {
@@ -656,6 +665,7 @@
             data.prod = name;
             data.prodPage = url || '';
             data.prodLink = path || productPath(name);     // seedha product page: /product/<slug>
+            data.prodSlug = slugFromPath(data.prodLink) || slugify(name);   // product page par review dikhane ke liye
         } else if (!confirm('Product select nahi hua. Bina product link ke approve karein?')) return;
         await db.collection("reviews").doc(apId).update(data);
         tgl('p-approve', 0);

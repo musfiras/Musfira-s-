@@ -1,0 +1,279 @@
+---
+// Musfira's - Product page par Customer Reviews (elite look, card nahi)
+//
+// Kaise chalta hai:
+// 1) Review page par admin jab review "Approve" karta hai aur product select karta hai,
+//    to review mein product ka slug (prodSlug) / link save ho jata hai.
+// 2) Yeh component product page ke URL (/product/<slug>) se slug leta hai, Firebase se approved reviews mangta hai
+//    aur sirf usi product ke reviews dikhata hai. Naam se bhi match karta hai, is liye purane approved reviews bhi
+//    khud aa jate hain. Reject / delete karne par foran gayab ho jate hain (live).
+// 3) Agar us product ka koi review nahi, to chhota sa "Be the first" invite dikhta hai.
+//
+// Use (product page layout mein, product details ke baad aur footer se pehle):
+//   import ProductReviews from '../components/ProductReviews.astro';
+//   <ProductReviews />
+//   ya slug khud dena ho:  <ProductReviews slug={product.slug} />
+//
+// Props (sab optional):
+//   slug           - product ka slug. Na den to URL se khud nikal leta hai
+//   allReviewsUrl  - aapke review page ka link ("Write a review" / "See all reviews" iske liye)
+const {
+    slug = '',
+    allReviewsUrl = '/reviews',
+    perPage = 4
+} = Astro.props;
+---
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+
+<style is:global>
+    #mpr { --m: #A30B22; --p: #FFB6C1; --soft: #fff6f8; --gold: #A30B22; --ink: #4a1c24; --mute: #b0707c;
+        font-family: 'Poppins', sans-serif; color: var(--ink); max-width: 920px; margin: 50px auto 40px; padding: 0 18px; box-sizing: border-box; }
+    #mpr * { box-sizing: border-box; }
+    #mpr[hidden] { display: none; }
+
+    /* Heading */
+    .mpr-head { text-align: center; margin-bottom: 26px; }
+    .mpr-eyebrow { font-size: 11px; letter-spacing: 3px; font-weight: 600; color: var(--p); text-transform: uppercase; }
+    .mpr-eyebrow:before, .mpr-eyebrow:after { content: ''; display: inline-block; width: 22px; height: 1px; background: var(--p); vertical-align: middle; margin: 0 10px; }
+    .mpr-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--m); margin: 6px 0 10px; }
+    .mpr-orn { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .mpr-orn i { display: block; width: 70px; height: 1px; background: linear-gradient(90deg, transparent, var(--p), transparent); }
+    .mpr-orn b { color: var(--m); font-size: 13px; font-weight: 400; }
+
+    /* Summary */
+    .mpr-sum { display: flex; align-items: center; justify-content: center; gap: 34px; padding: 22px 10px; margin-bottom: 8px; border-top: 1px solid #f3dfe3; border-bottom: 1px solid #f3dfe3; flex-wrap: wrap; }
+    .mpr-avg { text-align: center; }
+    .mpr-avg-n { font-family: 'Playfair Display', serif; font-size: 54px; font-weight: 700; line-height: 1; color: var(--m); }
+    .mpr-stars { color: #E8B923; letter-spacing: 2px; font-size: 16px; margin-top: 6px; white-space: nowrap; }
+    .mpr-stars .off { color: #e6d9dc; }
+    .mpr-cnt { font-size: 12px; color: var(--mute); margin-top: 4px; }
+    .mpr-bars { min-width: 220px; flex: 0 1 300px; }
+    .mpr-bar { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--mute); margin: 5px 0; }
+    .mpr-bar span:first-child { width: 22px; text-align: right; color: var(--m); font-weight: 600; }
+    #mpr .mpr-bar span:last-child { color: var(--m); }
+    .mpr-bar .tr { flex: 1; height: 5px; border-radius: 5px; background: #f3e6e9; overflow: hidden; }
+    .mpr-bar .tr em { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--p), var(--m)); }
+    .mpr-bar span:last-child { width: 24px; }
+
+    /* Review rows (no card) */
+    .mpr-item { display: flex; gap: 18px; padding: 26px 4px; border-bottom: 1px solid #f3e6e9; animation: mprIn .5s ease both; }
+    @keyframes mprIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .mpr-av { flex: 0 0 52px; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--m); background: var(--soft); border: 1.5px solid var(--p); box-shadow: 0 0 0 4px #fff, 0 0 0 5px #f6d3da; }
+    .mpr-body { flex: 1; min-width: 0; }
+    .mpr-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    #mpr .mpr-name { font-weight: 600; font-size: 15px; color: #000 !important; }
+    .mpr-ver { display: inline-block; margin-left: 8px; font-size: 10px; font-weight: 600; letter-spacing: .6px; color: #1f8a3b; background: #eefaf1; border: 1px solid #cdebd5; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; vertical-align: 2px; }
+    .mpr-date { font-size: 11px; color: var(--mute); }
+    .mpr-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .mpr-rt { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--m); }
+    .mpr-quote { position: relative; margin: 12px 0 0; padding-left: 26px; font-family: 'Playfair Display', serif; font-style: italic; font-size: 17px; line-height: 1.7; color: #4a1c24; white-space: pre-line; word-break: break-word; }
+    .mpr-quote:before { content: '\201C'; position: absolute; left: 0; top: -8px; font-size: 44px; line-height: 1; color: var(--p); font-style: normal; }
+    .mpr-pics { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .mpr-pics img { width: 68px; height: 68px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 1.5px solid var(--p); padding: 2px; background: #fff; transition: transform .25s ease, box-shadow .25s ease; }
+    .mpr-pics img:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 6px 14px rgba(163,11,34,.18); }
+    .mpr-reply { margin-top: 14px; padding: 10px 14px; border-left: 3px solid var(--m); background: linear-gradient(90deg, var(--soft), #fff); border-radius: 0 10px 10px 0; font-size: 13px; line-height: 1.6; color: #4a1c24; }
+    .mpr-reply b { display: block; font-size: 11px; letter-spacing: .8px; color: var(--m); text-transform: uppercase; margin-bottom: 2px; }
+    .mpr-reply b .bn { color: #e6007e; }
+    .mpr-reply small { display: block; margin-top: 3px; font-size: 10px; color: var(--mute); font-style: italic; }
+
+    /* Buttons */
+    .mpr-foot { text-align: center; margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .mpr-btn { display: inline-block; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: .4px; padding: 11px 28px; border-radius: 30px; cursor: pointer; text-decoration: none; transition: .3s; }
+    .mpr-btn.fill { background: var(--m); color: #fff !important; border: 1.5px solid var(--m); }
+    .mpr-btn.fill:hover { background: #fff; color: var(--m) !important; }
+    .mpr-btn.line { background: #fff; color: var(--m) !important; border: 1.5px solid var(--p); }
+    .mpr-btn.line:hover { background: var(--m); color: #fff !important; border-color: var(--m); }
+
+    /* Empty invite */
+    .mpr-empty { text-align: center; padding: 26px 10px 6px; color: var(--m); font-size: 14px; }
+    .mpr-empty p { margin: 0 0 16px; }
+
+    /* Photo popup */
+    #mpr-zoom { display: none; position: fixed; inset: 0; background: rgba(60,0,20,.30); z-index: 200000; align-items: center; justify-content: center; }
+    #mpr-zcard { position: relative; background: #fff; border: 2px solid #FFB6C1; border-radius: 18px; padding: 8px 8px 6px; box-shadow: 0 8px 22px rgba(163,11,34,.2); text-align: center; animation: mprIn .22s ease; }
+    #mpr-zimg { display: block; width: min(260px, 70vw); max-height: 58vh; height: auto; object-fit: contain; border-radius: 12px; background: #fff; transition: opacity .25s ease; }
+    .mpr-zx { position: absolute; top: -13px; right: -13px; width: 30px; height: 30px; border-radius: 50%; background: #A30B22; color: #fff; border: 2px solid #FFB6C1; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; line-height: 1; cursor: pointer; transition: .3s; }
+    .mpr-zx:hover { background: #FFB6C1; color: #A30B22; transform: rotate(90deg); }
+    .mpr-zh { margin-top: 5px; font-size: 9px; color: #b88; font-weight: 600; letter-spacing: .3px; }
+
+    @media (max-width: 560px) {
+        #mpr { margin-top: 36px; }
+        .mpr-title { font-size: 25px; }
+        .mpr-sum { gap: 18px; }
+        .mpr-item { gap: 12px; padding: 22px 0; }
+        .mpr-av { flex-basis: 42px; width: 42px; height: 42px; font-size: 18px; }
+        .mpr-quote { font-size: 15.5px; padding-left: 22px; }
+        .mpr-pics img { width: 60px; height: 60px; }
+    }
+</style>
+
+<section id="mpr" hidden data-slug={slug} data-all={allReviewsUrl} data-per={perPage}>
+    <div class="mpr-head">
+        <div class="mpr-eyebrow">Loved by our family</div>
+        <h2 class="mpr-title">Customer Reviews</h2>
+        <div class="mpr-orn"><i></i><b>✦</b><i></i></div>
+    </div>
+    <div id="mpr-sum"></div>
+    <div id="mpr-list"></div>
+    <div class="mpr-foot" id="mpr-foot"></div>
+
+    <div id="mpr-zoom">
+        <div id="mpr-zcard">
+            <span class="mpr-zx" title="Close">&times;</span>
+            <img id="mpr-zimg" alt="">
+            <div class="mpr-zh">Tap anywhere to close</div>
+        </div>
+    </div>
+</section>
+
+<script is:inline src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script is:inline src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+<script is:inline>
+(function () {
+    var root = document.getElementById('mpr');
+    if (!root || typeof firebase === 'undefined') return;
+
+    var firebaseConfig = {
+        apiKey: "AIzaSyDnRgwuGA_3rcDuRXlIYRLnFY7xS2_Bqzc",
+        authDomain: "musfiras-reviews.firebaseapp.com",
+        projectId: "musfiras-reviews",
+        storageBucket: "musfiras-reviews.firebasestorage.app",
+        messagingSenderId: "347196137668",
+        appId: "1:347196137668:web:d5ed6e3da3180b4e042991"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+    function slugify(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+    function slugFromPath(p) {
+        var m = String(p || '').match(/\/product\/([^\/?#]+)/);
+        if (!m) return '';
+        try { return decodeURIComponent(m[1]).toLowerCase(); } catch (e) { return m[1].toLowerCase(); }
+    }
+    function nameOf(r) {
+        if (r.prod) return r.prod;
+        try {
+            var n = new URL(r.prodLink, location.origin).searchParams.get('product');
+            if (n) return n;
+        } catch (e) {}
+        return '';
+    }
+    // Is product page ka slug: prop se, warna URL (/product/<slug>) se
+    var slug = String(root.getAttribute('data-slug') || '').trim().toLowerCase();
+    if (!slug) slug = slugFromPath(location.pathname);
+    if (!slug) return;
+
+    var allUrl = root.getAttribute('data-all') || '/reviews';
+    var perPage = parseInt(root.getAttribute('data-per'), 10) || 4;
+    var shown = perPage;
+    var list = [];
+
+    function matches(r) {
+        return slugFromPath(r.prodLink) === slug ||
+               String(r.prodSlug || '').toLowerCase() === slug ||
+               slugify(nameOf(r)) === slug;
+    }
+    function cl(url, t) {
+        return (typeof url === 'string' && url.indexOf('/upload/') > -1) ? url.replace('/upload/', '/upload/' + t + '/') : url;
+    }
+    function stars(n) {
+        n = Math.max(0, Math.min(5, Math.round(n)));
+        return '★'.repeat(n) + '<span class="off">' + '★'.repeat(5 - n) + '</span>';
+    }
+    var RT = { 5: 'EXCELLENT', 4: 'VERY GOOD', 3: 'GOOD', 2: 'AVERAGE', 1: 'TERRIBLE' };
+
+    function renderSummary() {
+        var box = document.getElementById('mpr-sum');
+        if (!list.length) { box.innerHTML = ''; return; }
+        var total = 0, c = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        list.forEach(function (r) { var v = r.rating || 5; total += v; c[v] = (c[v] || 0) + 1; });
+        var avg = total / list.length;
+        var bars = [5, 4, 3, 2, 1].map(function (s) {
+            var pc = Math.round((c[s] / list.length) * 100);
+            return '<div class="mpr-bar"><span>' + s + '★</span><div class="tr"><em style="width:' + pc + '%"></em></div><span>' + c[s] + '</span></div>';
+        }).join('');
+        box.innerHTML =
+            '<div class="mpr-sum">' +
+                '<div class="mpr-avg"><div class="mpr-avg-n">' + avg.toFixed(1) + '</div>' +
+                '<div class="mpr-stars">' + stars(avg) + '</div>' +
+                '<div class="mpr-cnt">Based on ' + list.length + (list.length === 1 ? ' review' : ' reviews') + '</div></div>' +
+                '<div class="mpr-bars">' + bars + '</div>' +
+            '</div>';
+    }
+
+    function render() {
+        renderSummary();
+        var wrap = document.getElementById('mpr-list');
+        var foot = document.getElementById('mpr-foot');
+        root.hidden = false;
+
+        if (!list.length) {
+            wrap.innerHTML = '<div class="mpr-empty"><p>No reviews for this product yet. Be the first to share your experience ✨</p></div>';
+            foot.innerHTML = '<a class="mpr-btn fill" href="' + esc(allUrl) + '">Write a Review</a>';
+            return;
+        }
+
+        wrap.innerHTML = list.slice(0, shown).map(function (r) {
+            var init = esc(String(r.name || '?').trim().charAt(0).toUpperCase() || '?');
+            var pics = (r.pics || []).map(function (p) {
+                return '<img src="' + esc(p) + '" alt="" loading="lazy" decoding="async" data-full="' + esc(p) + '">';
+            }).join('');
+            return '<article class="mpr-item">' +
+                '<div class="mpr-av">' + init + '</div>' +
+                '<div class="mpr-body">' +
+                    '<div class="mpr-top"><div><span class="mpr-name">' + esc(r.name) + '</span><span class="mpr-ver">Verified ✔</span></div>' +
+                    '<span class="mpr-date">' + esc(r.time) + '</span></div>' +
+                    '<div class="mpr-meta"><span class="mpr-stars">' + stars(r.rating || 5) + '</span><span class="mpr-rt">' + (RT[r.rating] || '') + '</span></div>' +
+                    '<p class="mpr-quote">' + esc(r.msg) + '</p>' +
+                    (pics ? '<div class="mpr-pics">' + pics + '</div>' : '') +
+                    (r.reply ? '<div class="mpr-reply"><b><span class="bn">Musfira\u2019s</span> Official Reply</b>' + esc(r.reply) + (r.replyTime ? '<small>Replied: ' + esc(r.replyTime) + '</small>' : '') + '</div>' : '') +
+                '</div>' +
+            '</article>';
+        }).join('');
+
+        var btns = '';
+        if (list.length > shown) btns += '<button type="button" class="mpr-btn line" id="mpr-more">Show More Reviews</button>';
+        btns += '<a class="mpr-btn fill" href="' + esc(allUrl) + '">See All Reviews</a>';
+        foot.innerHTML = btns;
+        var more = document.getElementById('mpr-more');
+        if (more) more.onclick = function () { shown += perPage; render(); };
+    }
+
+    // Photo popup (chhota elite card)
+    var zoomEl = document.getElementById('mpr-zoom'), zimg = document.getElementById('mpr-zimg');
+    var zcur = '';
+    function openZoom(src) {
+        zcur = src;
+        zimg.src = src;
+        zimg.style.opacity = '1';
+        zoomEl.style.display = 'flex';
+        var full = new Image();
+        full.onload = function () { if (zcur !== src) return; zimg.src = src; zimg.style.opacity = '1'; };
+        full.onerror = function () { zimg.style.opacity = '1'; };
+        full.src = src;
+    }
+    function closeZoom() { zcur = ''; zoomEl.style.display = 'none'; }
+    zoomEl.addEventListener('click', closeZoom);
+    document.getElementById('mpr-list').addEventListener('click', function (e) {
+        var t = e.target;
+        if (t && t.tagName === 'IMG' && t.getAttribute('data-full')) openZoom(t.getAttribute('data-full'));
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeZoom(); });
+
+    // Live: sirf approved reviews, phir isi product ke
+    db.collection('reviews').where('status', '==', 'approved').onSnapshot(function (snap) {
+        list = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; })
+            .filter(matches)
+            .sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+        render();
+    }, function () { /* error par section chhupa rehta hai */ });
+})();
+</script>

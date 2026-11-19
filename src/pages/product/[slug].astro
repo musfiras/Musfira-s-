@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ProductDetail from '../../components/ProductDetail.astro';
+import ProductReviews from '../../components/ProductReviews.astro';
 import ProductStickyBar from '../../components/ProductStickyBar.astro';
 import { products, CHECKOUT_URL } from '../../data/products.js';
 
@@ -32,6 +33,11 @@ const schema = {
   <div class="m-product-page-wrap m-page-mode">
     <a class="m-back-link" href="/store" data-back-to-store>← Back </a>
     <ProductDetail p={p} checkoutUrl={CHECKOUT_URL} />
+  </div>
+
+  <!-- Customer Reviews: product details ke neeche, footer se oper -->
+  <div style="padding-bottom: 90px;">
+    <ProductReviews slug={p.slug} allReviewsUrl="/reviews" />
   </div>
 
   <!-- Sticky bottom bar: Home | Chat | Cart | Buy it now -->

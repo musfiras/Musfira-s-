@@ -13,6 +13,7 @@
 //      Price wali white patti ki purani shadow hata di; ab wo page se ubhri hui (apni tight shadow).
 //      Buttons row price patti se aur zyada ubhri hui, buttons par halki bevel + gehri lift.
 //      Home aur Chat icons alag alag ubhre hue chips ki tarah (apni shadow ke saath).
+// [v5] Sirf price wali white patti patli (19px -> 16px, landscape 15px). Buttons row same (45px / 40px).
 // [v4] SAARI SHADOWS KHATM (bar, price patti, buttons row, icons, desktop buttons): bilkul saaf flat look.
 //      Sirf bar ke top par ek bareek halki line hai (shadow nahi), taake safed bar page se alag dikhe.
 const { id } = Astro.props;
@@ -57,12 +58,12 @@ const { id } = Astro.props;
   /* Bar ki height yahan se badlein (baqi sab khud adjust ho jata hai)
      --msb-total = upar ki patli white patti, --msb-row = buttons wali row */
   :root {
-    --msb-total: 19px;
+    --msb-total: 16px;
     --msb-row: 45px;
   }
   /* Landscape mein chhoti height wale phone par bar thori patli, taake screen na ghere */
   @media (orientation: landscape) and (max-height: 500px) {
-    :root { --msb-total: 17px; --msb-row: 40px; }
+    :root { --msb-total: 15px; --msb-row: 40px; }
   }
 
   .msb {

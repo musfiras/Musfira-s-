@@ -4,6 +4,11 @@
 // Laptop / PC aur mobile ka "Desktop site" mode (975px+): bar nahi,
 //   Add to Cart + Buy it now alag buttons content ke saath Total ke neeche (hover par halke upar + slow pink).
 // Total .m-final-bill se live sync hota hai (koi nayi calculation nahi, sirf wahi number dikhata hai).
+//
+// [v2] Bar thori patli (total patti 22->20px, buttons row 50->46px).
+//      Buttons wali row ab total (price) wali white patti se "ubhri hui" elite look mein:
+//      row ke upar tight shadow + buttons ki apni halki lift.
+//      Bar ke top ki shadow ab saaf, tight aur strong (phailti nahi).
 const { id } = Astro.props;
 ---
 <div id="mStickyBar" class="msb" role="toolbar" aria-label="Quick actions" data-id={id}>
@@ -46,12 +51,12 @@ const { id } = Astro.props;
   /* Bar ki height yahan se badlein (baqi sab khud adjust ho jata hai)
      --msb-total = upar ki patli white patti, --msb-row = buttons wali row */
   :root {
-    --msb-total: 22px;
-    --msb-row: 50px;
+    --msb-total: 20px;
+    --msb-row: 46px;
   }
   /* Landscape mein chhoti height wale phone par bar thori patli, taake screen na ghere */
   @media (orientation: landscape) and (max-height: 500px) {
-    :root { --msb-total: 20px; --msb-row: 44px; }
+    :root { --msb-total: 18px; --msb-row: 41px; }
   }
 
   .msb {
@@ -62,19 +67,20 @@ const { id } = Astro.props;
     padding-right: env(safe-area-inset-right, 0px);
     background: #fff;
     border-top: none;
-    /* TIGHT "uthi hui" shadow: phailti nahi, kirnon jaisi nahi.
-       1) bareek crisp edge  2) bar ke bilkul qareeb tight shadow  3) halki si lift (negative spread se side mein nahi phailti) */
+    /* TOP SHADOW: saaf, tight aur strong. Phailti nahi (bada blur nahi, negative spread).
+       1) bareek crisp edge line  2) bar ke bilkul qareeb gehri shadow  3) chhoti si lift */
     box-shadow:
-      0 -1px 0 rgba(0, 0, 0, 0.07),
-      0 -3px 6px -1px rgba(0, 0, 0, 0.16),
-      0 -9px 16px -8px rgba(0, 0, 0, 0.24);
+      0 -1px 0 rgba(0, 0, 0, 0.16),
+      0 -2px 3px rgba(0, 0, 0, 0.22),
+      0 -5px 8px -3px rgba(0, 0, 0, 0.30);
     font-family: 'Segoe UI', 'Montserrat', sans-serif;
   }
 
-  /* TOTAL LINE: patli aur soft */
+  /* TOTAL LINE: patli aur soft (row iske upar ubhri hui hai, is liye neeche ki border nahi) */
   .msb-total {
+    position: relative; z-index: 1;
     height: var(--msb-total); display: flex; align-items: center; justify-content: space-between;
-    padding: 0 16px; background: #fff; border-bottom: 1px solid #f3f3f3;
+    padding: 0 16px; background: #fff; border-bottom: none;
   }
   .msb-t-left { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
   .msb-t-lab { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #a8505c; }
@@ -83,19 +89,35 @@ const { id } = Astro.props;
   .msb-t-save { font-size: 9.5px; font-weight: 600; letter-spacing: .2px; color: #1e8e4e; white-space: nowrap; }
   .msb-t-old[hidden], .msb-t-save[hidden] { display: none; }
 
-  /* BAR ROW: buttons aur icons bade, tap karna aasan */
-  .msb-row { display: flex; align-items: stretch; height: var(--msb-row); padding-left: 4px; background: #fff; }
+  /* BAR ROW: total patti se UBHRI HUI (elite look).
+     z-index upar, upar ki taraf tight shadow + bareek roshan edge line */
+  .msb-row {
+    position: relative; z-index: 2;
+    display: flex; align-items: stretch; height: var(--msb-row); padding-left: 4px; background: #fff;
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.07),
+      0 -3px 4px -2px rgba(0, 0, 0, 0.24);
+  }
+  .msb-row::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+    background: rgba(255, 255, 255, 0.95);
+    pointer-events: none; z-index: 3;
+  }
   .msb-ic {
     flex: 0 0 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
     background: none; border: none; padding: 0; cursor: pointer; text-decoration: none;
     color: #800000; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .msb-ic svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .msb-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   .msb-ic span { font-size: 9px; font-weight: 700; letter-spacing: .2px; line-height: 1; }
   .msb-ic:active { color: #e6007e; }
   @media (hover: hover) { .msb-ic:hover { color: #e6007e; } }
 
-  .msb-btns { flex: 1; display: flex; min-width: 0; }
+  /* Buttons ki apni halki lift: filter parent par lagta hai, is liye clip-path (tirchhe kone) ke saath bhi shadow sahi aati hai */
+  .msb-btns {
+    flex: 1; display: flex; min-width: 0;
+    filter: drop-shadow(0 -2px 2px rgba(60, 0, 20, 0.28));
+  }
   .msb-cart, .msb-buy {
     flex: 1; min-width: 0; border: none; cursor: pointer; color: #fff;
     font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: .3px;
@@ -130,7 +152,7 @@ const { id } = Astro.props;
   /* Landscape phone: bar poori width, left/right gap nahi. Safe-area (notch) upar padding mein sambhali hui hai. */
   @media (orientation: landscape) and (max-height: 500px) {
     .msb-cart, .msb-buy { font-size: 13.5px; }
-    .msb-ic svg { width: 19px; height: 19px; }
+    .msb-ic svg { width: 18px; height: 18px; }
   }
 
   /* DESKTOP BUTTONS: phone / tablet par chhupe hue */
@@ -147,6 +169,8 @@ const { id } = Astro.props;
       display: flex; gap: 12px; align-items: stretch;
       width: 100%; margin: 8px 0 14px; box-sizing: border-box;
       font-family: 'Segoe UI', 'Montserrat', sans-serif;
+      /* elite ubhra look: shadow parent par (clip-path wale buttons ke saath bhi sahi) */
+      filter: drop-shadow(0 3px 3px rgba(60, 0, 20, 0.28));
     }
     .msb-d-cart, .msb-d-buy {
       flex: 1; min-width: 0; height: 48px; border: none; cursor: pointer; color: #fff;

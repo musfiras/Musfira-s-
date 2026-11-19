@@ -13,6 +13,9 @@
 //    Zoom ab Cloudinary ki on-the-fly transformation par nahi rukta (wo pehli baar slow hoti hai).
 // [v6] Approve par review mein prodSlug (product page ka slug) bhi save hota hai.
 //      Is se ProductReviews.astro (product page wala elite section) review ko khud sahi product page par dikha deta hai.
+// [v8] Auto compress target ab 25KB. Admin panel / approve window / zoom mein har photo ki KB size dikhti hai.
+// [v7] Admin panel mein review ki photo par click se bara popup khulta hai (pehle sirf size alert aata tha), thumbnail bhi bara.
+//      Approve window mein ab review ka message + photos upar dikhte hain taake dekh kar sahi product chuna jaye.
 ---
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
@@ -134,7 +137,7 @@
 
                 <div style="text-align:center; margin-bottom:10px;">
                     <label class="label-m" style="margin-bottom:2px;">Add Photos (Optional)</label>
-                    <p style="color:var(--m); font-size:10px; margin:2px 0;">Up to 3 photos of any size. They are compressed automatically to about 30KB.</p>
+                    <p style="color:var(--m); font-size:10px; margin:2px 0;">Up to 3 photos of any size. They are compressed automatically to about 25KB.</p>
                     <a href="https://image.pi7.org/resize-image-pixel" target="_blank" style="color:var(--m); font-weight:bold; font-size:12px; text-decoration:none;">Click here to compress pic (Optional)</a>
                     <p style="color:#888; font-size:10px; margin:2px 0;">Manual compression is optional - you can skip it, we compress your photos automatically.</p>
                 </div>
@@ -179,6 +182,7 @@
         <div class="mdl" style="max-width:420px;">
             <div class="mdl-h">APPROVE &amp; LINK PRODUCT <span class="cl-btn" onclick="tgl('p-approve',0)">&times;</span></div>
             <div class="mdl-b">
+                <div id="ap-info" style="background:#fffcfc; border:1px solid var(--p); border-radius:10px; padding:10px; margin-bottom:12px; font-size:12px;"></div>
                 <label class="label-m">1. Select Page</label>
                 <select id="ap-page" class="i-box" onchange="loadProducts()"></select>
                 <label class="label-m">2. Select Product</label>
@@ -195,6 +199,7 @@
             <span class="zm-x" onclick="closeZoom()" title="Close">&times;</span>
             <img id="zoom-img" alt="">
             <div id="zoom-ld">Loading photo...</div>
+            <div id="zoom-kb" style="display:none; margin-top:4px; font-size:11px; font-weight:700; color:var(--m);"></div>
             <div class="zm-hint">Tap anywhere to close</div>
         </div>
     </div>
@@ -241,7 +246,7 @@
     /* ===== PHOTO UPLOAD: auto compress (~30KB) + Cloudinary ===== */
     const CLOUD_NAME = 'dgtwdwufv';
     const UPLOAD_PRESET = 'musfira_final';
-    const TARGET_BYTES = 30 * 1024;
+    const TARGET_BYTES = 25 * 1024;
     let curSlot = 0;
     let pending = 0;
 
@@ -498,6 +503,15 @@
         const im = document.getElementById('zoom-img');
         const ld = document.getElementById('zoom-ld');
         _zoomCur = s;
+        const kbEl = document.getElementById('zoom-kb');
+        kbEl.style.display = 'none';
+        if (document.getElementById('p-admin').style.display === 'flex') {
+            getKB(s).then(function (k) {
+                if (_zoomCur !== s) return;
+                kbEl.textContent = 'File size: ' + (k ? k + ' KB' : 'unknown');
+                kbEl.style.display = 'block';
+            });
+        }
         im.onerror = null;
         im.src = cl(s, 'w_140,h_140,c_fill,q_auto:eco,f_auto,fl_lossy');   // browser cache se foran
         im.style.opacity = '.9';
@@ -554,7 +568,7 @@
                     <span>${esc(r.time)}</span>
                 </div>
                 <div style="font-size:12px; margin:5px 0;"><b>${esc(r.name)}:</b> ${esc(r.msg)}</div>
-                <div style="display:flex; gap:5px; margin-bottom:5px;">${(r.pics || []).map((p, pi) => `<div style="text-align:center;"><img src="${esc(cl(p, 'w_80,h_80,c_fill,q_auto:eco,f_auto,fl_lossy'))}" loading="lazy" onerror="this.onerror=null;this.src='${esc(p)}'" onclick="checkSize('${esc(p)}')" title="Tap to check real file size" width="35" height="35" style="border-radius:4px; object-fit:cover; cursor:pointer;"><div style="font-size:9px; color:#666;">${(r.picKB && r.picKB[pi]) ? r.picKB[pi] + ' KB' : 'tap'}</div></div>`).join('')}</div>
+                <div style="display:flex; gap:8px; margin-bottom:5px; flex-wrap:wrap;">${(r.pics || []).map((p, pi) => `<div style="text-align:center;"><img src="${esc(cl(p, 'w_160,h_160,c_fill,q_auto:eco,f_auto,fl_lossy'))}" loading="lazy" onerror="this.onerror=null;this.src='${esc(p)}'" onpointerdown="preFull('${esc(p)}')" onclick="zoom('${esc(p)}')" title="Tap to enlarge" width="64" height="64" style="border-radius:8px; object-fit:cover; cursor:pointer; border:1px solid var(--p);"><div class="kbl" data-u="${esc(p)}" style="font-size:10px; font-weight:700; color:var(--m);">${(r.picKB && r.picKB[pi]) ? r.picKB[pi] + ' KB' : '...'}</div></div>`).join('')}</div>
                 <div style="display:flex; gap:5px;">
                     <button onclick="openApprove('${r.id}')" style="color:green; background:none; border:1px solid; cursor:pointer; font-size:10px;">Approve</button>
                     <button onclick="upStat('${r.id}','pending')" style="color:orange; background:none; border:1px solid; cursor:pointer; font-size:10px;">Reject</button>
@@ -577,11 +591,52 @@
                 </div>
             </div>
         `).join('');
+        fillKB();
+    }
+
+    /* ===== PHOTO SIZE (KB) =====
+       Naye reviews mein size save hoti hai (picKB). Purane reviews ki size photo se seedha maloom karte hain. */
+    const _kbCache = {};
+    function kbFromReviews(u) {
+        for (const r of reviews) {
+            const i = (r.pics || []).indexOf(u);
+            if (i > -1 && r.picKB && r.picKB[i]) return r.picKB[i];
+        }
+        return 0;
+    }
+    async function getKB(u) {
+        if (_kbCache[u]) return _kbCache[u];
+        let k = kbFromReviews(u);
+        if (!k) {
+            try {
+                const r = await fetch(u, { method: 'HEAD' });
+                const b = r.headers.get('content-length');
+                if (b) k = Math.round(b / 1024);
+            } catch (e) {}
+        }
+        if (k) _kbCache[u] = k;
+        return k;
+    }
+    function fillKB() {
+        document.querySelectorAll('.kbl').forEach(function (el) {
+            if (el.textContent.trim() !== '...') return;
+            getKB(el.getAttribute('data-u')).then(function (k) { el.textContent = k ? k + ' KB' : '? KB'; });
+        });
     }
 
     /* ===== APPROVE + LINK PRODUCT ===== */
     function openApprove(id) {
         apId = id;
+        const rv = reviews.find(x => x.id === id);
+        const info = document.getElementById('ap-info');
+        if (rv) {
+            info.innerHTML = '<div style="font-weight:700; color:var(--m); margin-bottom:4px;">' + esc(rv.name) + ' <span style="color:#FFD700;">' + '★'.repeat(rv.rating || 0) + '</span></div>' +
+                '<div style="color:#444; line-height:1.5; margin-bottom:' + ((rv.pics || []).length ? '8' : '0') + 'px;">' + esc(rv.msg) + '</div>' +
+                ((rv.pics || []).length ? '<div style="display:flex; gap:8px; flex-wrap:wrap;">' + rv.pics.map(p =>
+                    '<div style="text-align:center;"><img src="' + esc(cl(p, 'w_220,h_220,c_fill,q_auto:eco,f_auto,fl_lossy')) + '" width="90" height="90" title="Tap to enlarge" style="border-radius:10px; object-fit:cover; cursor:pointer; border:1px solid var(--p);" onerror="this.onerror=null;this.src=\'' + esc(p) + '\'" onclick="zoom(\'' + esc(p) + '\')"><div class="kbl" data-u="' + esc(p) + '" style="font-size:10px; font-weight:700; color:var(--m);">...</div></div>'
+                ).join('') + '</div><div style="font-size:10px; color:#999; margin-top:4px;">Photo par tap karein, bara dekh kar product chunein</div>' : '');
+            fillKB();
+        } else { info.innerHTML = ''; }
         document.getElementById('ap-page').innerHTML = '<option value="">-- Select Page --</option>' +
             STORE_PAGES.map(p => `<option value="${p[1]}">${p[0]}</option>`).join('');
         document.getElementById('ap-prod').innerHTML = '<option value="">-- Select page first --</option>';

@@ -74,7 +74,7 @@ const total = slides.length;
                   src={s.desktopImage}
                   alt={s.alt}
                   width="1920"
-                  height="720"
+                  height="640"
                   loading={i === 0 ? "eager" : "lazy"}
                   fetchpriority={i === 0 ? "high" : "auto"}
                   decoding="async"
@@ -127,7 +127,7 @@ const total = slides.length;
   .mfs-hero-wrap {
     width: 100%;
     background: #ffffff;
-    padding: 22px 24px 8px;
+    padding: 20px 16px 8px;
   }
   .mfs-hero-wrap *,
   .mfs-hero-wrap *::before,
@@ -138,9 +138,9 @@ const total = slides.length;
   /* Ubhra howa (raised) look: shadow + halka border + gol corners */
   .mfs-hero-frame {
     position: relative;
-    /* HEIGHT KAM/ZYADA: sirf max-width badlo. Chhota number = kam height.
-       1080px = height lagbhag 405px. (1320px = 495px, 960px = 360px) */
-    max-width: 1080px;
+    /* WIDTH/HEIGHT: max-width badlo. 1240px = height lagbhag 413px.
+       (1320px = 440px, 1100px = 367px) */
+    max-width: 1240px;
     margin: 0 auto;
     border-radius: 22px;
     background: #ffffff;
@@ -152,11 +152,11 @@ const total = slides.length;
     overflow: hidden;
   }
 
-  /* Ratio images ke barabar hai (1920x720), isliye banner kahin se cut nahi hota */
+  /* Ratio images ke barabar hai (1920x640), isliye banner kahin se cut nahi hota */
   .mfs-viewport {
     position: relative;
     width: 100%;
-    aspect-ratio: 1920 / 720;
+    aspect-ratio: 1920 / 640;
     overflow: hidden;
     touch-action: pan-y;
   }
@@ -269,7 +269,7 @@ const total = slides.length;
   /* Mobile: ratio 4:5 (1080x1350), arrows hide, thora chhota margin */
   @media (max-width: 767px) {
     .mfs-hero-wrap {
-      padding: 12px 26px 4px;   /* side ka gap barha kar mobile banner ki height kam ki */
+      padding: 10px 10px 4px;
     }
     .mfs-hero-frame {
       border-radius: 18px;
@@ -278,9 +278,9 @@ const total = slides.length;
         0 2px 4px rgba(0, 0, 0, 0.06),
         0 8px 18px -4px rgba(0, 0, 0, 0.15);
     }
-    /* Mobile ratio images ke barabar (960x1200 = 4/5), koi cut nahi */
+    /* Mobile ratio images ke barabar (960x1000), koi cut nahi */
     .mfs-viewport {
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 960 / 1000;
     }
     .mfs-arrow {
       display: none;

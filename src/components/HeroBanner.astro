@@ -8,15 +8,15 @@
 // ---------- 1) SLIDER SETTINGS ----------
 const SLIDE_TIME_SECONDS = 4.5;   // har banner kitni der rukay (3 se 5 best hai)
 
-// ---------- 2) 4 SLIDES: IMAGE (DESKTOP aur MOBILE ALAG) ----------
-// Images public/products/ folder me hain (WebP, naam: bnr1.webp ... bnr8.webp).
+// ---------- 2) 3 SLIDES: IMAGE (DESKTOP aur MOBILE ALAG) ----------
+// Images public/products/ folder me hain.
 // Agar koi slide abhi ready nahi hai to uski dono images "" khali chor do.
 
 const MFS_SLIDES = [
   {
     // ===== SLIDE 1: Bundle Offer =====
-    desktopImage: "/products/bnr1.webp",   // bnr 1 = desktop
-    mobileImage:  "/products/bnr2.webp",   // bnr 2 = mobile
+    desktopImage: "/products/bn.jpeg",     // jpeg = desktop
+    mobileImage:  "/products/bn.jpg",      // jpg = mobile
     alt: "Buy more, save more. Bundle deals at Musfira's",
   },
   {
@@ -30,12 +30,6 @@ const MFS_SLIDES = [
     desktopImage: "/products/bnr5.webp",   // bnr 5 = desktop
     mobileImage:  "/products/bnr4.webp",   // bnr 4 = mobile
     alt: "Fashion and accessories by Musfira's",
-  },
-  {
-    // ===== SLIDE 4: Musfira's Choice =====
-    desktopImage: "/products/bnr7.webp",   // bnr 7 = desktop
-    mobileImage:  "/products/bnr8.webp",   // bnr 8 = mobile
-    alt: "Musfira's Choice, watches, wallets and bags",
   },
 ];
 
@@ -152,7 +146,7 @@ const total = slides.length;
     overflow: hidden;
   }
 
-  /* Ratio images ke barabar hai (1920x640), isliye banner kahin se cut nahi hota */
+  /* Ratio images ke barabar hai (1920x640) */
   .mfs-viewport {
     position: relative;
     width: 100%;
@@ -177,8 +171,6 @@ const total = slides.length;
     display: block;
     width: 100%;
     height: 100%;
-  }
-  .mfs-slide-link {
     cursor: default;
   }
   .mfs-slide picture,
@@ -186,7 +178,9 @@ const total = slides.length;
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* fill = image poori frame me fit, koi kinara cut nahi hota.
+       Agar image kheenchti hui lage to isay "cover" kar do. */
+    object-fit: fill;
     object-position: center;
     user-select: none;
     -webkit-user-drag: none;
@@ -266,7 +260,7 @@ const total = slides.length;
     border: 0;
   }
 
-  /* Mobile: ratio 4:5 (1080x1350), arrows hide, thora chhota margin */
+  /* Mobile: arrows hide, thora chhota margin */
   @media (max-width: 767px) {
     .mfs-hero-wrap {
       padding: 10px 10px 4px;
@@ -278,7 +272,7 @@ const total = slides.length;
         0 2px 4px rgba(0, 0, 0, 0.06),
         0 8px 18px -4px rgba(0, 0, 0, 0.15);
     }
-    /* Mobile ratio images ke barabar (960x1000), koi cut nahi */
+    /* Mobile ratio (960x1000) */
     .mfs-viewport {
       aspect-ratio: 960 / 1000;
     }

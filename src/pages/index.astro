@@ -5,7 +5,7 @@ import EliteDivider from '../components/EliteDivider.astro';
 import MusfirasChoice from '../components/MusfirasChoice.astro';
 import MusfirasChoiceBanner from '../components/MusfirasChoiceBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
-import { productsFor, CHECKOUT_URL } from '../data/products.js';
+import { productsFor, headingFor, CHECKOUT_URL } from '../data/products.js';
 
 // ---------------------------------------------------------------------
 //  HOME PAGE PLACEMENTS (products.js me placements: [...] me ye likho)
@@ -13,7 +13,11 @@ import { productsFor, CHECKOUT_URL } from '../data/products.js';
 //    'home-2'   = 'home-top' ke neeche (MusfirasChoice se pehle)
 //    'home'     = MusfirasChoice ke neeche (pehle jaisa, koi change nahi)
 // ---------------------------------------------------------------------
-const HOME_TOP_TITLE = "Discover the Collection";   // heading nahi chahiye to "" khali kar do
+//  Headings products.js ke PLACES se aati hain (yahan kuch badalna nahi).
+//  Heading badalni ho to products.js me PLACES ke andar badlo.
+const HOME_TOP_TITLE = headingFor('home-top');
+const HOME_2_TITLE = headingFor('home-2');
+const HOME_TITLE = headingFor('home');
 
 const homeTop = productsFor('home-top');
 const homeSecond = productsFor('home-2');
@@ -133,6 +137,12 @@ const homeProducts = productsFor('home');
   {/* USKE NEECHE: placements 'home-2' wale products */}
   {homeSecond.length > 0 && (
     <section class="m-home-sec">
+      {HOME_2_TITLE && (
+        <div class="m-home-head">
+          <h2 class="m-home-title">{HOME_2_TITLE}</h2>
+          <div class="m-home-rule"><span></span><i>&#9670;</i><span></span></div>
+        </div>
+      )}
       <div class="m-super-grid">
         {homeSecond.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
       </div>
@@ -142,9 +152,17 @@ const homeProducts = productsFor('home');
   <MusfirasChoice />
 
   {homeProducts.length > 0 && (
-    <div class="m-super-grid">
-      {homeProducts.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
-    </div>
+    <section class="m-home-sec">
+      {HOME_TITLE && (
+        <div class="m-home-head">
+          <h2 class="m-home-title">{HOME_TITLE}</h2>
+          <div class="m-home-rule"><span></span><i>&#9670;</i><span></span></div>
+        </div>
+      )}
+      <div class="m-super-grid">
+        {homeProducts.map((p) => <ProductCard p={p} checkoutUrl={CHECKOUT_URL} />)}
+      </div>
+    </section>
   )}
 
   <div style="display:block;width:100%;clear:both;">

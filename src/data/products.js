@@ -1,6 +1,42 @@
 export const CHECKOUT_URL = 'https://www.musfiras.com/check_out';
 
 // ============================================================================
+//  PLACES  (YAHAN SE HEADING + PATA CHALTA HAI KE PRODUCT SITE PE KAHAN AAYEGA)
+//
+//  Har placement ka ek naam (key) hai. Product me placements: ['bags'] likho
+//  to wo product us page / section me aayega, aur neeche likhi heading uske
+//  upar dikhegi.
+//
+//  key      : placements me jo likhna hai
+//  page     : sirf tumhari yaad ke liye - ye section site pe kahan hai
+//  heading  : us section ke upar dikhne wali heading ("" = koi heading nahi)
+//
+//  NAYA PAGE / SECTION BANANA HO TO: bas neeche ek line add karo, jaise
+//    'bags': { page: 'Bags & Carrying page', heading: 'Bags & Carrying' },
+//  Phir products me placements: ['bags'] likho. Bas.
+// ============================================================================
+export const PLACES = {
+  // ----- HOME PAGE -----
+  'home-top': { page: 'Home page: top banner ke neeche',        heading: 'Discover the Collection' },
+  'home-2':   { page: 'Home page: home-top ke neeche',          heading: '' },
+  'home':     { page: 'Home page: MusfirasChoice ke neeche',    heading: '' },
+
+  // ----- STORE PAGE -----
+  'shop-all': { page: 'Store page (/store/)',                   heading: 'Shop All' },
+
+  // ----- CATEGORY PAGES (tag wohi jo categories.js me hai) -----
+  'bags':     { page: 'Bags & Carrying page (/bags_carrying/)',          heading: 'Bags & Carrying' },
+  'fashion':  { page: 'Fashion & Accessories page (/fashion_accessories/)', heading: 'Fashion & Accessories' },
+  'choice':   { page: "Musfira's Choice page (/musfiras_choice/)",       heading: "Musfira's Choice" },
+};
+
+// Kisi placement ki heading nikalne ke liye: headingFor('home-top')
+export const headingFor = (place) => PLACES[place]?.heading ?? '';
+
+// Kisi placement ka page ka naam: pageFor('bags')
+export const pageFor = (place) => PLACES[place]?.page ?? '';
+
+// ============================================================================
 //  SETTINGS (yahan se poori site ka default behaviour control hota hai)
 // ============================================================================
 const DEFAULT_IMAGE = '/handbag.jpeg';   // agar product me images na do to ye lagegi
@@ -96,6 +132,15 @@ const make = (p) => {
     colorIndex[c] = i;
   });
 
+  const placements = p.placements?.length ? p.placements : DEFAULT_PLACEMENTS;
+
+  // Agar placement PLACES me nahi likha to warning (galti pakadne ke liye)
+  placements.forEach((pl) => {
+    if (!(pl in PLACES)) {
+      console.warn('[products.js] placement PLACES me nahi mila (heading nahi aayegi) ->', p.name, pl);
+    }
+  });
+
   return {
     ...p,
     slug,
@@ -112,7 +157,7 @@ const make = (p) => {
     colorIndex,
     image: images[0],
     gallery: images.slice(1),
-    placements: p.placements?.length ? p.placements : DEFAULT_PLACEMENTS,
+    placements,
     descriptionHtml: p.descriptionHtml ?? buildDesc(p, colors),
   };
 };
@@ -143,12 +188,20 @@ export const productsFor = (place) => products.filter((p) => p.placements?.inclu
 export const productBySlug = (slug) => products.find((p) => p.slug === slug);
 
 // ============================================================================
-//  PRODUCTS (naya product = neeche wali TEMPLATE line copy karo, bharo, aur
-//  isi jagah, TEMPLATE line se UPAR paste karo)
+//  PRODUCTS
+//
+//  Naya product = sab se neeche wali TEMPLATE line copy karo, "// " hatao,
+//  bharo, aur sahi HEADING WALE BLOCK ke andar paste karo.
+//  (Heading blocks sirf comments hain, taake file me dikhe ke konsa product
+//   site pe kis jagah hai. Asal heading PLACES se aati hai.)
 // ============================================================================
 const STOCK = { 'Classic Black': 6, 'Warm Beige': 7 };
 
 
+// ############################################################################
+//  HOME PAGE  >  TOP BANNER KE NEECHE  >  heading: "Discover the Collection"
+//  placements: ['home-top']
+// ############################################################################
 
 add({ id: 'PROD_001', name: 'Two-Tone Structured Tote', price: 110, oldPrice: 160, offer2: 215, offer3: 320, stock: { 'Beige Brown': 5, 'Beige Pink': 5 }, colorImages: { 'Beige Brown': '/tonebag (3).jpg', 'Beige Pink': '/tonebag (4).jpg' }, images: ['/products/nw (2).jpg', '/tonebag (3).jpg', '/tonebag (1).jpg', '/tonebag (2).jpg', '/tonebag (4).jpg', '/tonebag (5).jpg'], placements: ['shop-all', 'home-top'], overview: 'A stylish blend of modern elegance and everyday utility. Crafted from high-quality synthetic leather with a two-tone panel design and soft pom-pom charm, this structured shoulder tote is ideal for office, shopping, travel, and daily outings.', highlights: ['Two-Tone Panel Design: Contrasting panels with a minimal, elegant finish suitable for all outfits.', 'Material & Build: Crafted from high-quality synthetic leather with durable stitching and a structured shape.', 'Comfort & Closure: Dual long shoulder handles for easy carrying with a spacious open-top interior for daily essentials.', 'Signature Charm: Includes a soft pom-pom charm accessory for a chic, trendy touch.'], why: 'Gives you the polished look and spacious organization needed for office, travel, and daily use without feeling bulky or plain.' });
 
@@ -159,29 +212,63 @@ add({ id: 'PROD_003', name: 'Royal Trends Tote Bags', price: 150, oldPrice: 230,
 add({ id: 'PROD_004', name: 'Suede & Matte Minimalist Bag', price: 150, oldPrice: 270, offer2: 285, offer3: 430, stock: { 'Green': 5, 'Black': 5 }, colorImages: { 'Green': '/products/sm (1).jpg', 'Black': '/products/sm (3).jpg' }, images: ['/products/sm (1).jpg', '/products/sm (2).jpg', '/products/sm (3).jpg', '/products/sm (4).jpg', '/products/sm (5).jpg', '/products/sm (6).jpg'], placements: ['shop-all', 'home-top'], overview: 'Designed for women who love timeless style with a modern touch. Featuring a clean, structured silhouette with dual top handles and a sleek gold-tone accent, this bag adds effortless sophistication to both everyday and formal looks.', highlights: ['Structured Design: Clean and polished silhouette with an elegant gold-tone front accent.', 'Material & Build: Crafted from high-quality synthetic leather with a sturdy construction to maintain shape.', 'Storage & Capacity: Spacious interior with secure top zip closure to safely carry your daily essentials.', 'Carry Style: Designed with dual top handles for comfortable hand or shoulder carry.'], why: 'Brings a versatile, trendy olive green or classic black statement piece that elevates both casual and formal office outfits.' });
 
 
+// ############################################################################
+//  HOME PAGE  >  HOME-TOP KE NEECHE  >  placements: ['home-2']
+//  (naya product yahan paste karo)
+// ############################################################################
+
+
+
+// ############################################################################
+//  HOME PAGE  >  MUSFIRAS CHOICE KE NEECHE  >  placements: ['home']
+//  (naya product yahan paste karo)
+// ############################################################################
+
+
+
+// ############################################################################
+//  BAGS & CARRYING PAGE  >  heading: "Bags & Carrying"  >  placements: ['bags']
+//  (naya product yahan paste karo)
+// ############################################################################
+
+
+
+// ############################################################################
+//  FASHION & ACCESSORIES PAGE  >  placements: ['fashion']
+//  (naya product yahan paste karo)
+// ############################################################################
+
+
+
+// ############################################################################
+//  MUSFIRA'S CHOICE PAGE  >  placements: ['choice']
+//  (naya product yahan paste karo)
+// ############################################################################
+
 
 
 
 // ============================================================================
-//  TEMPLATE (ye line hamesha sab se neeche rahe, isko copy karo, "// " hatao,
-//  bharo, aur upar products ke baad paste karo)
+//  TEMPLATE  (SIRF EK LINE. Ye hamesha sab se neeche rahe)
+//
+//  Kaise use karein:
+//    1. Neeche wali line copy karo, "// " hatao.
+//    2. Bharo (id, name, price, stock zaroori hain, baqi optional).
+//    3. placements me wo naam likho jahan product dikhana hai:
+//         'home-top'  = Home: top banner ke neeche   ("Discover the Collection")
+//         'home-2'    = Home: home-top ke neeche
+//         'home'      = Home: MusfirasChoice ke neeche
+//         'shop-all'  = Store page
+//         'bags'      = Bags & Carrying page
+//         'fashion'   = Fashion & Accessories page
+//         'choice'    = Musfira's Choice page
+//       Ek se zyada jagah chahiye to: placements: ['shop-all', 'bags']
+//    4. Upar wale sahi HEADING BLOCK ke andar paste karo.
+//
+//  Heading badalni ho to upar PLACES me us placement ki heading badlo.
 //
 //  ZAROORI: id, name, price, stock
-//  OPTIONAL: baqi sab (nahi likhoge to auto/default lag jayega)
 //  colorImages: har color ki photo. Color ka naam stock jaisa hi likho.
 //  Text me apostrophe (') na likho, ya \' likho. Har field ke baad comma.
 // ============================================================================
-// add({ id: 'PROD_34', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, colorImages: { 'Classic Black': '/black.jpeg', 'Warm Beige': '/beige.jpeg', 'Blush Pink': '/pink.jpeg' }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['shop-all', 'home', 'bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });
-
-
-
-
-
-
-
-// ----- HOME-ONLY TEMPLATE (sirf home page ke liye, store page pe nahi aaye ga) -----
-//  placements: ['home-top']  = top banner ke neeche
-//  placements: ['home-2']    = home-top ke neeche
-//  placements: ['home']      = MusfirasChoice ke neeche
-//  Dono jagah chahiye to: ['home-top', 'shop-all']
-// add({ id: 'PROD_35', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, colorImages: { 'Classic Black': '/black.jpeg', 'Warm Beige': '/beige.jpeg', 'Blush Pink': '/pink.jpeg' }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['home-top'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });
+// add({ id: 'PROD_34', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, colorImages: { 'Classic Black': '/black.jpeg', 'Warm Beige': '/beige.jpeg', 'Blush Pink': '/pink.jpeg' }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });

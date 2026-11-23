@@ -53,8 +53,6 @@ const homeProducts = productsFor('home');
   .m-top-wrap > *:last-child{
     margin-bottom:0 !important;
     padding-bottom:0 !important;
-    min-height:0 !important;
-    height:auto !important;
   }
 
   /* ---------- HOME SECTIONS ---------- */
@@ -65,6 +63,8 @@ const homeProducts = productsFor('home');
     background:#ffffff;
     margin:0;
     padding:0;
+    position:relative;
+    z-index:2;
   }
 
   /* Heading ka upar ka gap chhota */
@@ -100,7 +100,7 @@ const homeProducts = productsFor('home');
   /* Desktop: gap aur kam (number bara karo = gap aur kam, chhota karo = gap thora zyada) */
   @media (min-width: 601px){
     .m-top-wrap + .m-home-sec{margin-top:0;}
-    .m-home-head{padding:18px 16px 10px;}
+    .m-home-head{padding:32px 16px 10px;}
     .m-home-sec .m-super-grid{padding-top:6px !important;}
   }
 

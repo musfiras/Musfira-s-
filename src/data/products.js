@@ -171,3 +171,12 @@ add({ id: 'PROD_004', name: 'Suede & Matte Minimalist Bag', price: 150, oldPrice
 //  Text me apostrophe (') na likho, ya \' likho. Har field ke baad comma.
 // ============================================================================
 // add({ id: 'PROD_34', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, colorImages: { 'Classic Black': '/black.jpeg', 'Warm Beige': '/beige.jpeg', 'Blush Pink': '/pink.jpeg' }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['shop-all', 'home', 'bags'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });
+
+
+
+// ----- HOME-ONLY TEMPLATE (sirf home page ke liye, store page pe nahi aaye ga) -----
+//  placements: ['home-top']  = top banner ke neeche
+//  placements: ['home-2']    = home-top ke neeche
+//  placements: ['home']      = MusfirasChoice ke neeche
+//  Dono jagah chahiye to: ['home-top', 'shop-all']
+// add({ id: 'PROD_35', name: 'Product Name', price: 50, oldPrice: 100, offer2: 95, offer3: 140, stock: { 'Classic Black': 5, 'Warm Beige': 5, 'Blush Pink': 3 }, colorImages: { 'Classic Black': '/black.jpeg', 'Warm Beige': '/beige.jpeg', 'Blush Pink': '/pink.jpeg' }, images: ['/main.jpeg', '/img2.jpeg', '/img3.jpeg', '/img4.jpeg'], placements: ['home-top'], overview: 'Short overview text', highlights: ['Title: detail one.', 'Title: detail two.'], why: 'Why customers should buy it' });

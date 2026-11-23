@@ -20,16 +20,17 @@ const MFS_SLIDES = [
     alt: "Buy more, save more. Bundle deals at Musfira's",
   },
   {
-    // ===== SLIDE 2: Bags & Carrying =====
-    desktopImage: "/products/bnr3.webp",   // bnr 3 = desktop
-    mobileImage:  "/products/bnr6.webp",   // bnr 6 = mobile
-    alt: "Bags and carrying collection by Musfira's",
+    // ===== SLIDE 2: (abhi khali) =====
+    // Naya banner aaye to neeche dono links daal do, slide + dots khud aa jayen ge
+    desktopImage: "",   // desktop image, e.g. "/products/new1.webp"
+    mobileImage:  "",   // mobile image,  e.g. "/products/new2.webp"
+    alt: "Musfira's banner",
   },
   {
-    // ===== SLIDE 3: Fashion & Accessories =====
-    desktopImage: "/products/bnr5.webp",   // bnr 5 = desktop
-    mobileImage:  "/products/bnr4.webp",   // bnr 4 = mobile
-    alt: "Fashion and accessories by Musfira's",
+    // ===== SLIDE 3: (abhi khali) =====
+    desktopImage: "",
+    mobileImage:  "",
+    alt: "Musfira's banner",
   },
 ];
 
@@ -42,6 +43,7 @@ const slides = MFS_SLIDES.filter((s) => s.desktopImage || s.mobileImage).map((s)
 const total = slides.length;
 ---
 
+{total > 0 && (
 <section
   class="mfs-hero-wrap"
   aria-roledescription="carousel"
@@ -111,6 +113,7 @@ const total = slides.length;
     )
   }
 </section>
+)}
 
 <style is:global>
   :root {

@@ -121,7 +121,7 @@ const total = slides.length;
   .mfs-hero-wrap {
     width: 100%;
     background: #ffffff;
-    padding: 20px 16px 8px;
+    padding: 0;
   }
   .mfs-hero-wrap *,
   .mfs-hero-wrap *::before,
@@ -129,20 +129,16 @@ const total = slides.length;
     box-sizing: border-box;
   }
 
-  /* Ubhra howa (raised) look: shadow + halka border + gol corners */
+  /* Flat look: koi shadow, border ya gol corner nahi. Banner page ka hissa lagta hai */
   .mfs-hero-frame {
     position: relative;
-    /* WIDTH/HEIGHT: max-width badlo. 1240px = height lagbhag 413px.
-       (1320px = 440px, 1100px = 367px) */
-    max-width: 1240px;
+    width: 100%;
+    max-width: none;   /* poori width. Chhota karna ho to yahan px likho, e.g. 1400px */
     margin: 0 auto;
-    border-radius: 22px;
+    border-radius: 0;
     background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.07);
-    box-shadow:
-      0 -6px 16px -4px rgba(0, 0, 0, 0.07),
-      0 2px 4px rgba(0, 0, 0, 0.06),
-      0 12px 28px -6px rgba(0, 0, 0, 0.16);
+    border: 0;
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -153,6 +149,7 @@ const total = slides.length;
     aspect-ratio: 1920 / 640;
     overflow: hidden;
     touch-action: pan-y;
+    transition: aspect-ratio 0.5s ease;
   }
 
   /* SLIDE ANIMATION: speed yahan se (1.1s = slow aur smooth, zyada slow ke liye 1.5s) */
@@ -178,9 +175,9 @@ const total = slides.length;
     display: block;
     width: 100%;
     height: 100%;
-    /* fill = image poori frame me fit, koi kinara cut nahi hota.
-       Agar image kheenchti hui lage to isay "cover" kar do. */
-    object-fit: fill;
+    /* contain = image na kheenchti hai na cut hoti hai. Frame ka ratio
+       JS khud image ke ratio ke mutabiq set karta hai, to poori fit rehti hai */
+    object-fit: contain;
     object-position: center;
     user-select: none;
     -webkit-user-drag: none;
@@ -263,14 +260,11 @@ const total = slides.length;
   /* Mobile: arrows hide, thora chhota margin */
   @media (max-width: 767px) {
     .mfs-hero-wrap {
-      padding: 10px 10px 4px;
+      padding: 0;
     }
     .mfs-hero-frame {
-      border-radius: 18px;
-      box-shadow:
-        0 -4px 12px -3px rgba(0, 0, 0, 0.07),
-        0 2px 4px rgba(0, 0, 0, 0.06),
-        0 8px 18px -4px rgba(0, 0, 0, 0.15);
+      border-radius: 0;
+      box-shadow: none;
     }
     /* Mobile ratio (960x1000) */
     .mfs-viewport {
@@ -308,6 +302,22 @@ const total = slides.length;
     let current = 0;
     let timer: number | undefined;
 
+    // Frame ka ratio active image ke asal ratio ke barabar rakho (desktop/mobile dono pe)
+    const setRatio = (slide: HTMLElement | undefined) => {
+      const img = slide?.querySelector<HTMLImageElement>("img");
+      if (viewport && img && img.naturalWidth && img.naturalHeight) {
+        viewport.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+      }
+    };
+    slides.forEach((slide) => {
+      const img = slide.querySelector<HTMLImageElement>("img");
+      img?.addEventListener("load", () => {
+        if (slide === slides[current]) setRatio(slide);
+      });
+    });
+    setRatio(slides[0]);
+    window.addEventListener("resize", () => setRatio(slides[current]));
+
     // dir = 1 (agla banner, right se aaye) / -1 (pichla banner, left se aaye)
     const show = (index: number, dir = 1) => {
       const next = (index + slides.length) % slides.length;
@@ -335,6 +345,7 @@ const total = slides.length;
       outgoing.style.transform = `translateX(${-dir * 100}%)`;
 
       current = next;
+      setRatio(slides[current]);
       slides.forEach((slide, i) => {
         slide.classList.toggle("is-active", i === current);
         slide.setAttribute("aria-hidden", i === current ? "false" : "true");

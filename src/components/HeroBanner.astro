@@ -1,47 +1,77 @@
 ---
 // =====================================================================
 //  MUSFIRAS - HERO SLIDER - MASTER CONTROL PANEL
-//  Banners clickable nahi hain. Sirf images badalni hain.
-//  Neeche ka code (HTML / CSS / JS) ko haath lagane ki zaroorat nahi.
+//  Slide 1 ab poori coding se bani hai (koi image link nahi).
+//  Sirf neeche ke settings badlo. HTML / CSS / JS ko haath lagane ki zaroorat nahi.
 // =====================================================================
 
 // ---------- 1) SLIDER SETTINGS ----------
 const SLIDE_TIME_SECONDS = 4.5;   // har banner kitni der rukay (3 se 5 best hai)
 
-// ---------- 2) 3 SLIDES: IMAGE (DESKTOP aur MOBILE ALAG) ----------
-// Images public/products/ folder me hain.
-// Agar koi slide abhi ready nahi hai to uski dono images "" khali chor do.
+// ---------- 2) CODED BANNER KA TEXT (yahan se badlo) ----------
+const PROMO = {
+  kicker: "Mix any watches, wallets & bags",
+  line1: "Buy 2, save more.",
+  line2: "Buy 3, save even more.",
+  tier2: { buy: "Buy", num: "2", save: "Save more" },          // chaho to "10% OFF" likh do
+  tier3: { buy: "Buy", num: "3", save: "Save even more", ribbon: "Best deal" }, // chaho to "20% OFF"
+  products: [
+    { label: "Watches", icon: "watch" },
+    { label: "Wallets", icon: "wallet" },
+    { label: "Bags", icon: "bag" },
+  ],
+};
 
+// ---------- 3) SLIDES ----------
+// type: "coded"  -> upar wala coded banner
+// type: "image"  -> purane tareeqe se image (desktopImage + mobileImage)
+// Image slide ready nahi to dono images "" khali chor do, wo slide nahi dikhegi.
 const MFS_SLIDES = [
   {
-    // ===== SLIDE 1: Bundle Offer =====
-    desktopImage: "/products/bn-desktop.png",     // desktop 1920px (logo hata howa)
-    mobileImage:  "/products/bn-mobile.png",       // mobile 1080px (logo hata howa)
-    alt: "Buy more, save more. Bundle deals at Musfira's",
+    // ===== SLIDE 1: Buy 2 / Buy 3 offer (coded, image nahi chahiye) =====
+    type: "coded",
+    desktopImage: "",
+    mobileImage: "",
+    alt: "Buy 2 save more, buy 3 save even more on watches, wallets and bags",
   },
   {
     // ===== SLIDE 2: (abhi khali) =====
-    // Naya banner aaye to neeche dono links daal do, slide + dots khud aa jayen ge
-    desktopImage: "",   // desktop image, e.g. "/products/new1.webp"
-    mobileImage:  "",   // mobile image,  e.g. "/products/new2.webp"
+    type: "image",
+    desktopImage: "",   // e.g. "/products/new1.webp"
+    mobileImage: "",    // e.g. "/products/new2.webp"
     alt: "Musfira's banner",
   },
   {
     // ===== SLIDE 3: (abhi khali) =====
+    type: "image",
     desktopImage: "",
-    mobileImage:  "",
+    mobileImage: "",
     alt: "Musfira's banner",
   },
 ];
 
 // ---------- Neeche kuch change nahi karna ----------
-const slides = MFS_SLIDES.filter((s) => s.desktopImage || s.mobileImage).map((s) => ({
+const ICONS: Record<string, string> = {
+  watch: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 3h7l.9 3.6H7.6L8.5 3zM8.5 21h7l.9-3.6H7.6L8.5 21z"/><circle cx="12" cy="12" r="5.4"/><path d="M12 9.4V12l1.9 1.2"/></svg>`,
+  wallet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.2V7a2.2 2.2 0 0 1 2.2-2.2H17"/><rect x="3.5" y="7" width="17" height="12.4" rx="2.6"/><path d="M20.5 11.4h-4.2a1.9 1.9 0 0 0 0 3.8h4.2"/><circle cx="16.6" cy="13.3" r=".6" fill="currentColor"/></svg>`,
+  bag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.2 9h13.6l1.2 11.2H4L5.2 9z"/><path d="M8.6 9V7.2a3.4 3.4 0 0 1 6.8 0V9"/></svg>`,
+};
+
+const slides = MFS_SLIDES.filter(
+  (s) => s.type === "coded" || s.desktopImage || s.mobileImage
+).map((s) => ({
   ...s,
   desktopImage: s.desktopImage || s.mobileImage,
   mobileImage: s.mobileImage || s.desktopImage,
 }));
 const total = slides.length;
+const firstIsCoded = slides[0]?.type === "coded";
 ---
+
+<!-- Font (optional). Agar site ke Layout me pehle se font hai to ye 3 lines hata sakte ho -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet" />
 
 {total > 0 && (
 <section
@@ -54,7 +84,7 @@ const total = slides.length;
   <h1 class="mfs-sr-only">Musfira's - Made to adore</h1>
 
   <div class="mfs-hero-frame">
-    <div class="mfs-viewport">
+    <div class={`mfs-viewport${firstIsCoded ? " is-coded" : ""}`}>
       {
         slides.map((s, i) => (
           <div
@@ -62,21 +92,62 @@ const total = slides.length;
             role="group"
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${total}`}
+            data-coded={s.type === "coded" ? "true" : undefined}
           >
             <div class="mfs-slide-link">
-              <picture>
-                <source media="(max-width: 767px)" srcset={s.mobileImage} />
-                <img
-                  src={s.desktopImage}
-                  alt={s.alt}
-                  width="1920"
-                  height="640"
-                  loading={i === 0 ? "eager" : "lazy"}
-                  fetchpriority={i === 0 ? "high" : "auto"}
-                  decoding="async"
-                  draggable="false"
-                />
-              </picture>
+              {s.type === "coded" ? (
+                <div class="mfs-promo" role="img" aria-label={s.alt}>
+                  <div class="mfs-float mfs-float-watch" aria-hidden="true" set:html={ICONS.watch} />
+                  <div class="mfs-float mfs-float-bag" aria-hidden="true" set:html={ICONS.bag} />
+                  <div class="mfs-float mfs-float-wallet" aria-hidden="true" set:html={ICONS.wallet} />
+
+                  <div class="mfs-promo-inner">
+                    <div class="mfs-copy">
+                      <p class="mfs-kicker">{PROMO.kicker}</p>
+                      <h2 class="mfs-title">
+                        {PROMO.line1}
+                        <span>{PROMO.line2}</span>
+                      </h2>
+                      <ul class="mfs-chips">
+                        {PROMO.products.map((p) => (
+                          <li class="mfs-chip">
+                            <span class="mfs-chip-icon" set:html={ICONS[p.icon]} />
+                            {p.label}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div class="mfs-tiers">
+                      <div class="mfs-tier mfs-tier-2">
+                        <span class="mfs-buy">{PROMO.tier2.buy}</span>
+                        <span class="mfs-num">{PROMO.tier2.num}</span>
+                        <span class="mfs-save">{PROMO.tier2.save}</span>
+                      </div>
+                      <div class="mfs-tier mfs-tier-3">
+                        <span class="mfs-ribbon">{PROMO.tier3.ribbon}</span>
+                        <span class="mfs-buy">{PROMO.tier3.buy}</span>
+                        <span class="mfs-num">{PROMO.tier3.num}</span>
+                        <span class="mfs-save">{PROMO.tier3.save}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <picture>
+                  <source media="(max-width: 767px)" srcset={s.mobileImage} />
+                  <img
+                    src={s.desktopImage}
+                    alt={s.alt}
+                    width="1920"
+                    height="640"
+                    loading={i === 0 ? "eager" : "lazy"}
+                    fetchpriority={i === 0 ? "high" : "auto"}
+                    decoding="async"
+                    draggable="false"
+                  />
+                </picture>
+              )}
             </div>
           </div>
         ))
@@ -119,6 +190,8 @@ const total = slides.length;
   :root {
     --mfs-pink: #e6007e;
     --mfs-maroon: #8e0b3f;
+    --mfs-deep: #5a0526;
+    --mfs-gold: #ffc93c;
   }
 
   .mfs-hero-wrap {
@@ -132,11 +205,10 @@ const total = slides.length;
     box-sizing: border-box;
   }
 
-  /* Flat look: koi shadow, border ya gol corner nahi. Banner page ka hissa lagta hai */
   .mfs-hero-frame {
     position: relative;
     width: 100%;
-    max-width: none;   /* poori width. Chhota karna ho to yahan px likho, e.g. 1400px */
+    max-width: none;
     margin: 0 auto;
     border-radius: 0;
     background: #ffffff;
@@ -145,7 +217,7 @@ const total = slides.length;
     overflow: hidden;
   }
 
-  /* Ratio images ke barabar hai (1920x640) */
+  /* Image slides ke liye (purana tareeqa) */
   .mfs-viewport {
     position: relative;
     width: 100%;
@@ -153,12 +225,14 @@ const total = slides.length;
     overflow: hidden;
     touch-action: pan-y;
     transition: aspect-ratio 0.5s ease;
-    /* HEIGHT: banner ki zyada se zyada height. Kam karni ho to number chhota karo.
-       Image kategi nahi, bas poori dikhe gi (kinaron pe safed jagah aa sakti hai) */
     max-height: 280px;
   }
+  /* Coded slide ke liye: laptop/PC ratio 1920x420, 560px se zyada lamba nahi */
+  .mfs-viewport.is-coded {
+    aspect-ratio: 1920 / 420;
+    max-height: 560px;
+  }
 
-  /* SLIDE ANIMATION: speed yahan se (1.1s = slow aur smooth, zyada slow ke liye 1.5s) */
   .mfs-slide {
     position: absolute;
     inset: 0;
@@ -181,12 +255,215 @@ const total = slides.length;
     display: block;
     width: 100%;
     height: 100%;
-    /* contain = image na kheenchti hai na cut hoti hai. Frame ka ratio
-       JS khud image ke ratio ke mutabiq set karta hai, to poori fit rehti hai */
     object-fit: contain;
     object-position: center;
     user-select: none;
     -webkit-user-drag: none;
+  }
+
+  /* =====================================================
+     CODED PROMO BANNER
+     Saari sizes "cqw" me hain (banner ki width ka %), is liye
+     har screen pe poora design apne aap chhota/bara hota hai.
+     ===================================================== */
+  .mfs-promo {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    container-type: inline-size;
+    color: #ffffff;
+    font-family: "Bricolage Grotesque", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    background:
+      radial-gradient(60cqw 60cqw at 88% 110%, rgba(255, 120, 190, 0.55), transparent 70%),
+      linear-gradient(110deg, #4d0422 0%, var(--mfs-maroon) 46%, var(--mfs-pink) 100%);
+  }
+  /* halki tirchi lines ka texture */
+  .mfs-promo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.045) 0 2px,
+      transparent 2px 22px
+    );
+    pointer-events: none;
+  }
+
+  .mfs-promo-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3cqw;
+    padding: 0 7cqw;
+  }
+
+  /* peeche halke watch / bag / wallet ke nishan */
+  .mfs-float {
+    position: absolute;
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.11);
+    pointer-events: none;
+  }
+  .mfs-float svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .mfs-float-watch  { width: 10cqw; left: 47cqw; top: 6cqw;  transform: rotate(-14deg); }
+  .mfs-float-bag    { width: 11cqw; left: 55cqw; bottom: 3cqw; transform: rotate(9deg); }
+  .mfs-float-wallet { width: 8cqw;  left: 41cqw; bottom: 5cqw; transform: rotate(-8deg); }
+
+  .mfs-copy {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 50cqw;
+  }
+  .mfs-kicker {
+    display: inline-block;
+    margin: 0 0 1.6cqw;
+    padding: 0.55cqw 1.3cqw;
+    font-size: max(11px, 1.05cqw);
+    font-weight: 600;
+    line-height: 1.2;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+  }
+  .mfs-title {
+    margin: 0;
+    font-size: max(21px, 3.7cqw);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .mfs-title span {
+    display: block;
+    color: var(--mfs-gold);
+  }
+
+  .mfs-chips {
+    list-style: none;
+    margin: 2cqw 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1cqw;
+  }
+  .mfs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6cqw;
+    padding: 0.6cqw 1.4cqw 0.6cqw 1cqw;
+    font-size: max(11px, 1.1cqw);
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.42);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .mfs-chip-icon {
+    display: inline-flex;
+    width: max(14px, 1.6cqw);
+    height: max(14px, 1.6cqw);
+  }
+  .mfs-chip-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Buy 2 aur Buy 3 ke cards: seedhi ki tarah ooncha hota hua */
+  .mfs-tiers {
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.4cqw;
+  }
+  .mfs-tier {
+    position: relative;
+    overflow: hidden;
+    width: 12.5cqw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 1.6cqw;
+  }
+  .mfs-buy {
+    font-size: max(12px, 1.5cqw);
+    font-weight: 600;
+    line-height: 1;
+  }
+  .mfs-num {
+    font-size: 7.4cqw;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0.2cqw 0 0.9cqw;
+    letter-spacing: -0.03em;
+  }
+  .mfs-save {
+    padding: 0.5cqw 1.1cqw;
+    font-size: max(11px, 1.25cqw);
+    font-weight: 700;
+    line-height: 1.15;
+    border-radius: 999px;
+    background: var(--mfs-maroon);
+    color: #ffffff;
+  }
+
+  .mfs-tier-2 {
+    height: 14.5cqw;
+    background: #ffffff;
+    color: var(--mfs-maroon);
+    box-shadow: 0 1cqw 2.4cqw rgba(0, 0, 0, 0.28);
+  }
+  .mfs-tier-3 {
+    height: 17.5cqw;
+    padding-top: 1.6cqw;
+    background: linear-gradient(160deg, #ffe08a 0%, var(--mfs-gold) 55%, #ffb300 100%);
+    color: var(--mfs-deep);
+    box-shadow: 0 1.2cqw 3cqw rgba(0, 0, 0, 0.38), 0 0 0 0.25cqw rgba(255, 255, 255, 0.55);
+  }
+  .mfs-tier-3 .mfs-save {
+    background: var(--mfs-deep);
+  }
+  .mfs-ribbon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.35cqw 0;
+    font-size: max(10px, 1cqw);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #ffffff;
+    background: var(--mfs-pink);
+  }
+
+  /* Ek hi halki chamak, sirf "Buy 3" card pe, jab slide samne ho */
+  .mfs-tier-3::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -70%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: skewX(-20deg);
+    animation: mfs-shine 3.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .mfs-slide:not(.is-active) .mfs-tier-3::after {
+    animation: none;
+  }
+  @keyframes mfs-shine {
+    0%, 55% { left: -70%; }
+    100%    { left: 150%; }
   }
 
   /* Arrows */
@@ -263,26 +540,80 @@ const total = slides.length;
     border: 0;
   }
 
-  /* Mobile: arrows hide, thora chhota margin */
-  @media (max-width: 767px) {
-    .mfs-hero-wrap {
+  /* =====================================================
+     TABLET (portrait) + MOBILE: text upar, cards neeche
+     ===================================================== */
+  @media (max-width: 900px) {
+    .mfs-viewport.is-coded {
+      aspect-ratio: 800 / 470;
+      max-height: none;
+    }
+    .mfs-promo-inner {
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: 2.8cqw;
+      padding: 4cqw 5cqw;
+    }
+    .mfs-copy { max-width: none; }
+    .mfs-kicker {
+      margin-bottom: 1.6cqw;
+      padding: 0.9cqw 2.4cqw;
+      font-size: max(10px, 2.5cqw);
+    }
+    .mfs-title { font-size: max(19px, 6.6cqw); }
+    .mfs-chips {
+      margin-top: 0;
+      order: 3;
+      gap: 1.6cqw;
+    }
+    .mfs-chip {
+      gap: 1.2cqw;
+      padding: 1.1cqw 2.4cqw 1.1cqw 1.8cqw;
+      font-size: max(10px, 2.4cqw);
+    }
+    .mfs-chip-icon {
+      width: max(12px, 3.2cqw);
+      height: max(12px, 3.2cqw);
+    }
+    /* chips ko tiers ke neeche bhejne ke liye copy ko "contents" bana do */
+    .mfs-copy { display: contents; }
+    .mfs-kicker { order: 0; align-self: flex-start; }
+    .mfs-title  { order: 1; }
+    .mfs-tiers  { order: 2; align-items: stretch; gap: 2.4cqw; }
+
+    .mfs-tier {
+      flex: 1 1 0;
+      width: auto;
+      height: auto;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: "num buy" "num save";
+      align-items: center;
+      justify-items: start;
+      column-gap: 2.4cqw;
+      row-gap: 0.4cqw;
+      padding: 2cqw 3cqw;
+      text-align: left;
+      border-radius: 2.6cqw;
+    }
+    .mfs-tier-2, .mfs-tier-3 { height: auto; padding: 2cqw 3cqw; }
+    .mfs-buy { grid-area: buy; font-size: max(10px, 2.6cqw); align-self: end; }
+    .mfs-num { grid-area: num; font-size: max(30px, 9.5cqw); margin: 0; }
+    .mfs-save {
+      grid-area: save;
+      align-self: start;
       padding: 0;
+      background: none;
+      color: inherit;
+      font-size: max(11px, 2.9cqw);
     }
-    .mfs-hero-frame {
-      border-radius: 0;
-      box-shadow: none;
-    }
-    /* Mobile ratio (960x1000) */
-    .mfs-viewport {
-      aspect-ratio: 960 / 1000;
-      max-height: 170px;   /* mobile pe banner ki zyada se zyada height */
-    }
-    .mfs-arrow {
-      display: none;
-    }
-    .mfs-dots {
-      padding-top: 12px;
-    }
+    .mfs-tier-3 .mfs-save { background: none; }
+    .mfs-ribbon { display: none; }
+
+    .mfs-float-watch  { width: 17cqw; left: auto; right: 3cqw; top: 3cqw; }
+    .mfs-float-bag,
+    .mfs-float-wallet { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -290,6 +621,10 @@ const total = slides.length;
     .mfs-dot,
     .mfs-arrow {
       transition: none;
+    }
+    .mfs-tier-3::after {
+      animation: none;
+      display: none;
     }
   }
 </style>
@@ -309,10 +644,17 @@ const total = slides.length;
     let current = 0;
     let timer: number | undefined;
 
-    // Frame ka ratio active image ke asal ratio ke barabar rakho (desktop/mobile dono pe)
+    // Image slide: frame ka ratio image ke barabar. Coded slide: ratio CSS khud sambhalti hai.
     const setRatio = (slide: HTMLElement | undefined) => {
-      const img = slide?.querySelector<HTMLImageElement>("img");
-      if (viewport && img && img.naturalWidth && img.naturalHeight) {
+      if (!viewport || !slide) return;
+      if (slide.dataset.coded === "true") {
+        viewport.classList.add("is-coded");
+        viewport.style.aspectRatio = "";
+        return;
+      }
+      viewport.classList.remove("is-coded");
+      const img = slide.querySelector<HTMLImageElement>("img");
+      if (img && img.naturalWidth && img.naturalHeight) {
         viewport.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
       }
     };
@@ -332,7 +674,6 @@ const total = slides.length;
       const outgoing = slides[current];
       const incoming = slides[next];
 
-      // baqi slides ko side me park karo (bina animation)
       slides.forEach((slide) => {
         if (slide !== outgoing && slide !== incoming) {
           slide.style.transition = "none";
@@ -340,14 +681,12 @@ const total = slides.length;
         }
       });
 
-      // incoming ko side par rakho (bina animation), phir andar le aao
       incoming.style.transition = "none";
       incoming.style.transform = `translateX(${dir * 100}%)`;
-      void incoming.offsetWidth; // browser ko position yaad karwao
+      void incoming.offsetWidth;
       incoming.style.transition = "";
       incoming.style.transform = "translateX(0)";
 
-      // purana banner dusri side se nikal jaye
       outgoing.style.transition = "";
       outgoing.style.transform = `translateX(${-dir * 100}%)`;
 
@@ -374,20 +713,18 @@ const total = slides.length;
     };
     const go = (index: number, dir = 1) => {
       show(index, dir);
-      start(); // click ke baad timer dobara shuru
+      start();
     };
 
     prevBtn?.addEventListener("click", () => go(current - 1, -1));
     nextBtn?.addEventListener("click", () => go(current + 1));
     dots.forEach((dot, i) => dot.addEventListener("click", () => go(i, i > current ? 1 : -1)));
 
-    // Mouse upar ho ya keyboard focus ho to ruk jaye
     root.addEventListener("mouseenter", stop);
     root.addEventListener("mouseleave", start);
     root.addEventListener("focusin", stop);
     root.addEventListener("focusout", start);
 
-    // Tab chhupa ho to autoplay band
     document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
 
     // Mobile swipe
@@ -418,7 +755,6 @@ const total = slides.length;
 
     slides.forEach((slide, i) => slide.setAttribute("aria-hidden", i === 0 ? "false" : "true"));
 
-    // Site load hone ke baad baqi banners pehle se load kar lo, taake slide me khali na dikhe
     window.addEventListener("load", () => {
       root.querySelectorAll<HTMLImageElement>("img[loading='lazy']").forEach((img) => (img.loading = "eager"));
     });

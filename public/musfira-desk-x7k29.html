@@ -3465,5 +3465,88 @@ setTimeout(()=>{ if(ADMIN_KEY){ refreshDash(); } else { showLock(""); } }, 300);
   try{ if(allOrders&&allOrders.length) update(allOrders); }catch(e){}
 })();
 </script>
+
+<script>
+(function(){
+  if(window.__fixAddon) return; window.__fixAddon=true;
+
+  const st=document.createElement('style');
+  st.textContent=`
+#mDash .anx{padding:12px;border-radius:18px;margin-bottom:14px}
+#mDash .anx-head{margin-bottom:10px}
+#mDash .anx-title{font-size:11px;letter-spacing:1.2px}
+#mDash .anx-card{padding:10px;border-radius:14px}
+#mDash .anx-rings{grid-template-columns:repeat(5,1fr);gap:8px}
+#mDash .anx-ring{padding:8px 4px;border-radius:14px}
+#mDash .anx-ring:hover{transform:none;box-shadow:none}
+#mDash .anx-ring-wrap{max-width:76px}
+#mDash .anx-scan{display:none}
+#mDash .anx-ticks{opacity:.5}
+#mDash .anx-track,#mDash .anx-prog{stroke-width:8}
+#mDash .anx-prog{filter:none}
+#mDash .anx-num{font-size:16px;text-shadow:none}
+#mDash .anx-pct{display:none}
+#mDash .anx-ring-lbl{font-size:9px;margin-top:5px;letter-spacing:.4px}
+#mDash .anx-ring-amt{font-size:9px;padding:2px 7px;margin-top:3px}
+#mDash .anx-row{gap:8px;margin-top:8px}
+#mDash .anx-chartbox{height:170px}
+#mDash .anx-dn{max-width:112px}
+#mDash .anx-dc b{font-size:17px;text-shadow:none}
+#mDash .anx-dc span{font-size:8px}
+#mDash .anx-dseg{filter:none}
+#mDash .anx-gwrap{max-width:170px}
+#mDash .anx-gprog{filter:none}
+#mDash .anx-gnum b{font-size:21px;text-shadow:none}
+#mDash .anx-mini b{font-size:12px}
+#mDash .anx-leg{gap:4px;margin-top:8px}
+#mDash .anx-leg-r{font-size:11px}
+#mDash .anx-plist{max-height:230px}
+@media (max-width:980px){
+ #mDash .anx-rings{grid-template-columns:repeat(5,1fr)}
+}
+@media (max-width:600px){
+ #mDash .anx{padding:10px;border-radius:16px}
+ #mDash .anx-rings{grid-template-columns:repeat(3,1fr);gap:7px}
+ #mDash .anx-rings .anx-ring:first-child{grid-column:auto}
+ #mDash .anx-ring-wrap{max-width:64px}
+ #mDash .anx-num{font-size:14px}
+ #mDash .anx-ring-lbl{font-size:8.5px}
+ #mDash .anx-ring-amt{font-size:8.5px}
+ #mDash .anx-chartbox{height:160px}
+ #mDash .anx-dn{max-width:100px}
+ #mDash .anx-gwrap{max-width:150px}
+}`;
+  document.head.appendChild(st);
+
+  const _api=api;
+  api=function(p){
+    try{
+      if(p && p.action==='sendEmail'){
+        p=Object.assign({from:'info@musfiras.com', fromName:"Musfira's", replyTo:'info@musfiras.com'}, p);
+      }
+      if(p && (p.action==='updateStatus' || p.action==='deleteRow')){
+        const r=allOrders.find(x=>x.rowNumber===p.row)||{};
+        p=Object.assign({
+          prevStatus:String(r["status"]||"Pending"),
+          items:parseOrderItems(r["product details"]).map(i=>({product:i.product,color:i.color,qty:i.qty}))
+        }, p);
+      }
+    }catch(e){}
+    const act=p && p.action;
+    return _api(p).then(res=>{
+      if(act==='sendEmail' && res && !Array.isArray(res) && res.message==='Access Denied'){
+        return {status:'error', message:'Email nahi gayi: worker mein sendEmail setup nahi hai. Worker code update karein.'};
+      }
+      if(act==='sendEmail' && res && res.status!=='success' && !res.message){
+        return {status:'error', message:'Email nahi gayi: '+JSON.stringify(res).slice(0,120)};
+      }
+      return res;
+    });
+  };
+})();
+</script>
+
+
+
 </body>
 </html>

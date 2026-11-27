@@ -227,10 +227,11 @@ const firstIsCoded = slides[0]?.type === "coded";
     transition: aspect-ratio 0.5s ease;
     max-height: 280px;
   }
-  /* Coded slide ke liye: laptop/PC ratio 1920x420, 560px se zyada lamba nahi */
+  /* Coded slide ke liye: laptop/PC ratio 1920x340, 460px se zyada lamba nahi.
+     HEIGHT aur kam karni ho to 340 ko chhota karo (e.g. 300) */
   .mfs-viewport.is-coded {
-    aspect-ratio: 1920 / 420;
-    max-height: 560px;
+    aspect-ratio: 1920 / 340;
+    max-height: 460px;
   }
 
   .mfs-slide {
@@ -326,7 +327,7 @@ const firstIsCoded = slides[0]?.type === "coded";
   }
   .mfs-kicker {
     display: inline-block;
-    margin: 0 0 1.6cqw;
+    margin: 0 0 1.2cqw;
     padding: 0.55cqw 1.3cqw;
     font-size: max(11px, 1.05cqw);
     font-weight: 600;
@@ -337,7 +338,7 @@ const firstIsCoded = slides[0]?.type === "coded";
   }
   .mfs-title {
     margin: 0;
-    font-size: max(21px, 3.7cqw);
+    font-size: max(21px, 3.4cqw);
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -349,7 +350,7 @@ const firstIsCoded = slides[0]?.type === "coded";
 
   .mfs-chips {
     list-style: none;
-    margin: 2cqw 0 0;
+    margin: 1.5cqw 0 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
@@ -400,10 +401,10 @@ const firstIsCoded = slides[0]?.type === "coded";
     line-height: 1;
   }
   .mfs-num {
-    font-size: 7.4cqw;
+    font-size: 5.4cqw;
     font-weight: 800;
     line-height: 1;
-    margin: 0.2cqw 0 0.9cqw;
+    margin: 0.1cqw 0 0.7cqw;
     letter-spacing: -0.03em;
   }
   .mfs-save {
@@ -417,13 +418,13 @@ const firstIsCoded = slides[0]?.type === "coded";
   }
 
   .mfs-tier-2 {
-    height: 14.5cqw;
+    height: 11.5cqw;
     background: #ffffff;
     color: var(--mfs-maroon);
     box-shadow: 0 1cqw 2.4cqw rgba(0, 0, 0, 0.28);
   }
   .mfs-tier-3 {
-    height: 17.5cqw;
+    height: 14cqw;
     padding-top: 1.6cqw;
     background: linear-gradient(160deg, #ffe08a 0%, var(--mfs-gold) 55%, #ffb300 100%);
     color: var(--mfs-deep);
@@ -545,7 +546,7 @@ const firstIsCoded = slides[0]?.type === "coded";
      ===================================================== */
   @media (max-width: 900px) {
     .mfs-viewport.is-coded {
-      aspect-ratio: 800 / 470;
+      aspect-ratio: 800 / 400;
       max-height: none;
     }
     .mfs-promo-inner {
@@ -553,7 +554,7 @@ const firstIsCoded = slides[0]?.type === "coded";
       align-items: stretch;
       justify-content: center;
       gap: 2.8cqw;
-      padding: 4cqw 5cqw;
+      padding: 3cqw 5cqw;
     }
     .mfs-copy { max-width: none; }
     .mfs-kicker {
@@ -578,7 +579,7 @@ const firstIsCoded = slides[0]?.type === "coded";
     }
     /* chips ko tiers ke neeche bhejne ke liye copy ko "contents" bana do */
     .mfs-copy { display: contents; }
-    .mfs-kicker { order: 0; align-self: flex-start; }
+    .mfs-kicker { display: none; }
     .mfs-title  { order: 1; }
     .mfs-tiers  { order: 2; align-items: stretch; gap: 2.4cqw; }
 

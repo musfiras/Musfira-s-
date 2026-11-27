@@ -227,11 +227,11 @@ const firstIsCoded = slides[0]?.type === "coded";
     transition: aspect-ratio 0.5s ease;
     max-height: 280px;
   }
-  /* Coded slide ke liye: laptop/PC ratio 1920x340, 460px se zyada lamba nahi.
-     HEIGHT aur kam karni ho to 340 ko chhota karo (e.g. 300) */
+  /* Coded slide ke liye: laptop/PC ratio 1920x290, 400px se zyada lamba nahi.
+     HEIGHT aur kam karni ho to 290 ko chhota karo (e.g. 260) */
   .mfs-viewport.is-coded {
-    aspect-ratio: 1920 / 340;
-    max-height: 460px;
+    aspect-ratio: 1920 / 290;
+    max-height: 400px;
   }
 
   .mfs-slide {
@@ -327,9 +327,9 @@ const firstIsCoded = slides[0]?.type === "coded";
   }
   .mfs-kicker {
     display: inline-block;
-    margin: 0 0 1.2cqw;
-    padding: 0.55cqw 1.3cqw;
-    font-size: max(11px, 1.05cqw);
+    margin: 0 0 0.9cqw;
+    padding: 0.4cqw 1.2cqw;
+    font-size: max(11px, 0.95cqw);
     font-weight: 600;
     line-height: 1.2;
     border-radius: 999px;
@@ -338,7 +338,7 @@ const firstIsCoded = slides[0]?.type === "coded";
   }
   .mfs-title {
     margin: 0;
-    font-size: max(21px, 3.4cqw);
+    font-size: max(21px, 3cqw);
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -350,7 +350,7 @@ const firstIsCoded = slides[0]?.type === "coded";
 
   .mfs-chips {
     list-style: none;
-    margin: 1.5cqw 0 0;
+    margin: 1.1cqw 0 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
@@ -360,8 +360,8 @@ const firstIsCoded = slides[0]?.type === "coded";
     display: inline-flex;
     align-items: center;
     gap: 0.6cqw;
-    padding: 0.6cqw 1.4cqw 0.6cqw 1cqw;
-    font-size: max(11px, 1.1cqw);
+    padding: 0.45cqw 1.3cqw 0.45cqw 0.9cqw;
+    font-size: max(11px, 1cqw);
     font-weight: 600;
     border-radius: 999px;
     border: 1.5px solid rgba(255, 255, 255, 0.42);
@@ -387,7 +387,7 @@ const firstIsCoded = slides[0]?.type === "coded";
   .mfs-tier {
     position: relative;
     overflow: hidden;
-    width: 12.5cqw;
+    width: 11cqw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -396,20 +396,20 @@ const firstIsCoded = slides[0]?.type === "coded";
     border-radius: 1.6cqw;
   }
   .mfs-buy {
-    font-size: max(12px, 1.5cqw);
+    font-size: max(12px, 1.3cqw);
     font-weight: 600;
     line-height: 1;
   }
   .mfs-num {
-    font-size: 5.4cqw;
+    font-size: 4.4cqw;
     font-weight: 800;
     line-height: 1;
     margin: 0.1cqw 0 0.7cqw;
     letter-spacing: -0.03em;
   }
   .mfs-save {
-    padding: 0.5cqw 1.1cqw;
-    font-size: max(11px, 1.25cqw);
+    padding: 0.4cqw 1cqw;
+    font-size: max(11px, 1.15cqw);
     font-weight: 700;
     line-height: 1.15;
     border-radius: 999px;
@@ -418,14 +418,14 @@ const firstIsCoded = slides[0]?.type === "coded";
   }
 
   .mfs-tier-2 {
-    height: 11.5cqw;
+    height: 9.5cqw;
     background: #ffffff;
     color: var(--mfs-maroon);
     box-shadow: 0 1cqw 2.4cqw rgba(0, 0, 0, 0.28);
   }
   .mfs-tier-3 {
-    height: 14cqw;
-    padding-top: 1.6cqw;
+    height: 11.5cqw;
+    padding-top: 1.8cqw;
     background: linear-gradient(160deg, #ffe08a 0%, var(--mfs-gold) 55%, #ffb300 100%);
     color: var(--mfs-deep);
     box-shadow: 0 1.2cqw 3cqw rgba(0, 0, 0, 0.38), 0 0 0 0.25cqw rgba(255, 255, 255, 0.55);
@@ -438,8 +438,8 @@ const firstIsCoded = slides[0]?.type === "coded";
     top: 0;
     left: 0;
     right: 0;
-    padding: 0.35cqw 0;
-    font-size: max(10px, 1cqw);
+    padding: 0.3cqw 0;
+    font-size: max(10px, 0.9cqw);
     font-weight: 700;
     line-height: 1.2;
     color: #ffffff;
@@ -546,15 +546,15 @@ const firstIsCoded = slides[0]?.type === "coded";
      ===================================================== */
   @media (max-width: 900px) {
     .mfs-viewport.is-coded {
-      aspect-ratio: 800 / 400;
+      aspect-ratio: 800 / 250;
       max-height: none;
     }
     .mfs-promo-inner {
       flex-direction: column;
       align-items: stretch;
       justify-content: center;
-      gap: 2.8cqw;
-      padding: 3cqw 5cqw;
+      gap: 2cqw;
+      padding: 2.4cqw 5cqw;
     }
     .mfs-copy { max-width: none; }
     .mfs-kicker {
@@ -562,11 +562,9 @@ const firstIsCoded = slides[0]?.type === "coded";
       padding: 0.9cqw 2.4cqw;
       font-size: max(10px, 2.5cqw);
     }
-    .mfs-title { font-size: max(19px, 6.6cqw); }
+    .mfs-title { font-size: max(18px, 5.8cqw); }
     .mfs-chips {
-      margin-top: 0;
-      order: 3;
-      gap: 1.6cqw;
+      display: none;   /* mobile pe jagah bachane ke liye chips band */
     }
     .mfs-chip {
       gap: 1.2cqw;
@@ -594,20 +592,20 @@ const firstIsCoded = slides[0]?.type === "coded";
       justify-items: start;
       column-gap: 2.4cqw;
       row-gap: 0.4cqw;
-      padding: 2cqw 3cqw;
+      padding: 1.2cqw 3cqw;
       text-align: left;
       border-radius: 2.6cqw;
     }
-    .mfs-tier-2, .mfs-tier-3 { height: auto; padding: 2cqw 3cqw; }
+    .mfs-tier-2, .mfs-tier-3 { height: auto; padding: 1.2cqw 3cqw; }
     .mfs-buy { grid-area: buy; font-size: max(10px, 2.6cqw); align-self: end; }
-    .mfs-num { grid-area: num; font-size: max(30px, 9.5cqw); margin: 0; }
+    .mfs-num { grid-area: num; font-size: max(24px, 7.4cqw); margin: 0; }
     .mfs-save {
       grid-area: save;
       align-self: start;
       padding: 0;
       background: none;
       color: inherit;
-      font-size: max(11px, 2.9cqw);
+      font-size: max(11px, 2.7cqw);
     }
     .mfs-tier-3 .mfs-save { background: none; }
     .mfs-ribbon { display: none; }
